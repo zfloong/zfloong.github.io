@@ -9,417 +9,631 @@
   <style>
     :root {
       --bg: #f8fafc;
-      --card: rgba(255,255,255,0.7);
+      --card-bg: rgba(255, 255, 255, 0.65);
+      --nav-bg: rgba(255, 255, 255, 0.85);
       --text: #1e293b;
       --primary: #6366f1;
-      --border: rgba(0,0,0,0.08);
+      --secondary: #8b5cf6;
+      --border: rgba(0,0,0,0.06);
+      --shadow: 0 4px 20px rgba(0,0,0,0.03);
     }
+
     @media (prefers-color-scheme: dark) {
       :root {
         --bg: #0f172a;
-        --card: rgba(15,23,42,0.6);
+        --card-bg: rgba(30, 41, 59, 0.7);
+        --nav-bg: rgba(15, 23, 42, 0.85);
         --text: #e2e8f0;
-        --border: rgba(255,255,255,0.1);
+        --border: rgba(255,255,255,0.08);
       }
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       background-image: 
-        radial-gradient(circle at 10% 20%, rgba(99,102,241,0.1) 0%, transparent 20%),
-        radial-gradient(circle at 90% 80%, rgba(139,92,246,0.1) 0%, transparent 20%);
-      padding: 1rem 1rem 2rem 1rem;
-    }
-    .container { max-width: 1280px; margin: 0 auto; }
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 1rem 0;
-    }
-    h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
-      background: linear-gradient(90deg, #6366f1, #8b5cf6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.3rem;
-    }
-    .desc { 
-      font-size: 1.1rem;
-      opacity: 0.7;
-      margin-top: 0.3rem;
+        radial-gradient(circle at 15% 25%, rgba(99,102,241,0.12) 0%, transparent 25%),
+        radial-gradient(circle at 85% 75%, rgba(139,92,246,0.12) 0%, transparent 25%);
+      padding-top: 80px; 
     }
 
-    .categories {
-      display: grid;
-      gap: 2rem;
-    }
-    .category {
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.05);
-      transition: all 0.3s ease;
-    }
-    .category:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-    .cat-header {
+    /* --- 顶部固定导航栏 --- */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.2rem;
-      cursor: pointer;
-      user-select: none;
+      justify-content: center;
+      box-shadow: var(--shadow);
     }
-    .cat-title {
-      font-size: 1.5rem;
-      font-weight: 700;
+
+    .nav-container {
+      width: 100%;
+      max-width: 1280px;
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 0.5rem 0;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 0.95rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.7;
+    }
+
+    .tab-btn:hover { background: rgba(99, 102, 241, 0.1); opacity: 1; }
+    .tab-btn.active { background: var(--primary); color: white; opacity: 1; box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
+
+    /* --- 主要内容区域 --- */
+    .main-content {
+      max-width: 1280px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* --- 搜索组件样式 (新) --- */
+    .search-wrapper {
+      max-width: 600px;
+      margin: 0 auto 2.5rem auto;
+      text-align: center;
+    }
+    
+/* --- 搜索引擎区域容器 --- */
+    .search-engines {
+      display: flex;
+      justify-content: center; /* 整体居中 */
+      align-items: center;     /* 垂直方向对齐 */
+      gap: 1.0rem;             /* 元素之间的间距稍微调小一点，更紧凑 */
+      margin-bottom: 0.8rem;
+    }
+
+/* --- 竖分割线 (新) --- */
+.divider {
+  width: 1px;
+  height: 16px;            /*稍微加高一点*/
+  background-color: var(--text);
+  opacity: 0.15;
+  margin: 0 0.2rem;        /* 减少自身的 margin，主要靠 gap 来控制间距 */
+}
+/* --- 迷你图标样式 (新) --- */
+.mini-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;            /* 鼠标放上去的触控区域大小 */
+  height: 34px;
+  border-radius: 8px;     /* 鼠标悬停时的圆角 */
+  transition: all 0.2s ease;
+  opacity: 0.7;           /* 默认稍微透明一点，不干扰视线 */
+  text-decoration: none;
+}
+
+.mini-icon:hover {
+  opacity: 1;
+  background: rgba(0,0,0,0.05); /* 悬停时出现浅灰色背景 */
+  transform: scale(1.1);        /* 微微放大 */
+}
+
+/* 暗色模式下的悬停背景适配 */
+@media (prefers-color-scheme: dark) {
+  .mini-icon:hover { background: rgba(255,255,255,0.1); }
+}
+
+.mini-icon img {
+  width: 22px;  /* ★图标实际显示大小：18px (非常精致) */
+  height: 22px;
+  border-radius: 4px;
+}
+
+
+
+
+
+
+    .engine-btn {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      opacity: 0.6;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 20px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    .engine-btn:hover { opacity: 1; background: rgba(0,0,0,0.05); }
+    
+    .engine-btn.active {
+      opacity: 1;
+      background: var(--text); /* 使用文字颜色做背景，形成反差 */
+      color: var(--bg);
+      font-weight: 600;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+        .engine-btn.active { background: #e2e8f0; color: #0f172a; }
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      padding-right: 3rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 8px 30px rgba(99,102,241,0.15);
+      background: rgba(65, 64, 66, 0.251);
+    }
+    
+    .search-btn {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    /* --- 布局动画 --- */
+    .category-section { display: none; animation: fadeIn 0.4s ease; }
+    .category-section.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header { margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
+    .section-title { font-size: 1.5rem; font-weight: 700; }
+
+    /* ★ 核心修改处：
+       将 minmax(160px, 1fr) 修改为 minmax(220px, 1fr)
+       解释：增加最小宽度迫使一行只能放下约5个，同时让卡片更宽，视觉更舒适
+    */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
       display: flex;
       align-items: center;
       gap: 0.8rem;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1rem;
-      transition: all 0.3s ease;
-    }
-    .collapsible-content {
-      overflow: hidden;
-      max-height: 2000px;
-      transition: max-height 0.5s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
-      opacity: 1;
-    }
-    .collapsed .collapsible-content {
-      max-height: 0;
-      opacity: 0;
-      margin-bottom: -1.5rem;
-    }
-    .toggle-icon {
-      transition: transform 0.3s ease;
-    }
-    .collapsed .toggle-icon {
-      transform: rotate(-90deg);
-    }
-
-    .item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
       padding: 1rem;
-      background: rgba(255,255,255,0.5);
-      border-radius: 14px;
-      transition: all 0.3s ease;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
       text-decoration: none;
       color: var(--text);
-      border: 1px solid var(--border);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+      overflow: hidden;
     }
+
+    .card:hover {
+      transform: translateY(-4px);
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+      border-color: var(--primary);
+    }
+    
     @media (prefers-color-scheme: dark) {
-      .item { background: rgba(255,255,255,0.08); }
+      .card:hover { background: rgba(40, 50, 70, 0.9); }
     }
-    .item:hover {
-      transform: scale(1.03);
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 10px 25px rgba(99,102,241,0.3);
-    }
-    .item:hover img { transform: scale(1.15); }
-    .item img {
-      width: 40px;
-      height: 40px;
+
+    .card img {
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
-      transition: all 0.3s ease;
-      flex-shrink: 0;
       object-fit: cover;
+      flex-shrink: 0;
     }
-    .item-text h3 { font-size: 1.1rem; font-weight: 600; }
-    .item-text p { font-size: 0.9rem; opacity: 0.7; margin-top: 0.2rem; }
-    .badge {
-      background: var(--primary);
-      color: white;
-      font-size: 0.75rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 50rem;
-      margin-left: auto;
-    }
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      padding: 2rem 0;
-      opacity: 0.6;
-      font-size: 0.9rem;
-    }
+
+    .card-info h3 { font-size: 0.95rem; font-weight: 600; line-height: 1.4; }
+    .card-info p { font-size: 0.75rem; opacity: 0.6; margin-top: 2px; }
+    footer { text-align: center; padding: 3rem 0; opacity: 0.5; font-size: 0.85rem; }
+    
   </style>
+
 </head>
+
 <body>
-  <div class="container">
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-tabs" id="navTabs">
+        <button class="tab-btn active" data-target="ai">
+          <i class="ri-sparkling-2-fill"></i> Everyday
+        </button>
+        <button class="tab-btn" data-target="media">
+          <i class="ri-globe-line"></i> 网络信平台
+        </button>
+        <button class="tab-btn" data-target="tools">
+          <i class="ri-tools-line"></i> 常用工具
+        </button>
+        <button class="tab-btn" data-target="opensource">
+          <i class="ri-open-source-line"></i> 开源社区
+        </button>
+        <button class="tab-btn" data-target="cloud">
+          <i class="ri-cloud-line"></i> API & 云
+        </button>
+      </div>
+    </div>
+  </nav>
 
-    <div class="categories">
+  <div class="main-content">
+    
+    <div class="search-wrapper">
+
+      <div class="search-engines">
+  <button class="engine-btn active" data-url="https://www.google.com/search?q=" data-name="q">Google</button>
+  <button class="engine-btn" data-url="https://www.baidu.com/s?wd=" data-name="wd">百度一下</button>
+  <button class="engine-btn" data-url="https://www.bing.com/search?q=" data-name="q">Bing</button>
+
+  <div class="divider"></div>
+
+  <a href="https://mail.google.com/" class="mini-icon" target="_blank" title="Gmail">
+    <img src="https://img.icons8.com/fluency/48/gmail-new.png" alt="Gmail">
+  </a>
+  <a href="https://mail.qq.com/" class="mini-icon" target="_blank" title="QQ邮箱">
+    <img src="https://mail.qq.com/favicon.ico" alt="QQ">
+  </a>
+</div>
       
-      <div class="category">
-        <div class="cat-header">
-          <div class="cat-title">
-            <i class="ri-sparkling-2-fill toggle-icon" style="color:#8b5cf6;"></i>
-            AI 集合（常用）
-          </div>
-          <span class="badge">推荐</span>
+      <form id="searchForm" action="https://www.google.com/search" method="get" target="_blank">
+        <div class="search-box">
+          <input type="text" name="q" class="search-input" placeholder="Search..." autocomplete="off">
+          <button type="submit" class="search-btn"><i class="ri-search-2-line"></i></button>
         </div>
-        <div class="collapsible-content">
-          <div class="grid">
-            <a href="https://chat.deepseek.com/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=chat.deepseek.com&sz=64" alt="DeepSeek">
-              <div class="item-text"><h3>DeepSeek</h3></div>
-            </a>
-            <a href="https://gemini.google.com/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=64" alt="Gemini">
-              <div class="item-text"><h3>Gemini</h3></div>
-            </a>
-            <a href="https://x.com/i/grok" class="item" target="_blank">
-              <img src="https://x.com/favicon.ico" alt="X.Grok">
-              <div class="item-text"><h3>Grok 4</h3></div>
-            </a>
-            <a href="https://copilot.microsoft.com/" class="item" target="_blank">
-              <img src="https://copilot.microsoft.com/favicon.ico" alt="Copilot">
-              <div class="item-text"><h3>Copilot</h3></div>
-            </a>
-            <a href="https://www.qianwen.com/" class="item" target="_blank">
-              <img src="https://img.alicdn.com/imgextra/i4/O1CN01Slt9qq1Q0CmLAG9MK_!!6000000001913-55-tps-32-32.svg" alt="通义千问">
-              <div class="item-text"><h3>通义千问</h3></div>
-            </a>
-            <a href="https://yuanbao.tencent.com/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=yuanbao.tencent.com&sz=64" alt="元宝">
-              <div class="item-text"><h3>腾讯元宝</h3></div>
-            </a>
-            <a href="https://www.doubao.com/chat/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=www.doubao.com&sz=64" alt="豆包">
-              <div class="item-text"><h3>豆包</h3></div>
-            </a>
-            <a href="diet.html" class="item" target="_blank">
-              <img src="https://github.com/zfloong/zfloong.github.io/raw/main/芝士.svg" alt="饮食计划">
-              <div class="item-text"><h3>饮食计划</h3></div>
-            </a>
-          </div>
-        </div>
+      </form>
+    </div>
+
+
+  
+
+
+
+
+    <div id="ai" class="category-section active">
+      <div class="section-header">
+        <i class="ri-sparkling-2-fill" style="font-size: 1.8rem; color: #8b5cf6;"></i>
+        <div class="section-title">AI Honey</div>
       </div>
-
-      <div class="category">
-        <div class="cat-header">
-          <div class="cat-title">
-            <i class="ri-globe-line toggle-icon" style="color:#10b981;"></i>
-            网络信息平台
-          </div>
-        </div>
-        <div class="collapsible-content">
-          <div class="grid">
-            <a href="https://www.bilibili.com/" class="item" target="_blank">
-              <img src="https://www.bilibili.com/favicon.ico" alt="bilibili">
-              <div class="item-text"><h3>bilibili</h3></div>
-            </a>
-            <a href="https://www.youtube.com/" class="item" target="_blank">
-              <img src="https://www.youtube.com/favicon.ico" alt="YouTube">
-              <div class="item-text"><h3>YouTube</h3></div>
-            </a>
-            <a href="https://www.tiktok.com/explore" class="item" target="_blank">
-              <img src="https://www.tiktok.com/favicon.ico" alt="TikTok">
-              <div class="item-text"><h3>TikTok</h3></div>
-            </a>
-             <a href="https://www.douyin.com/" class="item" target="_blank">
-              <img src="https://www.douyin.com/favicon.ico" alt="抖音">
-              <div class="item-text"><h3>抖音</h3></div>
-            </a>
-
-            <a href="https://www.google.com/" class="item" target="_blank">
-              <img src="https://www.google.com/favicon.ico" alt="Google">
-              <div class="item-text"><h3>Google</h3></div>
-            </a>
-            <a href="https://www.baidu.com/" class="item" target="_blank">
-              <img src="https://www.baidu.com/favicon.ico" alt="百度">
-              <div class="item-text"><h3>百度</h3></div>
-            </a>
-            <a href="https://www.bing.com/" class="item" target="_blank">
-              <img src="https://www.bing.com/favicon.ico" alt="Bing">
-              <div class="item-text"><h3>Bing</h3></div>
-            </a>
-
-            <a href="https://github.com/dashboard" class="item" target="_blank">
-              <img src="https://github.com/favicon.ico" alt="GitHub">
-              <div class="item-text"><h3>GitHub</h3></div>
-            </a>
-            <a href="https://dash.cloudflare.com/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=dash.cloudflare.com&sz=64" alt="Cloudflare">
-              <div class="item-text"><h3>Cloudflare</h3></div>
-            </a>
-            
-            <a href="https://mail.google.com/" class="item" target="_blank">
-              <img src="https://img.icons8.com/fluency/48/gmail-new.png" alt="Gmail">
-              <div class="item-text"><h3>谷歌邮箱</h3></div>
-            </a>
-            <a href="https://mail.qq.com/" class="item" target="_blank">
-              <img src="https://mail.qq.com/favicon.ico" alt="QQ邮箱">
-              <div class="item-text"><h3>QQ邮箱</h3></div>
-            </a>
-            <a href="https://mail.163.com/" class="item" target="_blank">
-              <img src="https://mail.163.com/favicon.ico" alt="网易邮箱">
-              <div class="item-text"><h3>网易邮箱</h3></div>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="category collapsed">
-        <div class="cat-header">
-          <div class="cat-title">
-            <i class="ri-tools-line toggle-icon" style="color:#f59e0b;"></i>
-            Tool 常用工具
-          </div>
-        </div>
-        <div class="collapsible-content">
-          <div class="grid">
-            <a href="https://fmhy.net/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=fmhy.net&sz=64" alt="FMHY">
-              <div class="item-text"><h3>FMHY</h3></div>
-            </a>
-            <a href="https://www.speedtest.net/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=speedtest.net&sz=64" alt="Speedtest">
-              <div class="item-text"><h3>网速测试</h3></div>
-            </a>
-            <a href="https://fanyi.baidu.com/mtpe-individual/transText#/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=fanyi.baidu.com&sz=64" alt="百度翻译">
-              <div class="item-text"><h3>百度翻译</h3></div>
-            </a>
-            <a href="https://translate.google.com/?hl=zh-CN&tab=TT&sl=auto&tl=en&op=translate" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=translate.google.com&sz=64" alt="Google翻译">
-              <div class="item-text"><h3>Google翻译</h3></div>
-            </a>
-            <a href="https://chromewebstore.google.com/?utm_source=ext_app_menu" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=chromewebstore.google.com&sz=64" alt="Chrome 商店">
-              <div class="item-text"><h3>Chrome 商店</h3></div>
-            </a>
-            <a href="https://www.iconfont.cn/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=iconfont.cn&sz=64" alt="Iconfont">
-              <div class="item-text"><h3>阿里图标</h3></div>
-            </a>
-            <a href="https://www.flaticon.com/?k=1767366214232&sign-up=google" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=flaticon.com&sz=64" alt="Flaticon">
-              <div class="item-text"><h3>Flaticon</h3></div>
-            </a>
-            <a href="https://iconpark.oceanengine.com/home" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=iconpark.oceanengine.com&sz=64" alt="IconPark">
-              <div class="item-text"><h3>IconPark</h3></div>
-            </a>
-            <a href="https://wallhaven.cc/" class="item" target="_blank">
-              <img src="https://wallhaven.cc/favicon.ico" alt="wallhaven">
-              <div class="item-text"><h3>WallHaven壁纸</h3></div>
-            </a>
-            <a href="https://unsplash.com/" class="item" target="_blank">
-              <img src="https://unsplash.com/favicon.ico" alt="unsplash">
-              <div class="item-text"><h3>UnsPlash摄影直出</h3></div>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="category collapsed">
-        <div class="cat-header">
-          <div class="cat-title">
-            <i class="ri-open-source-line toggle-icon" style="color:#ec4899;"></i>
-            OpenSource 开源社区
-          </div>
-        </div>
-        <div class="collapsible-content">
-          <div class="grid">
-            <a href="https://civitai.com/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=civitai.com&sz=64" alt="Civitai">
-              <div class="item-text"><h3>Civitai</h3></div>
-            </a>
-            <a href="https://huggingface.co/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=huggingface.co&sz=64" alt="Hugging Face">
-              <div class="item-text"><h3>Hugging Face</h3></div>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="category collapsed">
-        <div class="cat-header">
-          <div class="cat-title">
-            <i class="ri-cloud-line toggle-icon" style="color:#06b6d4;"></i>
-            Cloud 云服务
-          </div>
-        </div>
-        <div class="collapsible-content">
-          <div class="grid">
-            <a href="https://www.aliyun.com/" class="item" target="_blank">
-              <img src="https://img.alicdn.com/tfs/TB1_ZXuNcfpK1RjSZFOXXa6nFXa-32-32.ico" alt="阿里云">
-              <div class="item-text"><h3>阿里云</h3></div>
-            </a>
-            <a href="https://www.tencentcloud.com/zh" class="item" target="_blank">
-              <img src="https://www.tencentcloud.com/favicon.ico" alt="腾讯云">
-              <div class="item-text"><h3>腾讯云</h3></div>
-            </a>
-            <a href="https://www.oracle.com/cloud/" class="item" target="_blank">
-              <img src="https://www.oracle.com/favicon.ico" alt="Oracle Cloud">
-              <div class="item-text"><h3>Oracle Cloud</h3></div>
-            </a>
-            <a href="https://cloud.google.com/" class="item" target="_blank">
-              <img src="https://cloud.google.com/favicon.ico" alt="Google Cloud">
-              <div class="item-text"><h3>Google Cloud</h3></div>
-            </a>
-            <a href="https://platform.deepseek.com/usage" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=platform.deepseek.com&sz=64" alt="DeepSeek">
-              <div class="item-text"><h3>DeepSeek用量</h3></div>
-            </a>
-            <a href="https://www.volcengine.com/" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=www.volcengine.com&sz=64" alt="火山引擎">
-              <div class="item-text"><h3>火山引擎</h3></div>
-            </a>
-            <a href="https://bailian.console.aliyun.com/?spm=5176.29619931.J_C-NDPSQ8SFKWB4aef8i6I.1.74cd10d7k2jV7f&tab=model#/model-market/all" class="item" target="_blank">
-              <div style="width: 40px; height: 40px; border-radius: 10px; background: #ff6a00; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                  <i class="ri-cloud-line" style="font-size: 24px; color: white;"></i>
-              </div>
-              <div class="item-text"><h3>阿里百炼</h3></div>
-            </a>
-            <a href="https://open.cherryin.ai/pricing" class="item" target="_blank">
-              <img src="https://www.google.com/s2/favicons?domain=open.cherryin.ai&sz=64" alt="Cherry AI">
-              <div class="item-text"><h3>Cherry AI</h3></div>
-            </a>
-            <a href="https://siliconflow.cn/" class="item" target="_blank">
-              <img src="https://siliconflow.cn/favicon.ico" alt="SiliconFlow">
-              <div class="item-text"><h3>SiliconFlow</h3></div>
-            </a>
-          </div>
-        </div>
+      <div class="grid">
+        <a href="diet.html" class="card" target="_blank">
+          <img src="https://github.com/zfloong/zfloong.github.io/raw/main/芝士.svg" alt="Diet">
+          <div class="card-info"><h3>饮食计划</h3></div>
+        </a>
+        <a href="https://gemini.google.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=64" alt="Gemini">
+          <div class="card-info"><h3>Gemini</h3></div>
+        </a>
+        <a href="https://x.com/i/grok" class="card" target="_blank">
+          <img src="https://x.com/favicon.ico" alt="Grok">
+          <div class="card-info"><h3>Grok X</h3></div>
+        </a>
+        <a href="https://www.qianwen.com/" class="card" target="_blank">
+          <img src="https://img.alicdn.com/imgextra/i4/O1CN01Slt9qq1Q0CmLAG9MK_!!6000000001913-55-tps-32-32.svg" alt="Qwen">
+          <div class="card-info"><h3>通义千问</h3></div>
+        </a>
+        <a href="https://chat.deepseek.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=chat.deepseek.com&sz=64" alt="DeepSeek">
+          <div class="card-info"><h3>DeepSeek</h3></div>
+        </a>
+        <a href="https://www.bilibili.com/" class="card" target="_blank">
+          <img src="https://www.bilibili.com/favicon.ico" alt="Bilibili">
+          <div class="card-info"><h3>Bilibili</h3></div>
+        </a>
+        <a href="https://www.youtube.com/" class="card" target="_blank">
+          <img src="https://www.youtube.com/favicon.ico" alt="YouTube">
+          <div class="card-info"><h3>YouTube</h3></div>
+        </a>
+        <a href="https://github.com/dashboard" class="card" target="_blank">
+          <i class="ri-github-fill" style="font-size: 36px; color: var(--text);"></i>
+          <div class="card-info"><h3>GitHub</h3></div>
+        </a>
+        <a href="https://claude.ai/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=claude.ai&sz=64" alt="Claude">
+          <div class="card-info"><h3>Claude</h3></div>
+        </a>
+        <a href="https://copilot.microsoft.com/" class="card" target="_blank">
+          <img src="https://copilot.microsoft.com/favicon.ico" alt="Copilot">
+          <div class="card-info"><h3>Copilot</h3></div>
+        </a>
+        <a href="https://yuanbao.tencent.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=yuanbao.tencent.com&sz=64" alt="Yuanbao">
+          <div class="card-info"><h3>腾讯元宝</h3></div>
+        </a>
+        <a href="https://yiyan.baidu.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=yiyan.baidu.com&sz=64" alt="Wenxin">
+          <div class="card-info"><h3>文心一言</h3></div>
+        </a>
+        <a href="https://www.doubao.com/chat/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=www.doubao.com&sz=64" alt="Doubao">
+          <div class="card-info"><h3>豆包</h3></div>
+        </a>
+        <a href="https://weread.qq.com/web/shelf" class="card" target="_blank">
+          <img src="https://rescdn.qqmail.com/node/wr/wrpage/style/images/independent/favicon/favicon_48h.png" alt="微信读书">
+          <div class="card-info"><h3>微信读书</h3></div>
+        </a>
       </div>
     </div>
 
-    <footer>
-      <p>Made with ❤ & Grok • 随时星标此页面，效率起飞</p>
-    </footer>
+    <div id="media" class="category-section">
+      <div class="section-header">
+        <i class="ri-globe-line" style="font-size: 1.8rem; color: #10b981;"></i>
+        <div class="section-title">流媒体&邮箱</div>
+      </div>
+      <div class="grid">
+        <a href="https://www.tiktok.com/explore" class="card" target="_blank">
+          <img src="https://www.tiktok.com/favicon.ico" alt="TikTok">
+          <div class="card-info"><h3>TikTok</h3></div>
+        </a>
+        <a href="https://www.douyin.com/" class="card" target="_blank">
+          <img src="https://www.douyin.com/favicon.ico" alt="Douyin">
+          <div class="card-info"><h3>抖音</h3></div>
+        </a>
+        <a href="https://www.kuaishou.com/new-reco" class="card" target="_blank">
+          <img src="https://www.kuaishou.com/favicon.ico" alt="Kuaishou">
+          <div class="card-info"><h3>快手</h3></div>
+        </a>
+        <a href="https://www.jd.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=jd.com&sz=64" alt="JD">
+          <div class="card-info"><h3>京东</h3></div>
+        </a>
+
+        <a href="https://www.taobao.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=taobao.com&sz=64" alt="Taobao">
+          <div class="card-info"><h3>淘宝</h3></div>
+        </a>
+        <a href="https://mail.163.com/" class="card" target="_blank">
+          <img src="https://mail.163.com/favicon.ico" alt="163">
+          <div class="card-info"><h3>网易邮箱</h3></div>
+        </a>
+      </div>
+    </div>
+
+    <div id="tools" class="category-section">
+      <div class="section-header">
+        <i class="ri-tools-line" style="font-size: 1.8rem; color: #f59e0b;"></i>
+        <div class="section-title">常用工具</div>
+      </div>
+      <div class="grid">
+        <a href="https://fmhy.net/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=fmhy.net&sz=64" alt="FMHY">
+          <div class="card-info"><h3>FMHY</h3></div>
+        </a>
+        <a href="https://fanyi.baidu.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=fanyi.baidu.com&sz=64" alt="Baidu Trans">
+          <div class="card-info"><h3>百度翻译</h3></div>
+        </a>
+        <a href="https://translate.google.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=translate.google.com&sz=64" alt="Google Trans">
+          <div class="card-info"><h3>Google翻译</h3></div>
+        </a>
+        <a href="https://ping0.cc/" class="card" target="_blank">
+          <img src="https://ping0.cc/favicon.ico" alt="Ping0">
+          <div class="card-info"><h3>Ping0</h3></div>
+        </a>
+
+        <a href="https://www.speedtest.net/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=speedtest.net&sz=64" alt="Speedtest">
+          <div class="card-info"><h3>网速测试</h3></div>
+        </a>
+        <a href="https://chromewebstore.google.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=chromewebstore.google.com&sz=64" alt="Store">
+          <div class="card-info"><h3>Chrome商店</h3></div>
+        </a>
+        <a href="https://lestore.lenovo.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=lestore.lenovo.com&sz=64" alt="LeStore">
+          <div class="card-info"><h3>联想应用商店</h3></div>
+        </a>
+        <a href="https://wallhaven.cc/" class="card" target="_blank">
+          <img src="https://wallhaven.cc/favicon.ico" alt="Wallhaven">
+          <div class="card-info"><h3>WallHaven-壁纸</h3></div>
+        </a>
+
+        <a href="https://unsplash.com/" class="card" target="_blank">
+          <img src="https://unsplash.com/favicon.ico" alt="Unsplash">
+          <div class="card-info"><h3>Unsplash-摄影</h3></div>
+        </a>
+        <a href="https://www.iconfont.cn/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=iconfont.cn&sz=64" alt="Iconfont">
+          <div class="card-info"><h3>阿里图标</h3></div>
+        </a>
+        <a href="https://www.flaticon.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=flaticon.com&sz=64" alt="Flaticon">
+          <div class="card-info"><h3>Flaticon</h3></div>
+        </a>
+        <a href="https://iconpark.oceanengine.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=iconpark.oceanengine.com&sz=64" alt="IconPark">
+          <div class="card-info"><h3>IconPark</h3></div>
+        </a>
+
+        <a href="https://cdimage.debian.org/mirror/cdimage/archive/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=debian.org&sz=64" alt="Debian">
+          <div class="card-info"><h3>Debian 归档镜像站</h3></div>
+        </a>
+      </div>
+    </div>
+
+    <div id="opensource" class="category-section">
+      <div class="section-header">
+        <i class="ri-open-source-line" style="font-size: 1.8rem; color: #ec4899;"></i>
+        <div class="section-title">开源社区</div>
+      </div>
+      <div class="grid">
+        <a href="https://dash.cloudflare.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=dash.cloudflare.com&sz=64" alt="Cloudflare">
+          <div class="card-info"><h3>Cloudflare</h3></div>
+        </a>
+        <a href="https://huggingface.co/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=huggingface.co&sz=64" alt="HuggingFace">
+          <div class="card-info"><h3>Hugging Face</h3></div>
+        </a>
+
+        <a href="https://my.vultr.com/" class="card" target="_blank">
+          <img src="https://my.vultr.com/apple-touch-icon.png?v=1" alt="Vultr">
+          <div class="card-info"><h3>Vultr</h3></div>
+        </a>
+
+        <a href="https://gitee.com/explore" class="card" target="_blank">
+          <img src="https://gitee.com/favicon.ico" alt="Gitee">
+          <div class="card-info"><h3>Gitee</h3></div>
+        </a>
+        <a href="https://civitai.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=civitai.com&sz=64" alt="Civitai">
+          <div class="card-info"><h3>Civitai</h3></div>
+        </a>
+
+      </div>
+    </div>
+
+    <div id="cloud" class="category-section">
+      <div class="section-header">
+        <i class="ri-cloud-line" style="font-size: 1.8rem; color: #06b6d4;"></i>
+        <div class="section-title">API & 云</div>
+      </div>
+      <div class="grid">
+        <a href="https://platform.deepseek.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=platform.deepseek.com&sz=64" alt="DeepSeek">
+          <div class="card-info"><h3>DeepSeek API</h3></div>
+        </a>
+
+        <a href="https://www.volcengine.com/" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=www.volcengine.com&sz=64" alt="Volc">
+          <div class="card-info"><h3>火山引擎</h3></div>
+        </a>
+        <a href="https://bailian.console.aliyun.com/" class="card" target="_blank">
+          <div style="width: 36px; height: 36px; border-radius: 8px; background: #ff6a00; display: flex; align-items: center; justify-content: center; color: white;"><i class="ri-cloud-line"></i></div>
+          <div class="card-info"><h3>阿里百炼</h3></div>
+        </a>
+        <a href="https://open.cherryin.ai/pricing" class="card" target="_blank">
+          <img src="https://www.google.com/s2/favicons?domain=open.cherryin.ai&sz=64" alt="Cherry">
+          <div class="card-info"><h3>Cherry AI</h3></div>
+        </a>
+        <a href="https://siliconflow.cn/" class="card" target="_blank">
+          <img src="https://siliconflow.cn/favicon.ico" alt="SiliconFlow">
+          <div class="card-info"><h3>SiliconFlow</h3></div>
+        </a>
+
+        <a href="https://www.aliyun.com/" class="card" target="_blank">
+          <img src="https://img.alicdn.com/tfs/TB1_ZXuNcfpK1RjSZFOXXa6nFXa-32-32.ico" alt="Aliyun">
+          <div class="card-info"><h3>阿里云</h3></div>
+        </a>
+        <a href="https://www.tencentcloud.com/" class="card" target="_blank">
+          <img src="https://www.tencentcloud.com/favicon.ico" alt="Tencent">
+          <div class="card-info"><h3>腾讯云</h3></div>
+        </a>
+        <a href="https://www.oracle.com/cloud/" class="card" target="_blank">
+          <img src="https://www.oracle.com/favicon.ico" alt="Oracle">
+          <div class="card-info"><h3>Oracle</h3></div>
+        </a>
+        <a href="https://cloud.google.com/" class="card" target="_blank">
+          <img src="https://cloud.google.com/favicon.ico" alt="GCP">
+          <div class="card-info"><h3>Google Cloud</h3></div>
+        </a>
+
+      </div>
+    </div>
+
   </div>
 
-  <script>
-    // 通用折叠功能：为所有 .cat-header 添加点击事件
-    const headers = document.querySelectorAll('.cat-header');
+  <footer>
+    <p>By FlyLoong ❤ 文明其精神 - 野蛮其体魄</p>
+  </footer>
 
-    headers.forEach(header => {
-      header.addEventListener('click', () => {
-        // 找到当前头部所属的分类父容器
-        const category = header.closest('.category');
-        // 切换 collapsed 类
-        category.classList.toggle('collapsed');
+  <script>
+    // --- Tab 切换逻辑 ---
+    const tabs = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.category-section');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const targetId = tab.getAttribute('data-target');
+        sections.forEach(section => {
+          section.classList.remove('active');
+        });
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) targetSection.classList.add('active');
+      });
+    });
+
+    // --- 搜索引擎切换逻辑 ---
+    const engineBtns = document.querySelectorAll('.engine-btn');
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.querySelector('.search-input');
+
+    engineBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 1. 样式切换
+        engineBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // 2. 功能切换
+        const url = btn.getAttribute('data-url');
+        const paramName = btn.getAttribute('data-name');
+        
+        searchForm.action = url.split('?')[0]; // 设置表单提交地址
+        searchInput.name = paramName; // 设置input的name属性 (q 或 wd)
       });
     });
   </script>
 </body>
 </html>
-
-
-
-
-
-
