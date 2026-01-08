@@ -28,7 +28,7 @@
       "id": "ai",
       "navTitle": "Everyday",
       "icon": "ri-sparkling-2-fill",
-      "sectionTitle": "AI Honey", 
+      "sectionTitle": "Everyday", 
       "titleColor": "#8b5cf6",
       "groups": [
         {
@@ -48,14 +48,14 @@
           ]
         },
         {
-          "name": "📺 流媒体与其他",
+          "name": "🍃 研习之路",
           "isOpen": true,
           "items": [
             { "title": "GitHub Home", "url": "https://github.com/dashboard", "iconSymbol": "ri-github-fill", "iconColor": "var(--text)" },
             { "title": "Bilibili", "url": "https://www.bilibili.com/", "icon": "https://www.bilibili.com/favicon.ico" },
             { "title": "YouTube", "url": "https://www.youtube.com/", "icon": "https://www.youtube.com/favicon.ico" },
-            { "title": "微信读书", "url": "https://weread.qq.com/web/shelf", "icon": "https://rescdn.qqmail.com/node/wr/wrpage/style/images/independent/favicon/favicon_48h.png" },
-            { "title": "Claude", "url": "https://claude.ai/", "icon": "https://www.google.com/s2/favicons?domain=claude.ai&sz=64" }
+            { "title": "微信读书", "url": "https://weread.qq.com/web/shelf", "icon": "https://rescdn.qqmail.com/node/wr/wrpage/style/images/independent/favicon/favicon_48h.png" }
+            
           ]
         }
       ]
@@ -95,6 +95,7 @@
           "name": "🧩 其他",
           "isOpen": false,
           "items": [
+            { "title": "Claude", "url": "https://claude.ai/", "icon": "https://www.google.com/s2/favicons?domain=claude.ai&sz=64" },
             { "title": "Edge扩展商店", "url": "https://microsoftedge.microsoft.com/addons/Microsoft-Edge-Extensions-Home", "icon": "https://www.google.com/s2/favicons?domain=microsoftedge.microsoft.com&sz=64" },
             { "title": "Chrome商店", "url": "https://chromewebstore.google.com/", "icon": "https://www.google.com/s2/favicons?domain=chromewebstore.google.com&sz=64" },
             { "title": "Ping0-节点质量", "url": "https://ping0.cc/", "icon": "https://ping0.cc/favicon.ico" },
