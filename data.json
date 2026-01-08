@@ -24,29 +24,40 @@
     ]
   },
   "categories": [
-    {
+   {
       "id": "ai",
       "navTitle": "Everyday",
       "icon": "ri-sparkling-2-fill",
-      "sectionTitle": "AI Honey",
+      "sectionTitle": "AI Start", 
       "titleColor": "#8b5cf6",
-      "items": [
-        { "title": "Gemini", "url": "https://gemini.google.com/", "icon": "https://www.google.com/s2/favicons?domain=gemini.google.com&sz=64" },
-        { "title": "Google AI Studio", "url": "https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview", "icon": "https://www.google.com/s2/favicons?domain=aistudio.google.com&sz=64" },
-        { "title": "GitHub Copilot", "url": "https://github.com/copilot", "icon": "https://www.google.com/s2/favicons?domain=github.com&sz=64" },
-        { "title": "HuggingChat", "url": "https://huggingface.co/chat/models", "icon": "https://www.google.com/s2/favicons?domain=huggingface.co&sz=64" },
-        { "title": "Grok X", "url": "https://x.com/i/grok", "icon": "https://x.com/favicon.ico" },
-        { "title": "通义千问", "url": "https://www.qianwen.com/", "icon": "https://img.alicdn.com/imgextra/i4/O1CN01Slt9qq1Q0CmLAG9MK_!!6000000001913-55-tps-32-32.svg" },
-        { "title": "DeepSeek", "url": "https://chat.deepseek.com/", "icon": "https://www.google.com/s2/favicons?domain=chat.deepseek.com&sz=64" },
-        { "title": "LM Arena", "url": "https://lmarena.ai/zh", "icon": "https://www.google.com/s2/favicons?domain=lmarena.ai&sz=64" },
-        { "title": "Claude", "url": "https://claude.ai/", "icon": "https://www.google.com/s2/favicons?domain=claude.ai&sz=64" },
-        { "title": "Copilot", "url": "https://copilot.microsoft.com/", "icon": "https://copilot.microsoft.com/favicon.ico" },
-        { "title": "腾讯元宝", "url": "https://yuanbao.tencent.com/", "icon": "https://www.google.com/s2/favicons?domain=yuanbao.tencent.com&sz=64" },
-        { "title": "文心一言", "url": "https://yiyan.baidu.com/", "icon": "https://www.google.com/s2/favicons?domain=yiyan.baidu.com&sz=64" },
-        { "title": "GitHub 开源精神", "url": "https://github.com/dashboard", "iconSymbol": "ri-github-fill", "iconColor": "var(--text)" },
-        { "title": "Bilibili", "url": "https://www.bilibili.com/", "icon": "https://www.bilibili.com/favicon.ico" },
-        { "title": "YouTube", "url": "https://www.youtube.com/", "icon": "https://www.youtube.com/favicon.ico" },
-        { "title": "微信读书", "url": "https://weread.qq.com/web/shelf", "icon": "https://rescdn.qqmail.com/node/wr/wrpage/style/images/independent/favicon/favicon_48h.png" }
+      "groups": [
+        {
+          "name": "✨ AI Honey",
+          "isOpen": true,
+          "items": [
+            { "title": "Gemini", "url": "https://gemini.google.com/", "icon": "https://www.google.com/s2/favicons?domain=gemini.google.com&sz=64" },
+            { "title": "Grok X", "url": "https://x.com/i/grok", "icon": "https://x.com/favicon.ico" },
+            { "title": "通义千问", "url": "https://www.qianwen.com/", "icon": "https://img.alicdn.com/imgextra/i4/O1CN01Slt9qq1Q0CmLAG9MK_!!6000000001913-55-tps-32-32.svg" },
+            { "title": "腾讯元宝", "url": "https://yuanbao.tencent.com/", "icon": "https://www.google.com/s2/favicons?domain=yuanbao.tencent.com&sz=64" },
+            { "title": "DeepSeek", "url": "https://chat.deepseek.com/", "icon": "https://www.google.com/s2/favicons?domain=chat.deepseek.com&sz=64" },
+            { "title": "Google AI Studio", "url": "https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview", "icon": "https://www.google.com/s2/favicons?domain=aistudio.google.com&sz=64" },
+            { "title": "LM Arena", "url": "https://lmarena.ai/zh", "icon": "https://www.google.com/s2/favicons?domain=lmarena.ai&sz=64" },
+            { "title": "GitHub Claude", "url": "https://github.com/copilot", "icon": "https://www.google.com/s2/favicons?domain=github.com&sz=64" },
+            { "title": "HuggingChat", "url": "https://huggingface.co/chat/models", "icon": "https://www.google.com/s2/favicons?domain=huggingface.co&sz=64" },
+            { "title": "Copilot", "url": "https://copilot.microsoft.com/", "icon": "https://copilot.microsoft.com/favicon.ico" }
+          ]
+        },
+        {
+          "name": "📺 流媒体与其他",
+          "isOpen": true,
+          "items": [
+            { "title": "GitHub Home", "url": "https://github.com/dashboard", "iconSymbol": "ri-github-fill", "iconColor": "var(--text)" },
+            { "title": "Bilibili", "url": "https://www.bilibili.com/", "icon": "https://www.bilibili.com/favicon.ico" },
+            { "title": "YouTube", "url": "https://www.youtube.com/", "icon": "https://www.youtube.com/favicon.ico" },
+            { "title": "微信读书", "url": "https://weread.qq.com/web/shelf", "icon": "https://rescdn.qqmail.com/node/wr/wrpage/style/images/independent/favicon/favicon_48h.png" },
+            { "title": "Claude", "url": "https://claude.ai/", "icon": "https://www.google.com/s2/favicons?domain=claude.ai&sz=64" }
+          ]
+        }
       ]
     },
     {
@@ -63,6 +74,7 @@
             { "title": "FMHY", "url": "https://fmhy.net/", "icon": "https://www.google.com/s2/favicons?domain=fmhy.net&sz=64" },
             { "title": "小豆子", "url": "https://www.doubao.com/chat/", "icon": "https://www.google.com/s2/favicons?domain=www.doubao.com&sz=64" },
             { "title": "MIMO 翻译", "url": "https://aistudio.xiaomimimo.com/#/", "icon": "https://www.google.com/s2/favicons?domain=aistudio.xiaomimimo.com&sz=64" },
+            { "title": "文心一言", "url": "https://yiyan.baidu.com/", "icon": "https://www.google.com/s2/favicons?domain=yiyan.baidu.com&sz=64" },
             { "title": "Google翻译", "url": "https://translate.google.com/", "icon": "https://www.google.com/s2/favicons?domain=translate.google.com&sz=64" },
             { "title": "Z-Library", "url": "https://zh.z-library.sk/", "icon": "https://www.google.com/s2/favicons?domain=zh.z-library.sk&sz=64" },
             { "title": "樊登读书", "url": "https://www.dushu365.com/", "icon": "https://www.google.com/s2/favicons?domain=dushu365.com&sz=64" }
