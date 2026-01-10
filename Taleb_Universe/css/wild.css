@@ -1,0 +1,216 @@
+/* =========================================
+   Wildness Awakening - Final Refined
+   Pure Chinese & Perfect Spacing
+   ========================================= */
+
+/* 全屏包装器 */
+.wild-wrapper {
+    width: 100%;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* --- 1. 仪表盘网格布局 --- */
+.wild-dashboard {
+    display: grid;
+    grid-template-columns: 320px 1fr; 
+    gap: 0;
+    min-height: 85vh;
+}
+
+/* --- 2. 左侧边栏 (Sidebar) --- */
+.timeline-sidebar {
+    background: rgba(20, 22, 26, 0.4);
+    border-right: 1px solid var(--border);
+    padding: 30px; /* 增加内边距 */
+    height: 100%;
+}
+
+.sidebar-header {
+    margin-left: 15px; /* 对齐微调 */
+    margin-bottom: 30px;
+    font-size: 1rem; /* 稍微放大 */
+    color: var(--accent);
+    font-family: var(--font-serif);
+    letter-spacing: 2px;
+    opacity: 0.8;
+    font-weight: bold;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    cursor: default;
+}
+
+.timeline-item:hover {
+    background: rgba(255,255,255,0.03);
+    border-color: var(--border);
+    transform: translateX(5px);
+}
+
+.timeline-dot {
+    width: 6px; /* 稍微调小圆点，更精致 */
+    height: 6px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.timeline-item:hover .timeline-dot {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+}
+
+.timeline-content { flex-grow: 1; }
+.t-day { font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 4px; }
+.t-title { font-size: 1rem; color: var(--text-main); font-weight: 500; }
+
+
+/* --- 3. 右侧核心区域 (Hero Section) --- */
+.hero-section {
+    padding: 0 60px 80px 60px;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.day-card.hero-mode {
+    width: 100%;
+    min-height: 700px;
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.day-card.hero-mode .card-image {
+    height: 100%; width: 100%;
+    position: absolute;
+    top: 0; left: 0;
+    opacity: 0.15;
+    filter: grayscale(100%);
+    z-index: 0;
+    transition: transform 10s ease;
+}
+.day-card.hero-mode:hover .card-image { transform: scale(1.05); }
+
+.day-card.hero-mode .card-content {
+    position: relative;
+    z-index: 1;
+    padding: 60px 80px;
+    text-align: center;
+}
+
+/* =========================================
+   头部排版优化 (Header Row)
+   ========================================= */
+.hero-header-row {
+    display: flex;
+    align-items: center; /* 垂直居中对齐 */
+    justify-content: center;
+    margin-bottom: 5px; /* 缩小下方间距，紧凑感 */
+    height: 60px; /* 固定高度，确保对齐 */
+}
+
+/* 日期与标题 */
+.day-card.hero-mode .day-name,
+.day-card.hero-mode .card-title {
+    font-size: 3rem; /* 增大字号 */
+    color: var(--accent); 
+    font-family: var(--font-serif);
+    margin: 0;
+    line-height: 1;
+    white-space: nowrap;
+    text-shadow: 0 0 20px rgba(0,0,0,0.8);
+    font-weight: 700;
+}
+
+/* 金色分割线 (调整为垂直) */
+.hero-divider {
+    width: 2px; /* 变细一点 */
+    height: 36px; /* 配合字号高度 */
+    background-color: var(--accent);
+    margin: 0 25px; /* 左右间距统一 */
+    transform: rotate(20deg); 
+    box-shadow: 0 0 8px var(--accent);
+    opacity: 0.8;
+}
+
+/* 语录排版优化 */
+.day-card.hero-mode .remark {
+    font-size: 1.4rem; /* 稍微放大 */
+    color: #e0e0e0;
+    line-height: 1.6;
+    max-width: 900px;
+    /* 严格控制间距：上方与Subtitle拉开，下方与列表拉开 */
+    margin: 20px auto 40px auto; 
+    font-weight: 300;
+}
+
+/* =========================================
+   清单区域优化 (Protocol Grid)
+   ========================================= */
+.day-card.hero-mode .protocol-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 50px; /* 间距微调 */
+    
+    /* 顶部间距控制 */
+    margin-top: 30px;     
+    padding-top: 30px;    
+    
+    border-top: 1px solid rgba(255,255,255,0.1);
+    text-align: left;
+}
+
+.col-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 20px; /* 统一间距 */
+    padding-bottom: 12px;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.col-title.allowed { color: #10b981; }
+.col-title.avoid { color: #ef4444; }
+.col-title.move { color: #d4b483; }
+
+/* 列表条目优化 */
+.protocol-list li {
+    font-size: 1.3rem; /* 适中大小 */
+    font-weight: 500;
+    color: #f5f5f5;
+    margin-bottom: 16px; /* 统一行间距 */
+    line-height: 1.4;
+    padding-left: 15px;
+    border-left: 4px solid rgba(255,255,255,0.15);
+}
+
+/* Mobile 适配 */
+@media (max-width: 1024px) {
+    .wild-dashboard { grid-template-columns: 1fr; }
+    .page-header { padding-left: 20px !important; text-align: center !important; }
+    .hero-section { padding: 20px; order: 1; }
+    .timeline-sidebar { order: 2; border-right: none; }
+    
+    .hero-header-row { flex-direction: column; gap: 10px; height: auto; }
+    .hero-divider { display: none; }
+    .day-card.hero-mode .day-name, 
+    .day-card.hero-mode .card-title { font-size: 2.2rem; white-space: normal; }
+    
+    .day-card.hero-mode .protocol-grid { grid-template-columns: 1fr; gap: 40px; }
+    .day-card.hero-mode .card-content { padding: 30px; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

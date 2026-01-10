@@ -1,0 +1,211 @@
+/* ============================================================
+   Taleb Universe - Global Logic Engine vFinal
+   Content: 80 Quotes (Western Philosophy + Eastern Wisdom)
+   ============================================================ */
+
+// 1. 核心数据：塔勒布语录库 (中西合璧版)
+const quotesDB = [
+    // --- 第一组 (1-10) ---
+    { text: "世上最有害的三种成瘾是：海洛因、碳水化合物，以及月薪。", tag: "死于安乐 - 《孟子》" },
+    { text: "如果你的曾祖母不会把这东西当食物，那就别吃。", tag: "吹尽狂沙始到金 - 刘禹锡" }, 
+    { text: "反脆弱是：风会熄灭蜡烛，却会让火越烧越旺。脆弱的东西讨厌波动。", tag: "疾风知劲草 - 《旧唐书》" }, 
+    { text: "我们需要随机性的压力——饥饿、寒冷、不确定——来保持健康。舒适是脆弱的温床。", tag: "玉汝于成 - 张载" },
+    { text: "别问医生他‘建议’你吃什么，问他自己晚餐吃什么。", tag: "听其言而观其行 - 《论语》" }, 
+    { text: "大自然并不追求完美，却在应对混乱时远胜人类的设计。", tag: "大巧若拙 - 《老子》" },
+    { text: "规律的饮食是工业化时代的谎言。随机性才是进化的燃料。", tag: "流水不腐 - 《吕氏春秋》" },
+    { text: "通过承担风险致富，你是英雄；通过转移风险致富，你是寄生虫。", tag: "休戚与共 - 《国语》" },
+    { text: "即使是无神论者，在断食时也变得虔诚。", tag: "心斋 - 《庄子》" },
+    { text: "避免愚蠢比追求聪明更可靠，也更有效。", tag: "为道日损 - 《老子》" }, 
+
+    // --- 第二组 (11-20) ---
+    { text: "现代化就是一群人集体试图消灭生活中的波动性，结果却制造了更大的灾难。", tag: "日凿一窍，七日而混沌死 - 《庄子》" },
+    { text: "只有当你随时可以辞职时，你才是真正的自由。", tag: "不为五斗米折腰 - 《晋书》" },
+    { text: "黑天鹅事件主导历史，而我们却忙着研究平均值。", tag: "一叶障目，不见泰山 - 《鹖冠子》" },
+    { text: "知识分子却白痴（IYI）能预测一切，除了真正重要的事。", tag: "纸上谈兵 - 《史记》" },
+    { text: "杠铃策略：一边极端保守，一边极端冒险，中间地带是傻瓜的乐园。", tag: "凡战者，以正合，以奇胜 - 《孙子兵法》" },
+    { text: "勇气是唯一无法伪装的美德。", tag: "吾善养吾浩然之气 - 《孟子》" },
+    { text: "你若不需要向任何人证明自己富有，那你就是真正的富有。", tag: "知足者富 - 《老子》" },
+    { text: "干预主义者从不为自己造成的灾难买单。", tag: "治丝而棼 - 《左传》" },
+    { text: "宗教的存在是为了让人类跨代管理尾部风险。", tag: "慎终追远，民德归厚 - 《论语》" },
+    { text: "预测错误却不承担后果的人，不配给你建议。", tag: "夫轻诺必寡信 - 《老子》" },
+
+    // --- 第三组 (21-30) ---
+    { text: "复杂系统没有明显的因果关系，却有明显的脆弱点。", tag: "千丈之堤，以蚁穴之漏溃 - 《韩非子》" },
+    { text: "不要和没有失去任何东西的人争论战争。", tag: "不在其位，不谋其政 - 《论语》" },
+    { text: "学术界奖励复杂性，却惩罚实用性。", tag: "技成而无所用其巧 - 《庄子》" },
+    { text: "真正的智者知道自己知道得很少，并据此行事。", tag: "知之为知之，不知为不知 - 《论语》" },
+    { text: "时间是最好的过滤器，它无情地淘汰不耐久的。", tag: "岁寒，然后知松柏之后凋也 - 《论语》" },
+    { text: "记者的副作用比黑手党的还大，因为他们没有皮肤在游戏中。", tag: "众口铄金，积毁销骨 - 《史记》" },
+    { text: "官僚的风险由纳税人承担，他们却领着固定薪水。", tag: "尸位素餐 - 《汉书》" },
+    { text: "期权的好处在于不对称：损失有限，收益无限。人生也该如此。", tag: "牵动四两拨千斤 - 《太极拳论》" },
+    { text: "那些从不犯错的人，通常也没做过什么值得一提的事。", tag: "纸上得来终觉浅，绝知此事要躬行 - 陆游" },
+    { text: "不要预测黑天鹅，准备好迎接它即可。", tag: "宜未雨而绸缪，毋临渴而掘井 - 《朱子家训》" },
+
+    // --- 第四组 (31-40) ---
+    { text: "读书是为了减少愚蠢，而不是增加知识。", tag: "多闻阙疑，多见阙殆 - 《论语》" },
+    { text: "真正的教育是学会如何不被愚弄。", tag: "尽信书，则不如无书 - 《孟子》" },
+    { text: "统计数据是平均值的奴隶，却忽略了极端值。", tag: "察秋毫之末者，不见泰山 - 《韩非子》" },
+    { text: "脆弱系统最喜欢平稳的环境——直到它突然崩塌。", tag: "其兴也勃焉，其亡也忽焉 - 《左传》" },
+    { text: "如果你想长寿，就偶尔让自己饿一饿。", tag: "君子食无求饱，居无求安 - 《论语》" },
+    { text: "专家最危险的地方在于，他们相信自己的模型。", tag: "刻舟求剑 - 《吕氏春秋》" },
+    { text: "债务是未来的奴隶制。", tag: "仰人鼻息 - 《后汉书》" },
+    { text: "不要相信任何不承担下行风险的投资建议。", tag: "君子不立危墙之下 - 《孟子》" },
+    { text: "历史是由少数极端事件书写的，其余都是噪音。", tag: "风起于青萍之末 - 《文选》" },
+    { text: "现代人试图消灭饥饿、痛苦、随机性，结果却消灭了自己。", tag: "揠苗助长 - 《孟子》" },
+
+    // --- 第五组 (41-50) ---
+    { text: "那些从不举重的人，会告诉你举重有多危险。", tag: "夏虫不可以语于冰者，笃于时也 - 《庄子》" },
+    { text: "真正的自由不是选择多，而是拒绝多。", tag: "人有不为也，而后可以有为 - 《孟子》" },
+    { text: "知识分子讨厌交易员，因为后者用结果说话。", tag: "君子耻其言而过其行 - 《论语》" },
+    { text: "生存的第一法则：不要把自己置于毁灭的风险中，哪怕概率很小。", tag: "善战者，立于不败之地 - 《孙子兵法》" },
+    { text: "杠铃策略是唯一理性的生活方式：90%安全，10%疯狂。", tag: "文武之道，一张一弛 - 《礼记》" },
+    { text: "不要试图让世界更可预测，学会在不可预测中茁壮成长。", tag: "凡益之道，与时偕行 - 《易经》" },
+    { text: "那些从不挨过饿的人，会告诉你斋戒多不科学。", tag: "如人饮水，冷暖自知 - 《禅源诸诠集都序》" },
+    { text: "成功不是计划出来的，而是从混乱中幸存下来的。", tag: "投之亡地然后存，陷之死地然后生 - 《孙子兵法》" },
+    { text: "不要听营养学家的，吃你祖先吃的东西。", tag: "述而不作，信而好古 - 《论语》" },
+    { text: "真正的勇敢不是不害怕，而是害怕却依然行动。", tag: "虽千万人，吾往矣 - 《孟子》" },
+
+    // --- 第六组 (51-60) ---
+    { text: "预测未来的最好方式是拥有反脆弱性。", tag: "不可胜在己，可胜在敌 - 《孙子兵法》" },
+    { text: "那些从不冒险的人，最终会被风险找到。", tag: "履霜，坚冰至 - 《易经》" },
+    { text: "复杂不是深度，简单才是。", tag: "大道至简 - 《老子》" },
+    { text: "时间比理性更懂得筛选真理。", tag: "路遥知马力，日久见人心 - 《元曲》" },
+    { text: "不要优化，学会承受波动。", tag: "任凭风浪起，稳坐钓鱼台 - 《古今奇观》" },
+    { text: "那些没有失去任何东西的人，最喜欢谈论道德。", tag: "巧言令色，鲜矣仁 - 《论语》" },
+    { text: "真正的财富是能说‘不’的能力。", tag: "富贵不能淫，威武不能屈 - 《孟子》" },
+    { text: "随机性是信息，规律往往是噪音。", tag: "大音希声，大象无形 - 《老子》" },
+    { text: "脆弱的东西需要完美的环境，反脆弱的东西在混乱中成长。", tag: "千锤万凿出深山，烈火焚烧若等闲 - 《石灰吟》" },
+    { text: "不要相信任何没有下行风险的理论。", tag: "空谈误国，实干兴邦 - 《后汉书》" },
+
+    // --- 第七组 (61-80) ---
+    { text: "人生不是解方程，而是管理风险。", tag: "居安思危，思则有备，有备无患 - 《左传》" },
+    { text: "那些从不挨饿的科学家，会告诉你饥饿有害。", tag: "纸上得来终觉浅，绝知此事要躬行 - 陆游" },
+    { text: "真正的智者通过减法生活：少即是多。", tag: "少则得，多则惑 - 《老子》" },
+    { text: "黑天鹅就在眼前，我们却忙着看后视镜。", tag: "盲人骑瞎马，夜半临深池 - 《世说新语》" },
+    { text: "不要预测，准备。", tag: "凡事预则立，不预则废 - 《礼记》" },
+    { text: "那些从不交易的人，最喜欢谈论市场。", tag: "坐而论道，不如起而行之 - 《周礼》" },
+    { text: "反脆弱不是坚强，而是从打击中获益。", tag: "宝剑锋从磨砺出，梅花香自苦寒来 - 《警世贤文》" },
+    { text: "历史书是幸存者偏差的产物。", tag: "一将功成万骨枯 - 曹松" },
+    { text: "不要试图变得更好，试着减少愚蠢。", tag: "见贤思齐焉，见不贤而内自省也 - 《论语》" },
+    { text: "真正的风险不是波动，而是永久性损失。", tag: "留得青山在，不怕没柴烧 - 《初刻拍案惊奇》" },
+    { text: "现代医学延长寿命，却削弱了生命力。", tag: "正气存内，邪不可干 - 《黄帝内经》" },
+    { text: "不要听成功者的建议，他们只是幸存者。", tag: "时来天地皆同力，运去英雄不自由 - 罗隐" },
+    { text: "时间是最好的投资顾问。", tag: "试玉要烧三日满，辨材须待七年期 - 白居易" },
+    { text: "那些从不举铁的人，会告诉你举铁伤身体。", tag: "井蛙不可以语于海，拘于虚也 - 《庄子》" },
+    { text: "真正的教育是学会怀疑专家。", tag: "学贵有疑，大疑则大进 - 陈献章" },
+    { text: "脆弱系统最害怕随机性，反脆弱系统最爱它。", tag: "多难兴邦 - 《左传》" },
+    { text: "不要相信任何没有敌人的人。", tag: "乡愿，德之贼也 - 《论语》" },
+    { text: "人生最大的风险是不知道自己在冒什么风险。", tag: "燕雀处堂，不知大厦之将倾 - 《孔丛子》" },
+    { text: "真正的强者不需要证明自己。", tag: "桃李不言，下自成蹊 - 《史记》" },
+    { text: "不要询问理发师你是否需要理发。", tag: "与虎谋皮 - 《太平御览》" }
+];
+
+// 2. 核心配置：全站导航菜单
+const navLinks = [
+    { name: '首 页', path: 'index.html' },
+    { name: '狂野生长', path: 'wild.html' },
+    { name: '待定 · 墨水', path: 'library.html' },
+    { name: '待定 · 黄金', path: 'finance.html' }
+];
+
+// ============================================================
+// 3. 注入引擎 (Injection Engine)
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderGlobalHeader();
+    initTimelineInteraction();
+});
+
+function renderGlobalHeader() {
+    // 创建容器
+    const header = document.createElement('div');
+    header.id = 'global-header';
+    
+    // A. 生成时间轴 HTML
+    let timelineHTML = `
+        <div class="timeline-wrapper" id="timeline">
+            <div class="timeline-track" id="track">`;
+    
+    // 计算今天的高亮索引
+    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+    const todayIndex = dayOfYear % quotesDB.length;
+
+    quotesDB.forEach((quote, index) => {
+        const isHighlight = index === todayIndex ? 'highlight' : '';
+        const uniqueId = index === todayIndex ? 'id="today-quote"' : ''; 
+        
+        timelineHTML += `
+            <div class="timeline-node ${isHighlight}" ${uniqueId}>
+                <div class="node-dot"></div>
+                <div class="quote-content">“${quote.text}”</div>
+                <div class="quote-author">${quote.tag}</div>
+            </div>
+        `;
+    });
+
+    timelineHTML += `</div></div>`;
+
+    // B. 生成导航栏 HTML
+    let navHTML = `<div class="nav-bar">`;
+    const currentPath = window.location.pathname;
+
+    navLinks.forEach(link => {
+        let isActive = false;
+        if (link.path === 'index.html' && (currentPath.endsWith('/') || currentPath.endsWith('index.html'))) {
+            isActive = true;
+        } else if (link.path !== 'index.html' && currentPath.includes(link.path)) {
+            isActive = true;
+        }
+
+        navHTML += `<a href="${link.path}" class="nav-link ${isActive ? 'active' : ''}">${link.name}</a>`;
+    });
+    navHTML += `</div>`;
+
+    // 组合并插入页面顶部
+    header.innerHTML = timelineHTML + navHTML;
+    document.body.prepend(header);
+}
+
+// ============================================================
+// 4. 交互逻辑 (Interaction Logic)
+// ============================================================
+
+function initTimelineInteraction() {
+    const wrapper = document.getElementById('timeline');
+    const track = document.getElementById('track');
+    
+    if (!wrapper) return;
+
+    // --- 自动滚动到今天 ---
+    const todayEl = document.getElementById('today-quote');
+    if (todayEl) {
+        setTimeout(() => {
+            const centerPos = todayEl.offsetLeft - (wrapper.clientWidth / 2) + (todayEl.clientWidth / 2);
+            wrapper.scrollTo({ left: centerPos, behavior: 'smooth' });
+        }, 100);
+    }
+
+    // --- 鼠标拖拽逻辑 ---
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    wrapper.addEventListener('mousedown', (e) => {
+        isDown = true;
+        wrapper.classList.add('active');
+        startX = e.pageX - wrapper.offsetLeft;
+        scrollLeft = wrapper.scrollLeft;
+    });
+
+    wrapper.addEventListener('mouseleave', () => { isDown = false; wrapper.classList.remove('active'); });
+    wrapper.addEventListener('mouseup', () => { isDown = false; wrapper.classList.remove('active'); });
+
+    wrapper.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - wrapper.offsetLeft;
+        const walk = (x - startX) * 1.5; 
+        wrapper.scrollLeft = scrollLeft - walk;
+    });
+}
