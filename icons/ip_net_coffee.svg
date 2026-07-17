@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="13 18 76 76">
+  <style>
+    .s     { fill: none; stroke: #1a1a1a; stroke-width: 6.65; stroke-linecap: round; stroke-linejoin: round; }
+    .smile { fill: none; stroke: #1a1a1a; stroke-width: 5.2; stroke-linecap: round; stroke-linejoin: round; }
+    .eye   { fill: #1a1a1a; }
+    @media (prefers-color-scheme: dark) {
+      .s, .smile { stroke: #ffffff; }
+      .eye       { fill: #ffffff; }
+    }
+  </style>
+  <rect class="s" x="20" y="30" width="50" height="52" rx="5"/>
+  <path class="s" d="M70 44 Q82 44 82 56 Q82 68 70 68"/>
+  <circle class="eye" cx="35" cy="50" r="5"/>
+  <circle class="eye" cx="55" cy="50" r="5"/>
+  <path class="smile" d="M34 60 Q45 72 56 60"/>
+</svg>

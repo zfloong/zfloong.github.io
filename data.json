@@ -139,11 +139,6 @@
               "title": "文心一言",
               "url": "https://yiyan.baidu.com/",
               "icon": "icons/yiyan_baidu_com.png"
-            },
-            {
-              "title": "憨憨的小木屋",
-              "url": "https://mymuwu.net/",
-              "icon": "icons/mymuwu_net.png"
             }
           ]
         }
@@ -203,11 +198,6 @@
           "name": "🌐 网络工具",
           "items": [
             {
-              "title": "Cloudflare ESNI 测试",
-              "url": "https://www.cloudflare.com/zh-cn/ssl/encrypted-sni/#results",
-              "icon": "icons/cloudflare_com.png"
-            },
-            {
               "title": "IPCheck",
               "url": "https://ipcheck.ing/",
               "icon": "icons/ipcheck_ing.png"
@@ -221,6 +211,11 @@
               "title": "IPLeak",
               "url": "https://ipleak.net/",
               "icon": "icons/ipleak_net.png"
+            },
+            {
+              "title": "IP.Coffee",
+              "url": "https://ip.net.coffee/",
+              "icon": "icons/ip_net_coffee.svg"
             },
             {
               "title": "BrowserLeaks",
@@ -253,6 +248,11 @@
               "icon": "icons/test_ustc_edu_cn.png"
             },
             {
+              "title": "Cloudflare ESNI 测试",
+              "url": "https://www.cloudflare.com/zh-cn/ssl/encrypted-sni/#results",
+              "icon": "icons/cloudflare_com.png"
+            },
+            {
               "title": "SubLink Worker",
               "url": "https://sublinkworker.654519996.xyz/",
               "icon": "icons/sublinkworker_654519996_xyz.ico"
@@ -266,16 +266,6 @@
               "title": "ClouDNS",
               "url": "https://www.cloudns.net/",
               "icon": "icons/cloudns_net.png"
-            },
-            {
-              "title": "IP.Coffee",
-              "url": "https://ip.net.coffee/",
-              "icon": "icons/ip_net_coffee.png"
-            },
-            {
-              "title": "IDCJK",
-              "url": "https://www.idcjk.com/",
-              "icon": "https://www.google.com/s2/favicons?domain=idcjk.com&sz=64"
             }
           ]
         },
@@ -681,21 +671,6 @@
               "icon": "icons/nodeseek_com.png"
             },
             {
-              "title": "LowEndTalk",
-              "url": "https://lowendtalk.com/",
-              "icon": "icons/lowendtalk_com.png"
-            },
-            {
-              "title": "NodeLoc",
-              "url": "https://www.nodeloc.com/",
-              "icon": "icons/nodeloc_com.png"
-            },
-            {
-              "title": "IDC Flare",
-              "url": "https://idcflare.com/",
-              "icon": "icons/idcflare_com.png"
-            },
-            {
               "title": "DMIT",
               "url": "https://www.dmit.io/clientarea.php",
               "icon": "icons/dmit_io.png"
@@ -704,6 +679,11 @@
               "title": "搬瓦工",
               "url": "https://bandwagonhost.com/index.php",
               "icon": "icons/bandwagonhost_com.png"
+            },
+            {
+              "title": "Acck",
+              "url": "https://acck.io/",
+              "icon": "icons/acck_io.png"
             },
             {
               "title": "Akile",
@@ -736,9 +716,24 @@
               "icon": "icons/racknerd_com.png"
             },
             {
-              "title": "Acck",
-              "url": "https://acck.io/",
-              "icon": "icons/acck_io.png"
+              "title": "LowEndTalk",
+              "url": "https://lowendtalk.com/",
+              "icon": "icons/lowendtalk_com.png"
+            },
+            {
+              "title": "NodeLoc",
+              "url": "https://www.nodeloc.com/",
+              "icon": "icons/nodeloc_com.png"
+            },
+            {
+              "title": "IDC Flare",
+              "url": "https://idcflare.com/",
+              "icon": "icons/idcflare_com.png"
+            },
+            {
+              "title": "IDCJK",
+              "url": "https://www.idcjk.com/",
+              "icon": "icons/idcjk_com.svg"
             }
           ]
         }
