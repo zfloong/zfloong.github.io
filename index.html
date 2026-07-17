@@ -3,16 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
   <title>FlyLoong Start</title>
-  
   <link rel="icon" href="images/home.svg" type="image/x-icon">
-  
+  <script>
+  (function() {
+    var theme;
+    try { var val = localStorage.getItem("userPreference_theme"); if (val === "dark" || val === "light") theme = val; } catch(e) {}
+    if (!theme) { theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+    if (theme === "dark") document.documentElement.classList.add("dark");
+  })();
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css">
-  
   <link rel="stylesheet" href="css/main.css">
 </head>
-
 <body>
 
   <nav class="navbar">
