@@ -7,6 +7,7 @@ import { fetchData } from './modules/data-service.js';
 import { renderSearch, renderNavAndContent } from './modules/renderer.js';
 import { bindSearchEvents, bindTabEvents, bindSectionToggleEvents } from './modules/event-handler.js';
 import { initTheme, bindThemeToggle } from './modules/theme-manager.js';
+import { initParticles } from './modules/particles.js';
 import { showLoading, hideLoading, showError, initNetworkListeners } from './modules/error-handler.js';
 
 /**
@@ -47,6 +48,9 @@ function initPage(data) {
   
   initTheme();
   bindThemeToggle();
+
+  // 初始化粒子背景
+  initParticles();
 }
 
 /**

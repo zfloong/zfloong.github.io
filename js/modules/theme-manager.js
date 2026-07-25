@@ -74,7 +74,7 @@ function toggleTheme() {
 function bindThemeToggle() {
   const btn = document.getElementById('themeToggle');
   if (btn) btn.addEventListener('click', toggleTheme);
-  
+
   // 监听系统主题变化（用户未手动保存时跟随）
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     if (!getSavedTheme()) {
