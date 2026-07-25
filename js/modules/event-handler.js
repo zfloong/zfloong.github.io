@@ -104,22 +104,6 @@ function initSearchHistory(searchInput, searchForm) {
   // 创建历史记录容器
   const historyContainer = document.createElement('div');
   historyContainer.className = 'search-history';
-  historyContainer.style.cssText = `
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 0 0 10px 10px;
-    box-shadow: var(--shadow);
-    z-index: 100;
-    max-height: 400px;
-    overflow-y: auto;
-    display: none;
-    backdrop-filter: none;
-  `;
-  
   // 插入到搜索框下方
   const searchBox = searchInput.parentElement;
   searchBox.style.position = 'relative';
@@ -161,24 +145,22 @@ function showSearchHistory(container, searchInput) {
     return;
   }
   
-  // 生成历史记录 HTML
-  let html = '<div style="padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">';
-  html += '<span style="font-weight: 500; color: var(--text-sub);">搜索历史</span>';
-  html += '<button id="clear-history" style="background: none; border: none; color: var(--text-sub); cursor: pointer; font-size: 0.8rem;">清除</button>';
+  let html = '<div class="search-history-header">';
+  html += '<span>搜索历史</span>';
+  html += '<button id="clear-history" class="search-history-clear">清除</button>';
   html += '</div>';
-  
+
   history.forEach((item, index) => {
-    html += `<div class="history-item" data-index="${index}" style="padding: 10px; cursor: pointer; transition: background 0.2s;">`;
-    html += `<i class="ri-history-line" style="margin-right: 10px; color: var(--text-sub);"></i>`;
-    html += `<span>${item}</span>`;
+    html += '<div class="search-history-item" data-index="' + index + '">';
+    html += '<i class="ri-history-line"></i>';
+    html += '<span>' + item + '</span>';
     html += '</div>';
   });
-  
   container.innerHTML = html;
   container.style.display = 'block';
   
   // 添加历史记录项点击事件
-  container.querySelectorAll('.history-item').forEach(item => {
+  container.querySelectorAll('.search-history-item').forEach(item => {
     item.addEventListener('click', () => {
       const index = item.getAttribute('data-index');
       searchInput.value = history[index];
@@ -190,16 +172,6 @@ function showSearchHistory(container, searchInput) {
   document.getElementById('clear-history').addEventListener('click', () => {
     clearSearchHistory();
     container.style.display = 'none';
-  });
-  
-  // 添加鼠标悬停效果
-  container.querySelectorAll('.history-item').forEach(item => {
-    item.addEventListener('mouseenter', () => {
-      item.style.background = 'rgba(0, 0, 0, 0.05)';
-    });
-    item.addEventListener('mouseleave', () => {
-      item.style.background = 'transparent';
-    });
   });
 }
 
@@ -311,3 +283,5 @@ function bindTabEvents() {
 }
 
 export { bindSearchEvents, bindTabEvents, bindSectionToggleEvents, savePreference, getSavedPreference, clearAllPreferences };
+
+
