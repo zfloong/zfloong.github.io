@@ -163,11 +163,19 @@ function showSearchHistory(container, searchInput) {
   container.querySelectorAll('.search-history-item').forEach(item => {
     item.addEventListener('click', () => {
       const index = item.getAttribute('data-index');
-      searchInput.value = history[index];
+      const activeEngine = document.querySelector('.engine-btn.active');
+      const searchUrl = activeEngine ? activeEngine.getAttribute('data-url') : '';
+      const query = encodeURIComponent(history[index]);
+      if (searchUrl) {
+        const a = document.createElement('a');
+        a.href = searchUrl + query;
+        a.target = '_blank';
+        a.click();
+      }
       container.style.display = 'none';
     });
   });
-  
+
   // 添加清除历史记录事件
   document.getElementById('clear-history').addEventListener('click', () => {
     clearSearchHistory();
