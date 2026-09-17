@@ -3,6 +3,8 @@
  * 处理用户交互事件
  */
 
+import { revealActiveSection } from './hero-effects.js';
+
 /**
  * 保存用户偏好到本地存储
  * @param {string} key - 偏好键名
@@ -286,6 +288,9 @@ function bindTabEvents() {
 
       // 保存到本地存储
       savePreference('activeTab', targetId);
+
+      // 新展示出来的板块重新建立滚动揭示
+      revealActiveSection();
     });
   });
 }

@@ -1,21 +1,43 @@
 /* =========================================
-   FlyLoong Navigation - Cinematic Style
+   FlyLoong Navigation — Deep Dark Style
    ========================================= */
 
 :root {
-  --bg: oklch(93% 0.012 255);
-  --card-bg: oklch(92% 0.012 255 / 0.35);
-  --nav-bg: oklch(92% 0.012 255 / 0.15);
-  --text: oklch(25% 0.015 260);
-  --text-sub: oklch(50% 0.01 260);
-  --primary: #000000;
-  --border: oklch(75% 0.01 255 / 0.3);
-  --shadow: 0 4px 20px oklch(20% 0.01 260 / 0.03);
+  /* 底色 + 导航栏 + 搜索历史 + 卡片，四者同色系：
+     只改 --bg 而不管另外三个，导航栏和搜索历史会与底色"分家"。 */
+  --bg: #151a24;
+  --nav-bg-top: rgba(17,21,29,0.85);
+  --nav-bg-mid: rgba(17,21,29,0.45);
+  --history-bg: rgba(24,30,41,0.88);
+  --card-bg: rgba(255,255,255,0.05);
+  --text: #e8e8ec;
+  --text-sub: #8a8a9a;
+  --primary: #d4b483;
+  --border: rgba(255,255,255,0.07);
+  --shadow: 0 8px 32px rgba(0,0,0,0.5);
   --glass: blur(30px);
+
+  /* 流光色标：卡片边框流光与搜索框聚焦流光共用这一处定义，
+     改颜色只改这里，两个光效会一起变，保证观感统一。 */
+  --beam-stops:
+    transparent 0%,
+    rgba(150,180,255,0.7) 7%,
+    rgba(230,238,255,1) 13%,
+    rgba(170,195,255,0.85) 19%,
+    transparent 27%,
+    transparent 100%;
+
+  /* --- 背景观感参数（由 js/modules/deep-bg.js 的 readCssTuning() 读取）---
+     这里就是唯一一份定义，改背景观感改这里即可。 */
+  --bg-grid-cell: 72;          /* 格距 */
+  --bg-grid-line: 0.3;         /* 网格线不透明度 */
+  --bg-grid-dot-r: 1.7;        /* 顶点半径 */
+  --bg-grid-dot: 0.34;         /* 顶点不透明度 */
+  --bg-grid-highlight: 120,150,255;  /* 鼠标附近的高亮色（r,g,b） */
 }
 
 /* =========================================
-   全局样式重置
+   全局
    ========================================= */
 * {
   margin: 0;
@@ -24,37 +46,32 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  padding-top: 80px;
-  transition: background-color 0.3s ease;
+  padding-top: 62px;
   background-image:
-    radial-gradient(circle at 25% 20%, oklch(70% 0.05 260 / 0.18) 0%, transparent 40%),
-    radial-gradient(circle at 80% 75%, oklch(65% 0.04 280 / 0.15) 0%, transparent 40%);
-  background-size: 200% 200%, 200% 200%;
-  animation: bgDriftLight 35s ease-in-out infinite alternate;
+    radial-gradient(circle at 30% 20%, rgba(80,60,180,0.12) 0%, transparent 45%),
+    radial-gradient(circle at 70% 70%, rgba(40,80,160,0.1) 0%, transparent 45%);
 }
 
 /* =========================================
-   组件：导航栏
+   导航栏 — 融入背景
    ========================================= */
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 70px;
-  background: var(--nav-bg);
-  backdrop-filter: var(--glass);
-  -webkit-backdrop-filter: var(--glass);
-  border-bottom: 1px solid var(--border);
+  height: 52px;
+  /* 半透明渐变，网格透得出来 —— 刻意与背景融为一体（不做磨砂/分隔线，
+     否则会在顶部切出一条边，破坏一体感）。两端色值跟随背景变量，避免与底色分家。 */
+  background: linear-gradient(to bottom, var(--nav-bg-top) 0%, var(--nav-bg-mid) 70%, transparent 100%);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
 }
 
 .nav-container {
@@ -73,17 +90,15 @@ body {
   overflow-x: auto;
   scrollbar-width: none;
   padding: 0.5rem 0;
-
 }
 .nav-tabs::-webkit-scrollbar { display: none; }
 
-/* 导航按钮 */
 .tab-btn {
   background: transparent;
   border: 1px solid transparent;
   color: var(--text);
-  font-size: 0.95rem;
-  padding: 0.5rem 1.2rem;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.9rem;
   border-radius: 50px;
   cursor: pointer;
   font-weight: 500;
@@ -94,59 +109,20 @@ body {
   gap: 8px;
   opacity: 0.7;
 }
-
 .tab-btn:hover {
   opacity: 1;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255,255,255,0.05);
 }
-
 .tab-btn.active {
   background: var(--primary);
-  color: #fff;
+  color: #000;
   opacity: 1;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
-}
-
-/* 主题切换按钮 (导航栏右侧) */
-.nav-theme-toggle {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-sub);
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.nav-theme-toggle:hover {
-  color: var(--text);
-  border-color: var(--text-sub);
-  transform: translateY(-50%) rotate(30deg);
-}
-
-/* 底部磨砂发光边 */
-.navbar::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 5%;
-  width: 90%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
-  opacity: 0.6;
+  border-color: transparent;
+  box-shadow: 0 0 15px rgba(212,180,131,0.2);
 }
 
 /* =========================================
-   组件：搜索区
+   搜索区
    ========================================= */
 .main-content {
   max-width: 1280px;
@@ -158,6 +134,7 @@ body {
   max-width: 600px;
   margin: 0 auto 0.1rem auto;
   text-align: center;
+  animation: searchFadeIn 0.4s ease-out;
 }
 
 .search-engines {
@@ -199,7 +176,7 @@ body {
 
 .engine-btn {
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
   color: var(--text);
   opacity: 0.6;
   font-size: 0.85rem;
@@ -208,12 +185,15 @@ body {
   border-radius: 20px;
   transition: all 0.2s;
 }
-.engine-btn:hover { opacity: 1; border-color: var(--primary); }
+.engine-btn:hover {
+  opacity: 1;
+  border-color: rgba(255,255,255,0.15);
+}
 .engine-btn.active {
   opacity: 1;
-  background: var(--text);
-  color: var(--bg);
-  border-color: var(--text);
+  background: var(--primary);
+  color: #000;
+  border-color: transparent;
   font-weight: 600;
 }
 
@@ -221,6 +201,74 @@ body {
   position: relative;
   display: flex;
   align-items: center;
+  border-radius: 20px;
+}
+/* Shimmer：搜索框聚焦时光效
+   与卡片流光（.card::after）共用同一套色标变量 --beam-stops 与同一个 36 帧步进方案，
+   两者观感保持一致。详见 .card::after 的注释。 */
+.search-box::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(from 0deg, var(--beam-stops));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 1;
+}
+.search-box:focus-within::before {
+  opacity: 1;
+}
+/* 搜索框流光与卡片流光同速（1.8s），两个光效观感一致 */
+.search-box:focus-within::before {
+  animation: shimmerSpin 1.8s linear infinite;
+}
+/* 36 个关键帧，每 10° 一帧（1.8s → 每帧 50ms，约合 60fps 的 3 帧）。
+   同卡片：不能靠动画自定义属性，否则 Chromium 只更新计算值、不重新光栅化。 */
+@keyframes shimmerSpin {
+  0% { background-image: conic-gradient(from 0deg, var(--beam-stops)); }
+  2.78% { background-image: conic-gradient(from 10deg, var(--beam-stops)); }
+  5.56% { background-image: conic-gradient(from 20deg, var(--beam-stops)); }
+  8.33% { background-image: conic-gradient(from 30deg, var(--beam-stops)); }
+  11.11% { background-image: conic-gradient(from 40deg, var(--beam-stops)); }
+  13.89% { background-image: conic-gradient(from 50deg, var(--beam-stops)); }
+  16.67% { background-image: conic-gradient(from 60deg, var(--beam-stops)); }
+  19.44% { background-image: conic-gradient(from 70deg, var(--beam-stops)); }
+  22.22% { background-image: conic-gradient(from 80deg, var(--beam-stops)); }
+  25% { background-image: conic-gradient(from 90deg, var(--beam-stops)); }
+  27.78% { background-image: conic-gradient(from 100deg, var(--beam-stops)); }
+  30.56% { background-image: conic-gradient(from 110deg, var(--beam-stops)); }
+  33.33% { background-image: conic-gradient(from 120deg, var(--beam-stops)); }
+  36.11% { background-image: conic-gradient(from 130deg, var(--beam-stops)); }
+  38.89% { background-image: conic-gradient(from 140deg, var(--beam-stops)); }
+  41.67% { background-image: conic-gradient(from 150deg, var(--beam-stops)); }
+  44.44% { background-image: conic-gradient(from 160deg, var(--beam-stops)); }
+  47.22% { background-image: conic-gradient(from 170deg, var(--beam-stops)); }
+  50% { background-image: conic-gradient(from 180deg, var(--beam-stops)); }
+  52.78% { background-image: conic-gradient(from 190deg, var(--beam-stops)); }
+  55.56% { background-image: conic-gradient(from 200deg, var(--beam-stops)); }
+  58.33% { background-image: conic-gradient(from 210deg, var(--beam-stops)); }
+  61.11% { background-image: conic-gradient(from 220deg, var(--beam-stops)); }
+  63.89% { background-image: conic-gradient(from 230deg, var(--beam-stops)); }
+  66.67% { background-image: conic-gradient(from 240deg, var(--beam-stops)); }
+  69.44% { background-image: conic-gradient(from 250deg, var(--beam-stops)); }
+  72.22% { background-image: conic-gradient(from 260deg, var(--beam-stops)); }
+  75% { background-image: conic-gradient(from 270deg, var(--beam-stops)); }
+  77.78% { background-image: conic-gradient(from 280deg, var(--beam-stops)); }
+  80.56% { background-image: conic-gradient(from 290deg, var(--beam-stops)); }
+  83.33% { background-image: conic-gradient(from 300deg, var(--beam-stops)); }
+  86.11% { background-image: conic-gradient(from 310deg, var(--beam-stops)); }
+  88.89% { background-image: conic-gradient(from 320deg, var(--beam-stops)); }
+  91.67% { background-image: conic-gradient(from 330deg, var(--beam-stops)); }
+  94.44% { background-image: conic-gradient(from 340deg, var(--beam-stops)); }
+  97.22% { background-image: conic-gradient(from 350deg, var(--beam-stops)); }
+  100% { background-image: conic-gradient(from 360deg, var(--beam-stops)); }
 }
 .search-input {
   width: 100%;
@@ -228,7 +276,7 @@ body {
   padding-right: 3.5rem;
   border-radius: 20px;
   border: 1px solid var(--border);
-  background: var(--card-bg);
+  background: rgba(255,255,255,0.04);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   color: var(--text);
@@ -238,8 +286,12 @@ body {
   transition: all 0.3s ease;
 }
 .search-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  border-color: rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(60,80,180,0.1);
+}
+.search-input::placeholder {
+  color: var(--text-sub);
+  opacity: 0.5;
 }
 
 .search-btn {
@@ -255,35 +307,25 @@ body {
 }
 .search-btn:hover { opacity: 1; }
 
-
 /* =========================================
-   组件：搜索历史下拉
+   搜索历史
    ========================================= */
 .search-history {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  background: oklch(96% 0.01 250 / 0.6);
+  background: var(--history-bg);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 1.5px solid oklch(60% 0.015 260 / 0.25);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
-  box-shadow: 0 8px 32px oklch(0% 0 0 / 0.12);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   z-index: 100;
   max-height: 400px;
   overflow-y: auto;
   display: none;
   margin-top: 6px;
-}
-
-.dark .search-history {
-  background: oklch(10% 0.015 265 / 0.55);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1.5px solid oklch(70% 0.01 75 / 0.2);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px oklch(0% 0 0 / 0.4);
 }
 
 .search-history-header {
@@ -293,7 +335,6 @@ body {
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
 }
-
 .search-history-header span {
   font-size: 0.8rem;
   font-weight: 600;
@@ -301,7 +342,6 @@ body {
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
-
 .search-history-clear {
   background: none;
   border: none;
@@ -314,10 +354,7 @@ body {
 }
 .search-history-clear:hover {
   color: var(--text);
-  background: oklch(70% 0.01 260 / 0.15);
-}
-.dark .search-history-clear:hover {
-  background: oklch(90% 0.01 260 / 0.1);
+  background: rgba(255,255,255,0.06);
 }
 
 .search-history-item {
@@ -332,29 +369,24 @@ body {
   border-left: 3px solid transparent;
 }
 .search-history-item:hover {
-  background: oklch(70% 0.06 260 / 0.25);
+  background: rgba(212,180,131,0.08);
   border-left-color: var(--primary);
-  border-left-width: 3px;
 }
-.dark .search-history-item:hover {
-  background: oklch(70% 0.08 75 / 0.15);
-  border-left-color: var(--primary);
-  border-left-width: 3px;
-}
-
 .search-history-item i {
   color: var(--text-sub);
   font-size: 0.9rem;
   flex-shrink: 0;
 }
+
 /* =========================================
-   组件：内容板块
+   内容板块
    ========================================= */
 .category-section {
   display: none;
 }
 .category-section.active {
   display: block;
+  /* 保持你原来的 0.5s 不变 —— 这层本来就是合理的 */
   animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 @keyframes fadeIn {
@@ -390,9 +422,7 @@ body {
   align-items: center;
   transition: opacity 0.2s;
 }
-.section-group-title:hover {
-  opacity: 1;
-}
+.section-group-title:hover { opacity: 1; }
 .section-group-title::after {
   content: '\ea4e';
   font-family: 'remixicon';
@@ -404,9 +434,7 @@ body {
   transform: rotate(-90deg);
 }
 
-.grid.grid-collapsed {
-  display: none;
-}
+.grid.grid-collapsed { display: none; }
 
 .grid {
   display: grid;
@@ -414,6 +442,7 @@ body {
   gap: 1rem;
 }
 
+/* 卡片 */
 .card {
   display: flex;
   align-items: center;
@@ -428,22 +457,56 @@ body {
   color: var(--text);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
+  z-index: 1;
 }
-
 .card:hover {
   transform: translateY(-4px);
-  background: oklch(96% 0.01 250 / 0.55);
-  border-color: var(--primary);
-  box-shadow: 0 10px 30px oklch(20% 0.01 260 / 0.08);
+  background: rgba(255,255,255,0.08);
+  border-color: transparent;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
-
+/* BorderBeam：卡片 hover 流光边框
+   环形遮罩 = 透明边框 + mask-composite 挖空中心；亮带用 conic-gradient 沿边框扫过。
+   几个必须遵守的点（都踩过，别再改）：
+     1) 角度**不能**来自 @property 注册的自定义属性动画 —— Chromium 会让计算值变化
+        但不重新光栅化，表现为「animation running、角度在变、画面定格」（真机实测）。
+        所以角度直接写进 @keyframes 的 background-image 里（见文件末尾 cardBeamSpin）。
+     2) 环形遮罩必须加在「不转」的那一层，带 transform 的层遮罩会跟着转、环会歪。
+     3) conic 渐变盒太小（如 200%）时，2px 细环上只切到一丁点，亮带会看不见。
+     4) 父层用不透明色做遮罩会把环压成和中心一样暗，整条环消失。
+   亮带要够宽够亮（下面 7%~27% 那段），细带子在深色卡片上认不出来。
+   z-index: 0 是把这层光圈垫在卡片内容（.card img / .card-info 的 z-index: 1）下面，
+   避免光带扫过时糊住图标和文字。 */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 20px;
+  padding: 2px;
+  background: conic-gradient(from 0deg, var(--beam-stops));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 0;
+}
+.card:hover::after {
+  opacity: 1;
+}
+/* 卡片内容浮在流光之上（相对定位 + z-index 1 压住 ::after 的光圈） */
+.card img, .card-info {
+  position: relative;
+  z-index: 1;
+}
 .card img {
   width: 38px;
   height: 38px;
   border-radius: 10px;
   background: transparent;
 }
-
 .card-info h3 {
   font-size: 0.95rem;
   font-weight: 500;
@@ -458,132 +521,162 @@ footer {
   font-size: 0.85rem;
   letter-spacing: 1px;
 }
-
-/* =========================================
-   暗色模式
-   ========================================= */
-:root.dark {
-  --bg: oklch(13% 0.02 260);
-  --card-bg: oklch(18% 0.02 260 / 0.2);
-  --nav-bg: oklch(11% 0.018 260 / 0.12);
-  --text: oklch(92% 0.008 260);
-  --text-sub: oklch(65% 0.01 260);
-  --primary: #d4b483;
-  --border: oklch(85% 0.01 260 / 0.1);
-  --shadow: 0 8px 32px oklch(5% 0.01 265 / 0.5);
+footer a {
+  color: var(--text-sub);
+  text-decoration: none;
+  transition: color 0.2s;
 }
-
-.dark body {
-  background-image:
-    radial-gradient(circle at 30% 20%, oklch(45% 0.08 265 / 0.25) 0%, transparent 45%),
-    radial-gradient(circle at 70% 70%, oklch(30% 0.06 280 / 0.2) 0%, transparent 45%);
-  background-attachment: fixed;
-  background-size: 200% 200%, 200% 200%;
-  animation: bgDriftDark 40s ease-in-out infinite alternate;
-}
-
-.dark .tab-btn.active {
-  background: var(--primary) !important;
-  color: #000 !important;
-  border-color: var(--primary) !important;
-}
-
-.dark .engine-btn {
-  background: transparent;
-  border-color: transparent;
+footer a:hover {
   color: var(--text);
 }
-.dark .engine-btn.active {
-  background: var(--primary);
-
-  color: #000;
-
-  border-color: transparent;
-  border-color: transparent;
-
-}
-
-.dark .search-input:focus {
-  box-shadow: 0 0 30px rgba(212, 180, 131, 0.1);
-}
-
-.dark .card:hover {
-  background: oklch(90% 0.01 260 / 0.1);
-  border-color: oklch(90% 0.01 260 / 0.2);
-  box-shadow: 0 10px 40px oklch(5% 0.01 265 / 0.5);
-}
 
 /* =========================================
-   动效：卡片入场 stagger
-   ========================================= */
-@keyframes cardEnter {
-  from {
+   入场动画（叠化：从模糊+透明逐渐变清晰，再错开延迟）
+   写法取自 DeepSeek Harness 落地页的 .ds-hero-enter：
+     0% { opacity:0; translateY(var(--enter-y,20px)); filter: blur(var(--enter-blur,0)) }
+     100% 由浏览器补齐；animation-fill-mode: backwards 保证延迟期间保持 0% 状态。
+   ⚠️ 导航栏必须把位移设成 0（--enter-y: 0）：
+   它是 position:fixed 且背景是「上深下透明」的渐变，一旦 translateY(20px) 下移，
+   最顶部那条就没有东西覆盖，加上入场时的 blur，会看成顶上一片发白的横条
+   （实际是"露出的空缺"），等它归位才消失 —— 这就是那个"突然出现的白色"。
+   注意：本页没有 prefers-reduced-motion 门控，所以这里也不要加。 */
+@keyframes pageEnter {
+  0% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(var(--enter-y, 20px));
+    filter: blur(var(--enter-blur, 6px));
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
+    filter: none;
   }
 }
-.grid .card {
-  animation: cardEnter 0.4s ease-out both;
+.navbar,
+.search-wrapper,
+#main-content-area {
+  animation: pageEnter 0.8s ease-out backwards;
 }
-.grid .card:nth-child(1) { animation-delay: 0.02s; }
-.grid .card:nth-child(2) { animation-delay: 0.04s; }
-.grid .card:nth-child(3) { animation-delay: 0.06s; }
-.grid .card:nth-child(4) { animation-delay: 0.08s; }
-.grid .card:nth-child(5) { animation-delay: 0.10s; }
-.grid .card:nth-child(6) { animation-delay: 0.12s; }
-.grid .card:nth-child(7) { animation-delay: 0.14s; }
-.grid .card:nth-child(8) { animation-delay: 0.16s; }
-.grid .card:nth-child(9) { animation-delay: 0.18s; }
-.grid .card:nth-child(10) { animation-delay: 0.20s; }
-.grid .card:nth-child(11) { animation-delay: 0.22s; }
-.grid .card:nth-child(12) { animation-delay: 0.24s; }
-.grid .card:nth-child(13) { animation-delay: 0.26s; }
-.grid .card:nth-child(14) { animation-delay: 0.28s; }
-.grid .card:nth-child(15) { animation-delay: 0.30s; }
-.grid .card:nth-child(16) { animation-delay: 0.32s; }
-.grid .card:nth-child(17) { animation-delay: 0.34s; }
-.grid .card:nth-child(18) { animation-delay: 0.36s; }
-.grid .card:nth-child(19) { animation-delay: 0.38s; }
-.grid .card:nth-child(20) { animation-delay: 0.40s; }
+.navbar            { --enter-y: 0; animation-delay: 0s; }
+.search-wrapper    { animation-delay: 0.12s; }
+#main-content-area { animation-delay: 0.22s; }
+
+/* 网格 canvas 自己淡入（含轻微缩放，像"从远处浮上来"）。
+   ⚠️ 时序关键：不能用页面级的 bootFade 来淡入网格 ——
+   网格 canvas 是**数据加载完才创建并画出第一帧**的（实测约 1650~1930ms），
+   而页面级 bootFade 从加载起算、0.72s 就结束了，那时网格还没出现，
+   等它画出来时已经"全亮"，所以看起来"网格突然凸显在内容前面"。
+   ⇒ 淡入必须加在 canvas 上，从它被创建那一刻起算。
+   实测数据：1.25s 的版本在网格出现后仅 1.07s 就到 opacity 0.997，仍然太急；
+   网格面积大、对比强（mask 双轴交集让中部很密），所以：
+     · 前 15% 保持全暗 —— 让卡片入场先走完，避免"网格和卡片抢戏"
+     · 总时长 1.9s，缓动用 ease-out 的强形式，尾部更柔
+   实测（canvas 创建后）：opacity 0 → 0.81 → 0.98 → 1；对比度 1.5 → 58 → 98 → 100。 */
+.deep-bg-grid canvas {
+  animation: gridRise 1.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes gridRise {
+  0%   { opacity: 0; transform: scale(1.045); }
+  15%  { opacity: 0; transform: scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
 
 /* =========================================
-   动效：搜索区淡入
-   ========================================= */
+   卡片入场（动画放在外层包裹层 .card-wrap 上，卡片子树保持静止）
+   0.26s + 每张错开 0.012s：最后一张约 0.60s 收完，切页签不拖沓。
+   ⚠️ 已知遗留问题：真机上"动画结束后可能卡一下"（软件渲染环境复现不出来）。
+   试过把动画放在 .card 上、放在 .card img/.card-info 上、以及完全去掉，都不能消除，
+   所以它不是卡片动画本身引起的 —— 暂按观感优先保留此动画。
+   只有包裹层在动、卡片子树（含 backdrop-filter 磨砂）全程不变。 */
+@keyframes cardContentEnter {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: none; }
+}
+.card-wrap {
+  animation: cardContentEnter 0.26s ease-out backwards;
+}
+.card-wrap:nth-child(1)  { animation-delay: 0.10s; }
+.card-wrap:nth-child(2)  { animation-delay: 0.112s; }
+.card-wrap:nth-child(3)  { animation-delay: 0.124s; }
+.card-wrap:nth-child(4)  { animation-delay: 0.136s; }
+.card-wrap:nth-child(5)  { animation-delay: 0.148s; }
+.card-wrap:nth-child(6)  { animation-delay: 0.16s; }
+.card-wrap:nth-child(7)  { animation-delay: 0.172s; }
+.card-wrap:nth-child(8)  { animation-delay: 0.184s; }
+.card-wrap:nth-child(9)  { animation-delay: 0.196s; }
+.card-wrap:nth-child(10) { animation-delay: 0.208s; }
+.card-wrap:nth-child(11) { animation-delay: 0.22s; }
+.card-wrap:nth-child(12) { animation-delay: 0.232s; }
+.card-wrap:nth-child(13) { animation-delay: 0.244s; }
+.card-wrap:nth-child(14) { animation-delay: 0.256s; }
+.card-wrap:nth-child(15) { animation-delay: 0.268s; }
+.card-wrap:nth-child(16) { animation-delay: 0.28s; }
+.card-wrap:nth-child(17) { animation-delay: 0.292s; }
+.card-wrap:nth-child(18) { animation-delay: 0.304s; }
+.card-wrap:nth-child(19) { animation-delay: 0.316s; }
+.card-wrap:nth-child(20) { animation-delay: 0.328s; }
+
 @keyframes searchFadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.search-wrapper {
-  animation: searchFadeIn 0.4s ease-out;
+
+/* 加载指示器的转圈（error-handler.js 内联引用动画名 spin，必须存在） */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 注意：这里刻意不做 prefers-reduced-motion 适配。
+   Windows 的「显示动画」开关(MinAnimate)会映射成 prefers-reduced-motion: reduce 且全局生效，
+   一旦用它关停流光/入场动画，页面在关掉系统动画的机器上会整片失去动效。
+   如需恢复该适配，请连同 deep-bg.js 里的 prefersReducedMotionEnabled() 一起重新启用。 */
+
+/* =========================================
+   滚动揭示
+   ========================================= */
+/* 滚动揭示：0.7s → 0.32s。
+   这层在切页签时也会跑（新板块的 .grid 会被重新观察、揭示），
+   0.7s 叠上卡片入场就明显拖沓了。 */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* =========================================
-   动效：背景光晕缓慢漂移
+   流动背景容器
    ========================================= */
-@keyframes bgDriftLight {
-  0%   { background-position: 0% 0%, 100% 100%, 50% 50%; }
-  25%  { background-position: 80% 20%, 30% 80%, 0% 50%; }
-  50%  { background-position: 40% 60%, 70% 30%, 100% 80%; }
-  75%  { background-position: 100% 40%, 10% 90%, 50% 0%; }
-  100% { background-position: 20% 80%, 90% 10%, 80% 100%; }
+/* Hero 区流动光带（WebGL）：只铺首屏一条，底部渐隐后交给下面的 CSS 网格。
+   ⚠️ 兜底色**不能是近黑**：本层 z-index:-3，画在 body 背景之前，
+   如果给它一个近黑底（曾经是 #050a18），在 WebGL 画出第一帧之前
+   整屏会先黑一下再变亮 —— 就是"进页面突然黑屏"的原因。
+   这里只保留很淡的蓝色光晕，底色交给 body（透明）。 */
+#hero-shader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: clamp(380px, 68vh, 660px);
+  z-index: -3;   /* 光带在最底；磨砂层(-2) 叠在它上面做柔化，网格(-1) 再盖上去 */
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 60% at 62% 28%, rgba(32,74,126,0.55) 0%, transparent 62%),
+    radial-gradient(ellipse 90% 70% at 40% 45%, rgba(26,56,112,0.45) 0%, transparent 70%);
+  -webkit-mask: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0,0,0,0.35) 78%, transparent 100%);
+  mask: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0,0,0,0.35) 78%, transparent 100%);
+}
+#hero-shader canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-@keyframes bgDriftDark {
-  0%   { background-position: 0% 0%, 100% 100%, 50% 50%; }
-  25%  { background-position: 60% 30%, 30% 70%, 100% 20%; }
-  50%  { background-position: 40% 70%, 70% 30%, 0% 80%; }
-  75%  { background-position: 80% 20%, 50% 90%, 30% 50%; }
-  100% { background-position: 20% 60%, 80% 40%, 70% 0%; }
-}
-
-/* =========================================
-   组件：3D 粒子背景
-   ========================================= */
-#particles-bg {
+#deep-bg {
   position: fixed;
   top: 0;
   left: 0;
@@ -591,17 +684,98 @@ footer {
   height: 100%;
   z-index: -1;
   pointer-events: none;
+  overflow: hidden;
 }
-#particles-bg canvas {
-  display: block;
+
+/* 磨砂层：只作用于 hero 光带。
+   层级必须是「光带(-3) → 磨砂(-2) → 网格(-1)」，
+   这样 backdrop-filter 只吃到它下面的光带，网格在其上方保持清晰。
+   ⚠️ 踩过的坑：曾把本层与 #deep-bg 同设 z-index:-1，DOM 又排在后面，
+   结果整层盖在网格上 —— 14px 模糊把 0.3 不透明度的 1px 网格线彻底抹平，
+   网格"A/B 对照"从 47 条变成 0 条。层级关系不要再动。 */
+#frost {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  z-index: -2;
+  pointer-events: none;
+  backdrop-filter: blur(14px) saturate(1.06);
+  -webkit-backdrop-filter: blur(14px) saturate(1.06);
+  /* 蒙版用**透明黑**而不是白 —— 白蒙版会在整屏（尤其顶部光带最亮处）叠出一层发灰发白，
+     看起来像"顶部突然有一片白色"。透明黑只会压暗一点点，不会提亮。 */
+  background: rgba(0, 0, 0, 0.12);
 }
 
+.deep-bg-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(60,80,180,0.08) 0%, transparent 70%);
+  mix-blend-mode: screen;
+}
 
+/* 网格层：双轴遮罩 —— 横、竖两个方向都从 15% 处显现、85% 处淡出，
+   两条遮罩求交集（mask-composite: intersect），于是网格只在画面中部区域出现、
+   向四周柔和消失，不会像单轴遮罩那样在左右两侧出现硬边。
+   这个手法参考自 DeepSeek Harness 落地页的 .ds-grid-bg。 */
+.deep-bg-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0, #000 15%, #000 85%, transparent),
+    linear-gradient(180deg, transparent 0, #000 15%, #000 85%, transparent);
+  mask-image:
+    linear-gradient(90deg, transparent 0, #000 15%, #000 85%, transparent),
+    linear-gradient(180deg, transparent 0, #000 15%, #000 85%, transparent);
+  -webkit-mask-composite: source-in, xor;
+  mask-composite: intersect;
+}
 
-
-
-
-
-
+/* 卡片流光旋转：36 个关键帧，每 10° 一帧。
+   时长 1.8s → 每帧间隔 50ms（约合 60fps 的 3 帧），阶梯感不可见。
+   为什么不用「动画 --card-beam 自定义属性」的写法，见上方 .card::after 注释第 1 条。 */
+@keyframes cardBeamSpin {
+  0% { background-image: conic-gradient(from 0deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  2.78% { background-image: conic-gradient(from 10deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  5.56% { background-image: conic-gradient(from 20deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  8.33% { background-image: conic-gradient(from 30deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  11.11% { background-image: conic-gradient(from 40deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  13.89% { background-image: conic-gradient(from 50deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  16.67% { background-image: conic-gradient(from 60deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  19.44% { background-image: conic-gradient(from 70deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  22.22% { background-image: conic-gradient(from 80deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  25% { background-image: conic-gradient(from 90deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  27.78% { background-image: conic-gradient(from 100deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  30.56% { background-image: conic-gradient(from 110deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  33.33% { background-image: conic-gradient(from 120deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  36.11% { background-image: conic-gradient(from 130deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  38.89% { background-image: conic-gradient(from 140deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  41.67% { background-image: conic-gradient(from 150deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  44.44% { background-image: conic-gradient(from 160deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  47.22% { background-image: conic-gradient(from 170deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  50% { background-image: conic-gradient(from 180deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  52.78% { background-image: conic-gradient(from 190deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  55.56% { background-image: conic-gradient(from 200deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  58.33% { background-image: conic-gradient(from 210deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  61.11% { background-image: conic-gradient(from 220deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  63.89% { background-image: conic-gradient(from 230deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  66.67% { background-image: conic-gradient(from 240deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  69.44% { background-image: conic-gradient(from 250deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  72.22% { background-image: conic-gradient(from 260deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  75% { background-image: conic-gradient(from 270deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  77.78% { background-image: conic-gradient(from 280deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  80.56% { background-image: conic-gradient(from 290deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  83.33% { background-image: conic-gradient(from 300deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  86.11% { background-image: conic-gradient(from 310deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  88.89% { background-image: conic-gradient(from 320deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  91.67% { background-image: conic-gradient(from 330deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  94.44% { background-image: conic-gradient(from 340deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  97.22% { background-image: conic-gradient(from 350deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+  100% { background-image: conic-gradient(from 360deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
+}
+.card:hover::after {
+  animation: cardBeamSpin 1.8s linear infinite;
+}

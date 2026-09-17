@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 渲染模块
  * 处理DOM渲染功能
  */
@@ -171,10 +171,12 @@ function renderCards(items) {
     }
 
     return `
-      <a href="${item.url}" class="card" target="_blank">
-        ${iconHtml}
-        <div class="card-info"><h3>${item.title}</h3></div>
-      </a>
+      <div class="card-wrap">
+        <a href="${item.url}" class="card" target="_blank">
+          ${iconHtml}
+          <div class="card-info"><h3>${item.title}</h3></div>
+        </a>
+      </div>
     `;
   }).join('');
 }

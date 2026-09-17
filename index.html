@@ -5,42 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FlyLoong Start</title>
   <link rel="icon" href="images/home.svg" type="image/x-icon">
-  <script>
-  (function() {
-    var theme;
-    try { var val = localStorage.getItem("userPreference_theme"); if (val === "dark" || val === "light") theme = val; } catch(e) {}
-    if (!theme) { theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
-    if (theme === "dark") document.documentElement.classList.add("dark");
-  })();
-  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
+  <!-- 首帧底色 + 整页淡入，必须是「内联且靠前」的：
+       默认底色来自浏览器，而 main.css 是外链 —— 在它生效之前会先画一帧默认色，
+       看起来就是"进页面黑一下/白一下"。这里把底色和淡入写进文档开头，
+       从第一个字节起就是正确颜色，并且内容整体「从暗渐渐浮现」，
+       与官网那种"先暗、再慢慢显出内容"的入场一致。
+       改底色时记得同步 css/main.css 里的 --bg。 -->
+  <style>
+    html { background-color: #151a24; }
+    body {
+      margin: 0;
+      background-color: #151a24;
+      animation: bootFade 0.72s ease-out both;
+    }
+    @keyframes bootFade {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
-  <div id="particles-bg"></div>
+
+  <!-- 流动背景：hero 光带（WebGL）+ 交互网格 -->
+  <div id="hero-shader" aria-hidden="true"></div>
+  <div id="deep-bg">
+    <div class="deep-bg-glow"></div>
+    <div class="deep-bg-grid"></div>
+  </div>
+  <!-- 磨砂层：铺在光带之上做柔化，再让网格盖在上面 -->
+  <div id="frost" aria-hidden="true"></div>
 
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-tabs" id="navTabs"></div>
-      <button id="themeToggle" class="nav-theme-toggle" title="切换主题"><i class="ri-moon-line"></i></button>
     </div>
   </nav>
 
   <div class="main-content">
-
     <div class="search-wrapper" id="search-container"></div>
-
     <div id="main-content-area"></div>
-
   </div>
 
   <footer>
-    <p>By Loong ❤ 文明其精神 - 野蛮其体魄</p>
+    <p><a href="https://github.com/zfloong/zfloong.github.io" target="_blank" rel="noopener noreferrer">LoongStart</a> · 文明其精神 野蛮其体魄</p>
   </footer>
 
   <script type="module" src="js/nav-manager.js"></script>
 
 </body>
 </html>
-
-
