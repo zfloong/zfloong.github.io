@@ -14,14 +14,14 @@
 // 改背景观感请改 CSS，不要改这里。
 const CONFIG = {
   grid: {
-    cellSize: 100,
-    lineOpacity: 0.166,
-    dotRadius: 1.2,
-    dotOpacity: 0.15,
-    mouseRadius: 150,
+    cellSize: 90,         // DeepSeek 默认 90px
+    lineOpacity: 0.06,    // DeepSeek 默认 0.06
+    dotRadius: 1.8,       // DeepSeek 默认 1.8
+    dotOpacity: 0.12,     // DeepSeek 默认 0.12
+    mouseRadius: 140,     // DeepSeek 默认 140
     pushStrength: 8,
     returnSpeed: 0.009,
-    highlightColor: { r: 120, g: 150, b: 255 },
+    highlightColor: { r: 255, g: 255, b: 255 },  // DeepSeek 用纯白
   },
 };
 

@@ -17,23 +17,15 @@
   --shadow: 0 8px 32px rgba(0,0,0,0.5);
   --glass: blur(30px);
 
-  /* 流光色标：卡片边框流光与搜索框聚焦流光共用这一处定义，
-     改颜色只改这里，两个光效会一起变，保证观感统一。 */
-  --beam-stops:
-    transparent 0%,
-    rgba(150,180,255,0.7) 7%,
-    rgba(230,238,255,1) 13%,
-    rgba(170,195,255,0.85) 19%,
-    transparent 27%,
-    transparent 100%;
+
 
   /* --- 背景观感参数（由 js/modules/deep-bg.js 的 readCssTuning() 读取）---
-     这里就是唯一一份定义，改背景观感改这里即可。 */
-  --bg-grid-cell: 72;          /* 格距 */
-  --bg-grid-line: 0.3;         /* 网格线不透明度 */
-  --bg-grid-dot-r: 1.7;        /* 顶点半径 */
-  --bg-grid-dot: 0.34;         /* 顶点不透明度 */
-  --bg-grid-highlight: 120,150,255;  /* 鼠标附近的高亮色（r,g,b） */
+     参考 dsh-plugin-backdrop 逆向项目的默认值 */
+  --bg-grid-cell: 90;            /* 格距（DeepSeek 默认 90px）*/
+  --bg-grid-line: 0.06;          /* 网格线不透明度（DeepSeek 默认 0.06）*/
+  --bg-grid-dot-r: 1.8;          /* 顶点半径（DeepSeek 默认 1.8）*/
+  --bg-grid-dot: 0.12;           /* 顶点不透明度（DeepSeek 默认 0.12）*/
+  --bg-grid-highlight: 255,255,255;  /* 鼠标附近的高亮色（DeepSeek 用纯白）*/
 }
 
 /* =========================================
@@ -202,73 +194,10 @@ body {
   display: flex;
   align-items: center;
   border-radius: 20px;
+  transition: box-shadow 0.3s;
 }
-/* Shimmer：搜索框聚焦时光效
-   与卡片流光（.card::after）共用同一套色标变量 --beam-stops 与同一个 36 帧步进方案，
-   两者观感保持一致。详见 .card::after 的注释。 */
-.search-box::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  padding: 2px;
-  background: conic-gradient(from 0deg, var(--beam-stops));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-  z-index: 1;
-}
-.search-box:focus-within::before {
-  opacity: 1;
-}
-/* 搜索框流光与卡片流光同速（1.8s），两个光效观感一致 */
-.search-box:focus-within::before {
-  animation: shimmerSpin 1.8s linear infinite;
-}
-/* 36 个关键帧，每 10° 一帧（1.8s → 每帧 50ms，约合 60fps 的 3 帧）。
-   同卡片：不能靠动画自定义属性，否则 Chromium 只更新计算值、不重新光栅化。 */
-@keyframes shimmerSpin {
-  0% { background-image: conic-gradient(from 0deg, var(--beam-stops)); }
-  2.78% { background-image: conic-gradient(from 10deg, var(--beam-stops)); }
-  5.56% { background-image: conic-gradient(from 20deg, var(--beam-stops)); }
-  8.33% { background-image: conic-gradient(from 30deg, var(--beam-stops)); }
-  11.11% { background-image: conic-gradient(from 40deg, var(--beam-stops)); }
-  13.89% { background-image: conic-gradient(from 50deg, var(--beam-stops)); }
-  16.67% { background-image: conic-gradient(from 60deg, var(--beam-stops)); }
-  19.44% { background-image: conic-gradient(from 70deg, var(--beam-stops)); }
-  22.22% { background-image: conic-gradient(from 80deg, var(--beam-stops)); }
-  25% { background-image: conic-gradient(from 90deg, var(--beam-stops)); }
-  27.78% { background-image: conic-gradient(from 100deg, var(--beam-stops)); }
-  30.56% { background-image: conic-gradient(from 110deg, var(--beam-stops)); }
-  33.33% { background-image: conic-gradient(from 120deg, var(--beam-stops)); }
-  36.11% { background-image: conic-gradient(from 130deg, var(--beam-stops)); }
-  38.89% { background-image: conic-gradient(from 140deg, var(--beam-stops)); }
-  41.67% { background-image: conic-gradient(from 150deg, var(--beam-stops)); }
-  44.44% { background-image: conic-gradient(from 160deg, var(--beam-stops)); }
-  47.22% { background-image: conic-gradient(from 170deg, var(--beam-stops)); }
-  50% { background-image: conic-gradient(from 180deg, var(--beam-stops)); }
-  52.78% { background-image: conic-gradient(from 190deg, var(--beam-stops)); }
-  55.56% { background-image: conic-gradient(from 200deg, var(--beam-stops)); }
-  58.33% { background-image: conic-gradient(from 210deg, var(--beam-stops)); }
-  61.11% { background-image: conic-gradient(from 220deg, var(--beam-stops)); }
-  63.89% { background-image: conic-gradient(from 230deg, var(--beam-stops)); }
-  66.67% { background-image: conic-gradient(from 240deg, var(--beam-stops)); }
-  69.44% { background-image: conic-gradient(from 250deg, var(--beam-stops)); }
-  72.22% { background-image: conic-gradient(from 260deg, var(--beam-stops)); }
-  75% { background-image: conic-gradient(from 270deg, var(--beam-stops)); }
-  77.78% { background-image: conic-gradient(from 280deg, var(--beam-stops)); }
-  80.56% { background-image: conic-gradient(from 290deg, var(--beam-stops)); }
-  83.33% { background-image: conic-gradient(from 300deg, var(--beam-stops)); }
-  86.11% { background-image: conic-gradient(from 310deg, var(--beam-stops)); }
-  88.89% { background-image: conic-gradient(from 320deg, var(--beam-stops)); }
-  91.67% { background-image: conic-gradient(from 330deg, var(--beam-stops)); }
-  94.44% { background-image: conic-gradient(from 340deg, var(--beam-stops)); }
-  97.22% { background-image: conic-gradient(from 350deg, var(--beam-stops)); }
-  100% { background-image: conic-gradient(from 360deg, var(--beam-stops)); }
+.search-box:focus-within {
+  box-shadow: 0 0 10px rgba(180, 200, 255, 0.5), 0 0 25px rgba(150, 180, 255, 0.2), inset 0 0 10px rgba(180, 200, 255, 0.12);
 }
 .search-input {
   width: 100%;
@@ -290,8 +219,8 @@ body {
   box-shadow: 0 0 30px rgba(60,80,180,0.1);
 }
 .search-input::placeholder {
-  color: var(--text-sub);
-  opacity: 0.5;
+  color: #c9a86c;
+  opacity: 1;
 }
 
 .search-btn {
@@ -386,12 +315,6 @@ body {
 }
 .category-section.active {
   display: block;
-  /* 保持你原来的 0.5s 不变 —— 这层本来就是合理的 */
-  animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .section-header {
@@ -455,7 +378,10 @@ body {
   border-radius: 18px;
   text-decoration: none;
   color: var(--text);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              background 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
   z-index: 1;
 }
@@ -464,37 +390,6 @@ body {
   background: rgba(255,255,255,0.08);
   border-color: transparent;
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-/* BorderBeam：卡片 hover 流光边框
-   环形遮罩 = 透明边框 + mask-composite 挖空中心；亮带用 conic-gradient 沿边框扫过。
-   几个必须遵守的点（都踩过，别再改）：
-     1) 角度**不能**来自 @property 注册的自定义属性动画 —— Chromium 会让计算值变化
-        但不重新光栅化，表现为「animation running、角度在变、画面定格」（真机实测）。
-        所以角度直接写进 @keyframes 的 background-image 里（见文件末尾 cardBeamSpin）。
-     2) 环形遮罩必须加在「不转」的那一层，带 transform 的层遮罩会跟着转、环会歪。
-     3) conic 渐变盒太小（如 200%）时，2px 细环上只切到一丁点，亮带会看不见。
-     4) 父层用不透明色做遮罩会把环压成和中心一样暗，整条环消失。
-   亮带要够宽够亮（下面 7%~27% 那段），细带子在深色卡片上认不出来。
-   z-index: 0 是把这层光圈垫在卡片内容（.card img / .card-info 的 z-index: 1）下面，
-   避免光带扫过时糊住图标和文字。 */
-.card::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 20px;
-  padding: 2px;
-  background: conic-gradient(from 0deg, var(--beam-stops));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-  z-index: 0;
-}
-.card:hover::after {
-  opacity: 1;
 }
 /* 卡片内容浮在流光之上（相对定位 + z-index 1 压住 ::after 的光圈） */
 .card img, .card-info {
@@ -530,91 +425,39 @@ footer a:hover {
   color: var(--text);
 }
 
-/* =========================================
-   入场动画（叠化：从模糊+透明逐渐变清晰，再错开延迟）
-   写法取自 DeepSeek Harness 落地页的 .ds-hero-enter：
-     0% { opacity:0; translateY(var(--enter-y,20px)); filter: blur(var(--enter-blur,0)) }
-     100% 由浏览器补齐；animation-fill-mode: backwards 保证延迟期间保持 0% 状态。
-   ⚠️ 导航栏必须把位移设成 0（--enter-y: 0）：
-   它是 position:fixed 且背景是「上深下透明」的渐变，一旦 translateY(20px) 下移，
-   最顶部那条就没有东西覆盖，加上入场时的 blur，会看成顶上一片发白的横条
-   （实际是"露出的空缺"），等它归位才消失 —— 这就是那个"突然出现的白色"。
-   注意：本页没有 prefers-reduced-motion 门控，所以这里也不要加。 */
-@keyframes pageEnter {
-  0% {
-    opacity: 0;
-    transform: translateY(var(--enter-y, 20px));
-    filter: blur(var(--enter-blur, 6px));
-  }
-  100% {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
-.navbar,
-.search-wrapper,
-#main-content-area {
-  animation: pageEnter 0.8s ease-out backwards;
-}
-.navbar            { --enter-y: 0; animation-delay: 0s; }
-.search-wrapper    { animation-delay: 0.12s; }
-#main-content-area { animation-delay: 0.22s; }
 
-/* 网格 canvas 自己淡入（含轻微缩放，像"从远处浮上来"）。
-   ⚠️ 时序关键：不能用页面级的 bootFade 来淡入网格 ——
-   网格 canvas 是**数据加载完才创建并画出第一帧**的（实测约 1650~1930ms），
-   而页面级 bootFade 从加载起算、0.72s 就结束了，那时网格还没出现，
-   等它画出来时已经"全亮"，所以看起来"网格突然凸显在内容前面"。
-   ⇒ 淡入必须加在 canvas 上，从它被创建那一刻起算。
-   实测数据：1.25s 的版本在网格出现后仅 1.07s 就到 opacity 0.997，仍然太急；
-   网格面积大、对比强（mask 双轴交集让中部很密），所以：
-     · 前 15% 保持全暗 —— 让卡片入场先走完，避免"网格和卡片抢戏"
-     · 总时长 1.9s，缓动用 ease-out 的强形式，尾部更柔
-   实测（canvas 创建后）：opacity 0 → 0.81 → 0.98 → 1；对比度 1.5 → 58 → 98 → 100。 */
-.deep-bg-grid canvas {
-  animation: gridRise 1.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-@keyframes gridRise {
-  0%   { opacity: 0; transform: scale(1.045); }
-  15%  { opacity: 0; transform: scale(1.04); }
-  100% { opacity: 1; transform: none; }
-}
 
-/* =========================================
-   卡片入场（动画放在外层包裹层 .card-wrap 上，卡片子树保持静止）
-   0.26s + 每张错开 0.012s：最后一张约 0.60s 收完，切页签不拖沓。
-   ⚠️ 已知遗留问题：真机上"动画结束后可能卡一下"（软件渲染环境复现不出来）。
-   试过把动画放在 .card 上、放在 .card img/.card-info 上、以及完全去掉，都不能消除，
-   所以它不是卡片动画本身引起的 —— 暂按观感优先保留此动画。
-   只有包裹层在动、卡片子树（含 backdrop-filter 磨砂）全程不变。 */
-@keyframes cardContentEnter {
-  0% { opacity: 0; transform: translateY(14px); }
-  100% { opacity: 1; transform: none; }
+
+
+/* 卡片入场：只做位移，不动 opacity，避免 backdrop-filter 延迟渲染 */
+@keyframes cardSlideIn {
+  from { transform: translateY(8px); }
+  to { transform: none; }
 }
 .card-wrap {
-  animation: cardContentEnter 0.26s ease-out backwards;
+  animation: cardSlideIn 0.2s ease-out backwards;
 }
-.card-wrap:nth-child(1)  { animation-delay: 0.10s; }
-.card-wrap:nth-child(2)  { animation-delay: 0.112s; }
-.card-wrap:nth-child(3)  { animation-delay: 0.124s; }
-.card-wrap:nth-child(4)  { animation-delay: 0.136s; }
-.card-wrap:nth-child(5)  { animation-delay: 0.148s; }
-.card-wrap:nth-child(6)  { animation-delay: 0.16s; }
-.card-wrap:nth-child(7)  { animation-delay: 0.172s; }
-.card-wrap:nth-child(8)  { animation-delay: 0.184s; }
-.card-wrap:nth-child(9)  { animation-delay: 0.196s; }
-.card-wrap:nth-child(10) { animation-delay: 0.208s; }
-.card-wrap:nth-child(11) { animation-delay: 0.22s; }
-.card-wrap:nth-child(12) { animation-delay: 0.232s; }
-.card-wrap:nth-child(13) { animation-delay: 0.244s; }
-.card-wrap:nth-child(14) { animation-delay: 0.256s; }
-.card-wrap:nth-child(15) { animation-delay: 0.268s; }
-.card-wrap:nth-child(16) { animation-delay: 0.28s; }
-.card-wrap:nth-child(17) { animation-delay: 0.292s; }
-.card-wrap:nth-child(18) { animation-delay: 0.304s; }
-.card-wrap:nth-child(19) { animation-delay: 0.316s; }
-.card-wrap:nth-child(20) { animation-delay: 0.328s; }
+.card-wrap:nth-child(1)  { animation-delay: 0.05s; }
+.card-wrap:nth-child(2)  { animation-delay: 0.06s; }
+.card-wrap:nth-child(3)  { animation-delay: 0.07s; }
+.card-wrap:nth-child(4)  { animation-delay: 0.08s; }
+.card-wrap:nth-child(5)  { animation-delay: 0.09s; }
+.card-wrap:nth-child(6)  { animation-delay: 0.10s; }
+.card-wrap:nth-child(7)  { animation-delay: 0.11s; }
+.card-wrap:nth-child(8)  { animation-delay: 0.12s; }
+.card-wrap:nth-child(9)  { animation-delay: 0.13s; }
+.card-wrap:nth-child(10) { animation-delay: 0.14s; }
+.card-wrap:nth-child(11) { animation-delay: 0.15s; }
+.card-wrap:nth-child(12) { animation-delay: 0.16s; }
+.card-wrap:nth-child(13) { animation-delay: 0.17s; }
+.card-wrap:nth-child(14) { animation-delay: 0.18s; }
+.card-wrap:nth-child(15) { animation-delay: 0.19s; }
+.card-wrap:nth-child(16) { animation-delay: 0.20s; }
+.card-wrap:nth-child(17) { animation-delay: 0.21s; }
+.card-wrap:nth-child(18) { animation-delay: 0.22s; }
+.card-wrap:nth-child(19) { animation-delay: 0.23s; }
+.card-wrap:nth-child(20) { animation-delay: 0.24s; }
+
 
 @keyframes searchFadeIn {
   from { opacity: 0; transform: translateY(-10px); }
@@ -631,22 +474,7 @@ footer a:hover {
    一旦用它关停流光/入场动画，页面在关掉系统动画的机器上会整片失去动效。
    如需恢复该适配，请连同 deep-bg.js 里的 prefersReducedMotionEnabled() 一起重新启用。 */
 
-/* =========================================
-   滚动揭示
-   ========================================= */
-/* 滚动揭示：0.7s → 0.32s。
-   这层在切页签时也会跑（新板块的 .grid 会被重新观察、揭示），
-   0.7s 叠上卡片入场就明显拖沓了。 */
-.scroll-reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.scroll-reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
+
 
 /* =========================================
    流动背景容器
@@ -661,20 +489,21 @@ footer a:hover {
   top: 0;
   left: 0;
   width: 100%;
-  height: clamp(380px, 68vh, 660px);
-  z-index: -3;   /* 光带在最底；磨砂层(-2) 叠在它上面做柔化，网格(-1) 再盖上去 */
+  height: 100%;
+  z-index: -3;   /* 光带在最底，网格(-1) 盖在上面 */
   pointer-events: none;
   background:
-    radial-gradient(ellipse 70% 60% at 62% 28%, rgba(32,74,126,0.55) 0%, transparent 62%),
-    radial-gradient(ellipse 90% 70% at 40% 45%, rgba(26,56,112,0.45) 0%, transparent 70%);
-  -webkit-mask: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0,0,0,0.35) 78%, transparent 100%);
-  mask: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0,0,0,0.35) 78%, transparent 100%);
+    radial-gradient(ellipse 70% 60% at 62% 28%, rgba(26,56,112,0.55) 0%, transparent 62%),
+    radial-gradient(ellipse 90% 70% at 40% 45%, rgba(32,74,126,0.45) 0%, transparent 70%);
+  -webkit-mask: linear-gradient(rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.91) 12%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.72) 100%);
+  mask: linear-gradient(rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.91) 12%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.72) 100%);
 }
 #hero-shader canvas {
   display: block;
   width: 100%;
   height: 100%;
 }
+
 
 #deep-bg {
   position: fixed;
@@ -687,95 +516,13 @@ footer a:hover {
   overflow: hidden;
 }
 
-/* 磨砂层：只作用于 hero 光带。
-   层级必须是「光带(-3) → 磨砂(-2) → 网格(-1)」，
-   这样 backdrop-filter 只吃到它下面的光带，网格在其上方保持清晰。
-   ⚠️ 踩过的坑：曾把本层与 #deep-bg 同设 z-index:-1，DOM 又排在后面，
-   结果整层盖在网格上 —— 14px 模糊把 0.3 不透明度的 1px 网格线彻底抹平，
-   网格"A/B 对照"从 47 条变成 0 条。层级关系不要再动。 */
-#frost {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -2;
-  pointer-events: none;
-  backdrop-filter: blur(14px) saturate(1.06);
-  -webkit-backdrop-filter: blur(14px) saturate(1.06);
-  /* 蒙版用**透明黑**而不是白 —— 白蒙版会在整屏（尤其顶部光带最亮处）叠出一层发灰发白，
-     看起来像"顶部突然有一片白色"。透明黑只会压暗一点点，不会提亮。 */
-  background: rgba(0, 0, 0, 0.12);
-}
-
-.deep-bg-glow {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(60,80,180,0.08) 0%, transparent 70%);
-  mix-blend-mode: screen;
-}
-
-/* 网格层：双轴遮罩 —— 横、竖两个方向都从 15% 处显现、85% 处淡出，
-   两条遮罩求交集（mask-composite: intersect），于是网格只在画面中部区域出现、
-   向四周柔和消失，不会像单轴遮罩那样在左右两侧出现硬边。
-   这个手法参考自 DeepSeek Harness 落地页的 .ds-grid-bg。 */
+/* 网格层：CSS mask 从上到下渐隐（参考 dsh-plugin-backdrop） */
 .deep-bg-grid {
   position: absolute;
   inset: 0;
   z-index: 8;
-  -webkit-mask-image:
-    linear-gradient(90deg, transparent 0, #000 15%, #000 85%, transparent),
-    linear-gradient(180deg, transparent 0, #000 15%, #000 85%, transparent);
-  mask-image:
-    linear-gradient(90deg, transparent 0, #000 15%, #000 85%, transparent),
-    linear-gradient(180deg, transparent 0, #000 15%, #000 85%, transparent);
-  -webkit-mask-composite: source-in, xor;
-  mask-composite: intersect;
+  mask: linear-gradient(rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0.55) 100%);
+  -webkit-mask: linear-gradient(rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0.55) 100%);
 }
 
-/* 卡片流光旋转：36 个关键帧，每 10° 一帧。
-   时长 1.8s → 每帧间隔 50ms（约合 60fps 的 3 帧），阶梯感不可见。
-   为什么不用「动画 --card-beam 自定义属性」的写法，见上方 .card::after 注释第 1 条。 */
-@keyframes cardBeamSpin {
-  0% { background-image: conic-gradient(from 0deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  2.78% { background-image: conic-gradient(from 10deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  5.56% { background-image: conic-gradient(from 20deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  8.33% { background-image: conic-gradient(from 30deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  11.11% { background-image: conic-gradient(from 40deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  13.89% { background-image: conic-gradient(from 50deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  16.67% { background-image: conic-gradient(from 60deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  19.44% { background-image: conic-gradient(from 70deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  22.22% { background-image: conic-gradient(from 80deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  25% { background-image: conic-gradient(from 90deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  27.78% { background-image: conic-gradient(from 100deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  30.56% { background-image: conic-gradient(from 110deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  33.33% { background-image: conic-gradient(from 120deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  36.11% { background-image: conic-gradient(from 130deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  38.89% { background-image: conic-gradient(from 140deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  41.67% { background-image: conic-gradient(from 150deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  44.44% { background-image: conic-gradient(from 160deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  47.22% { background-image: conic-gradient(from 170deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  50% { background-image: conic-gradient(from 180deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  52.78% { background-image: conic-gradient(from 190deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  55.56% { background-image: conic-gradient(from 200deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  58.33% { background-image: conic-gradient(from 210deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  61.11% { background-image: conic-gradient(from 220deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  63.89% { background-image: conic-gradient(from 230deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  66.67% { background-image: conic-gradient(from 240deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  69.44% { background-image: conic-gradient(from 250deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  72.22% { background-image: conic-gradient(from 260deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  75% { background-image: conic-gradient(from 270deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  77.78% { background-image: conic-gradient(from 280deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  80.56% { background-image: conic-gradient(from 290deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  83.33% { background-image: conic-gradient(from 300deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  86.11% { background-image: conic-gradient(from 310deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  88.89% { background-image: conic-gradient(from 320deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  91.67% { background-image: conic-gradient(from 330deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  94.44% { background-image: conic-gradient(from 340deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  97.22% { background-image: conic-gradient(from 350deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-  100% { background-image: conic-gradient(from 360deg, transparent 0%, rgba(150,180,255,0.7) 7%, rgba(230,238,255,1) 13%, rgba(170,195,255,0.85) 19%, transparent 27%, transparent 100%); }
-}
-.card:hover::after {
-  animation: cardBeamSpin 1.8s linear infinite;
-}
+

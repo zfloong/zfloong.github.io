@@ -8,7 +8,6 @@ import { bindSearchEvents, bindTabEvents, bindSectionToggleEvents } from './modu
 import { showLoading, hideLoading, showError, initNetworkListeners } from './modules/error-handler.js';
 import { initDeepBg } from './modules/deep-bg.js';
 import { initHeroShader } from './modules/hero-shader.js';
-import { initScrollReveal } from './modules/hero-effects.js';
 
 async function loadDataAndInit() {
   try {
@@ -30,7 +29,6 @@ function initPage(data) {
   bindTabEvents();
   bindSectionToggleEvents();
 
-  initScrollReveal();
   initDeepBg();
   initHeroShader();
 }

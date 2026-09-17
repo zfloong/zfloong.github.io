@@ -21,7 +21,7 @@
     body {
       margin: 0;
       background-color: #151a24;
-      animation: bootFade 0.72s ease-out both;
+      animation: bootFade 1.5s ease-in-out both;
     }
     @keyframes bootFade {
       from { opacity: 0; }
@@ -34,11 +34,8 @@
   <!-- 流动背景：hero 光带（WebGL）+ 交互网格 -->
   <div id="hero-shader" aria-hidden="true"></div>
   <div id="deep-bg">
-    <div class="deep-bg-glow"></div>
     <div class="deep-bg-grid"></div>
   </div>
-  <!-- 磨砂层：铺在光带之上做柔化，再让网格盖在上面 -->
-  <div id="frost" aria-hidden="true"></div>
 
   <nav class="navbar">
     <div class="nav-container">
