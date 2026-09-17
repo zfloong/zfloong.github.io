@@ -431,7 +431,7 @@ footer a:hover {
 
 /* 卡片入场：只做位移，不动 opacity，避免 backdrop-filter 延迟渲染 */
 @keyframes cardSlideIn {
-  from { transform: translateY(8px); }
+  from { transform: translateY(16px); }
   to { transform: none; }
 }
 .card-wrap {
