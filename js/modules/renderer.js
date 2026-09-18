@@ -23,6 +23,8 @@ function renderSearch(searchData) {
     engineBtn.className = `engine-btn ${index === 0 ? 'active' : ''}`;
     engineBtn.setAttribute('data-url', engine.url);
     engineBtn.setAttribute('data-name', engine.param);
+    // param 会重复（Google/Bing 都是 q），偏好只能按引擎名存
+    engineBtn.setAttribute('data-engine', engine.name);
     engineBtn.textContent = engine.name;
     searchEnginesDiv.appendChild(engineBtn);
   });
@@ -104,9 +106,11 @@ function renderNavAndContent(categories) {
     section.className = `category-section ${index === 0 ? 'active' : ''}`;
 
     if (cat.sections) {
-      cat.sections.forEach(sectionData => {
+      cat.sections.forEach((sectionData, si) => {
         const sectionTitle = document.createElement('div');
         sectionTitle.className = 'section-group-title';
+        // 折叠状态存 localStorage，必须用稳定标识；用文案当 key 的话改个名状态就丢
+        sectionTitle.dataset.key = `${cat.id}-${si}`;
         sectionTitle.textContent = sectionData.name;
         section.appendChild(sectionTitle);
 
@@ -181,4 +185,4 @@ function renderCards(items) {
   }).join('');
 }
 
-export { renderSearch, renderNavAndContent, renderCards };
+export { renderSearch, renderNavAndContent };

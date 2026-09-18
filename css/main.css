@@ -108,6 +108,7 @@ body {
 .tab-btn.active {
   background: var(--primary);
   color: #000;
+  text-shadow: 0 0 0.5px currentColor;
   opacity: 1;
   border-color: transparent;
   box-shadow: 0 0 15px rgba(212,180,131,0.2);
@@ -385,17 +386,13 @@ body {
   position: relative;
   z-index: 1;
 }
-.card:hover {
+/* 键盘光标（keyboard-nav.js）与鼠标悬停共用同一套强调，不再单独设计 */
+.card:hover,
+.card.kb-cursor {
   transform: translateY(-4px);
   background: rgba(255,255,255,0.05);
   border-color: transparent;
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-/* 键盘光标（keyboard-nav.js）：金色描边呼应品牌主色 */
-.card.kb-cursor {
-  background: rgba(255,255,255,0.05);
-  border-color: transparent;
-  box-shadow: 0 0 0 2px rgba(212,180,131,0.55), 0 10px 40px rgba(0,0,0,0.5);
 }
 /* 卡片内容浮在流光之上（相对定位 + z-index 1 压住 ::after 的光圈） */
 .card img, .card-info {
@@ -478,7 +475,8 @@ footer a:hover {
 /* 注意：这里刻意不做 prefers-reduced-motion 适配。
    Windows 的「显示动画」开关(MinAnimate)会映射成 prefers-reduced-motion: reduce 且全局生效，
    一旦用它关停流光/入场动画，页面在关掉系统动画的机器上会整片失去动效。
-   如需恢复该适配，请连同 deep-bg.js 里的 prefersReducedMotionEnabled() 一起重新启用。 */
+   目前代码里没有任何 reduced-motion 开关（deep-bg.js 与 hero-shader.js 都没有），
+   如需恢复该适配，要在两个渲染循环里各自加判断。 */
 
 
 

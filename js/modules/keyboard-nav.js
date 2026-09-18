@@ -37,9 +37,23 @@ function setCursor(card) {
   card.scrollIntoView({ block: 'nearest' });
 }
 
-/** 用视口坐标分行（卡片可能分布在不同 grid 父级，offsetTop 不可跨父比较） */
+/** 用视口坐标分行（卡片可能分布在不同 grid 父级，offsetTop 不可跨父比较）。
+ *  hover / 光标的 translateY 会让同排卡片 top 相差几 px，所以按容差聚排，不能精确相等 */
+const ROW_TOL = 8;
+
 function rowTop(card) {
   return Math.round(card.getBoundingClientRect().top);
+}
+
+function rowsOf(cards) {
+  const sorted = [...cards].sort((a, b) => rowTop(a) - rowTop(b));
+  const rows = [];
+  for (const c of sorted) {
+    const row = rows[rows.length - 1];
+    if (row && Math.abs(rowTop(c) - row.top) <= ROW_TOL) row.cards.push(c);
+    else rows.push({ top: rowTop(c), cards: [c] });
+  }
+  return rows;
 }
 
 function moveHorizontal(cards, idx, dir) {
@@ -48,20 +62,18 @@ function moveHorizontal(cards, idx, dir) {
 }
 
 function moveVertical(cards, idx, dir) {
-  const curTop = rowTop(cards[idx]);
-  const tops = [...new Set(cards.map(rowTop))].sort((a, b) => a - b);
-  const ti = tops.indexOf(curTop) + dir;
-  if (ti < 0 || ti >= tops.length) return idx;
-  const targetTop = tops[ti];
-  const row = cards.filter(c => rowTop(c) === targetTop);
+  const rows = rowsOf(cards);
+  const ri = rows.findIndex(r => r.cards.includes(cards[idx]));
+  const target = rows[ri + dir];
+  if (!target) return idx;
   const colLeft = cards[idx].getBoundingClientRect().left;
-  // 找目标行中水平位置最接近的一张
-  let best = 0, bestDist = Infinity;
-  row.forEach((c, i) => {
+  // 找目标排中水平位置最接近的一张
+  let best = target.cards[0], bestDist = Infinity;
+  target.cards.forEach(c => {
     const d = Math.abs(c.getBoundingClientRect().left - colLeft);
-    if (d < bestDist) { bestDist = d; best = i; }
+    if (d < bestDist) { bestDist = d; best = c; }
   });
-  return cards.indexOf(row[best]);
+  return cards.indexOf(best);
 }
 
 function onKeydown(e) {

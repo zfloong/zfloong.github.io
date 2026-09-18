@@ -28,11 +28,6 @@ const CONFIG = {
   color3: [0.125, 0.290, 0.494],
   color4: [0.933, 0.847, 0.667],
   color5: [0.000, 0.000, 0.000],
-  // ── 光源颜色（DeepSeek 默认）──
-  // '#fff7d1', '#538dca', '#2d448b'
-  glow1: [1.000, 0.969, 0.820],
-  glow2: [0.325, 0.553, 0.792],
-  glow3: [0.176, 0.267, 0.545],
   // ── 效果参数（DeepSeek 默认）──
   lightX: 0.89,
   lightY: 0.46,
@@ -58,7 +53,6 @@ uniform vec3  u_c1, u_c2, u_c3, u_c4, u_c5;
 uniform float u_scale;
 uniform vec2  u_offset;
 uniform float u_grain;
-uniform vec3  u_glowColor1, u_glowColor2, u_glowColor3;
 uniform vec2  u_lightPos;
 uniform float u_lightCore;
 uniform float u_lightHalo;
@@ -176,7 +170,7 @@ void main(){
   float bloom=smoothstep(u_bloomThreshold-u_bloomRange,u_bloomThreshold+u_bloomRange,luma);
   col+=(col*.85+vec3(.15,.145,.13))*bloom*u_bloomStrength;
 
-  // 虚拟光源
+  // 虚拟光源（颜色是字面量：暖核 / 冷晕；强度和位置在 CONFIG.light* 上调）
   float ld=length((uv-u_lightPos)*vec2(aspect,1.));
   float core=exp(-ld*ld*4.5);
   float halo=exp(-ld*1.8);
@@ -197,6 +191,7 @@ let timerId = null;
 let lastTime = 0;
 let timeAcc = Math.random() * 1000;
 let paused = false;
+let initialized = false;
 const U = {};
 let frameCount = 0;
 let lastError = null;
@@ -219,6 +214,9 @@ function compile(glCtx, type, src) {
 }
 
 export function initHeroShader() {
+  // retryFetchData 会重跑整个 initPage，没有这个守卫每重试一次就多一块 canvas 和一个 rAF 循环
+  if (initialized) return true;
+
   const host = document.getElementById('hero-shader');
   if (!host) return false;
 
@@ -283,9 +281,6 @@ export function initHeroShader() {
   gl.uniform3fv(gl.getUniformLocation(program, 'u_c3'), CONFIG.color3);
   gl.uniform3fv(gl.getUniformLocation(program, 'u_c4'), CONFIG.color4);
   gl.uniform3fv(gl.getUniformLocation(program, 'u_c5'), CONFIG.color5);
-  gl.uniform3fv(gl.getUniformLocation(program, 'u_glowColor1'), CONFIG.glow1);
-  gl.uniform3fv(gl.getUniformLocation(program, 'u_glowColor2'), CONFIG.glow2);
-  gl.uniform3fv(gl.getUniformLocation(program, 'u_glowColor3'), CONFIG.glow3);
 
   canvas.addEventListener('webglcontextlost', (e) => {
     e.preventDefault();
@@ -300,6 +295,7 @@ export function initHeroShader() {
 
   lastTime = performance.now();
   schedule();
+  initialized = true;
   return true;
 }
 

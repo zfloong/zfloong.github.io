@@ -8,8 +8,7 @@
  * 在页面中央显示加载动画
  */
 function showLoading() {
-  const mainContent = document.querySelector('.main-content');
-  if (mainContent) {
+  if (document.querySelector('.main-content')) {
     // 检查是否已经存在加载元素
     let loadingElement = document.getElementById('loading-indicator');
     if (!loadingElement) {
@@ -56,8 +55,7 @@ function hideLoading() {
  * @param {string} message - 错误信息
  */
 function showError(message) {
-  const mainContent = document.querySelector('.main-content');
-  if (mainContent) {
+  if (document.querySelector('.main-content')) {
     // 隐藏加载状态
     hideLoading();
     

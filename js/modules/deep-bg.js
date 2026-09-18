@@ -8,10 +8,9 @@
  * 历史上还有「模糊光斑层」和「粒子连线层」，都已移除：
  *   光斑层观感发灰、像雾；粒子层用户明确不要。相关代码不要在恢复。
  */
-//
-// 注意：下面这些值只是「默认值/兜底」。真正生效的是 CSS 变量
-// （见 css/main.css 的 :root），由 readCssTuning() 在启动时读取。
-// 改背景观感请改 CSS，不要改这里。
+// 注意：下面只有 cellSize / lineOpacity / dotRadius / dotOpacity / highlightColor
+// 这五项能被 css/main.css 的同名 CSS 变量覆盖（见 TUNING_VARS，启动时读取一次）。
+// mouseRadius / pushStrength / returnSpeed 不在覆盖名单里，只能改这里。
 const CONFIG = {
   grid: {
     cellSize: 90,         // DeepSeek 默认 90px
@@ -67,9 +66,6 @@ function refreshTuning() {
 // ── 状态 ──────────────────────────────────────────
 let animId = null;
 let gridVertices = [];  // {x, y, ox, oy, dx, dy}
-
-// 监听 <html> 的 class 变化（切档位时同步画布参数）
-let tuningObserver = null;
 
 let canvasGrid = null;
 let ctxGrid = null;
@@ -261,7 +257,7 @@ function pauseAnimation() {
 function resumeAnimation() {
   if (!paused || !initialized) return;
   paused = false;
-  // 跳过暂停期间累积的时间，避免恢复瞬间粒子瞬移
+  // 跳过暂停期间累积的时间，避免恢复瞬间网格跳一帧
   lastTime = performance.now();
   animId = requestAnimationFrame(animate);
 }
@@ -272,8 +268,7 @@ function handleVisibilityChange() {
     pauseAnimation();
   } else {
     resumeAnimation();
-    // 顺便同步一次档位参数：这样即使切换档位时页面在后台、MutationObserver 没触发，
-    // 回到前台也能拿到正确的观感参数（设备从休眠唤醒也走这条路径）。
+    // 回前台再同步一次 CSS 参数：改完样式后刷新、设备从休眠唤醒都走这条路径。
     refreshTuning();
   }
 }
@@ -321,16 +316,9 @@ function initDeepBg() {
 
   handleResize();
   initGridVertices();
-  refreshTuning();          // 读取 CSS 里的档位参数（网格线/光斑强度等）
+  refreshTuning();          // 从 CSS 变量读取网格线/顶点/高亮色参数
   window.addEventListener('resize', handleResize);
   document.addEventListener('visibilitychange', handleVisibilityChange);
-
-  // 切换背景档位（<html> 上的 bg-* 类变化）时同步刷新参数。
-  // 只观察 class，不观察 style，避免 rAF 里改样式导致无限循环。
-  if (typeof MutationObserver === 'function') {
-    tuningObserver = new MutationObserver(refreshTuning);
-    tuningObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-  }
 
   // 鼠标事件（绑定到 document，覆盖整个页面）
   document.addEventListener('mousemove', handleMouseMove);
@@ -346,39 +334,4 @@ function initDeepBg() {
   initialized = true;
 }
 
-// ── 显示/隐藏 ────────────────────────────────────
-function showDeepBg() {
-  const el = document.getElementById('deep-bg');
-  if (el) {
-    el.style.display = 'block';
-    if (!initialized) {
-      requestAnimationFrame(() => initDeepBg());
-    }
-  }
-}
-
-function hideDeepBg() {
-  const el = document.getElementById('deep-bg');
-  if (el) el.style.display = 'none';
-}
-
-// ── 销毁 ──────────────────────────────────────────
-function destroyDeepBg() {
-  if (animId) cancelAnimationFrame(animId);
-  animId = null;
-  paused = true;
-  window.removeEventListener('resize', handleResize);
-  document.removeEventListener('visibilitychange', handleVisibilityChange);
-  document.removeEventListener('mousemove', handleMouseMove);
-  document.removeEventListener('mouseleave', handleMouseLeave);
-  // 移除动态创建的 canvas，否则重新初始化会叠加多层
-  if (container) {
-    container.querySelectorAll('canvas').forEach(cv => cv.remove());
-  }
-  canvasGrid = null;
-  ctxGrid = null;
-  initialized = false;
-  gridVertices = [];
-}
-
-export { initDeepBg, showDeepBg, hideDeepBg, destroyDeepBg };
+export { initDeepBg };

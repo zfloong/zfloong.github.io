@@ -57,10 +57,10 @@ function bindSearchEvents(searchData) {
   const searchForm = document.getElementById('searchForm');
   const searchInput = document.querySelector('.search-input');
 
-  // 从本地存储加载默认搜索引擎
+  // 从本地存储加载默认搜索引擎（按引擎名匹配，param 会重复）
   const savedEngine = getSavedPreference('defaultEngine');
   if (savedEngine) {
-    const savedBtn = Array.from(engineBtns).find(btn => btn.getAttribute('data-name') === savedEngine);
+    const savedBtn = Array.from(engineBtns).find(btn => btn.getAttribute('data-engine') === savedEngine);
     if (savedBtn) {
       engineBtns.forEach(b => b.classList.remove('active'));
       savedBtn.classList.add('active');
@@ -85,7 +85,7 @@ function bindSearchEvents(searchData) {
       searchInput.name = paramName;
 
       // 保存到本地存储
-      savePreference('defaultEngine', paramName);
+      savePreference('defaultEngine', btn.getAttribute('data-engine'));
     });
   });
 
@@ -99,6 +99,10 @@ function bindSearchEvents(searchData) {
  * @param {HTMLFormElement} searchForm - 搜索表单
  */
 let searchHistoryListenerAdded = false;
+// renderSearch 每次都会重建搜索区，而 document 监听器只注册一次，
+// 所以回调必须读"当前"容器，否则重试加载后点外部再也关不掉。
+let currentHistoryBox = null;
+let currentHistoryContainer = null;
 
 function initSearchHistory(searchInput, searchForm) {
   // 创建历史记录容器
@@ -108,6 +112,8 @@ function initSearchHistory(searchInput, searchForm) {
   const searchBox = searchInput.parentElement;
   searchBox.style.position = 'relative';
   searchBox.appendChild(historyContainer);
+  currentHistoryBox = searchBox;
+  currentHistoryContainer = historyContainer;
   
   // 显示历史记录
   searchInput.addEventListener('focus', () => {
@@ -117,8 +123,8 @@ function initSearchHistory(searchInput, searchForm) {
   // 点击其他地方隐藏历史记录 - 只添加一次监听器
   if (!searchHistoryListenerAdded) {
     document.addEventListener('click', (e) => {
-      if (!searchBox.contains(e.target)) {
-        historyContainer.style.display = 'none';
+      if (currentHistoryContainer && !currentHistoryBox.contains(e.target)) {
+        currentHistoryContainer.style.display = 'none';
       }
     });
     searchHistoryListenerAdded = true;
@@ -145,18 +151,32 @@ function showSearchHistory(container, searchInput) {
     return;
   }
   
-  let html = '<div class="search-history-header">';
-  html += '<span>搜索历史</span>';
-  html += '<button id="clear-history" class="search-history-clear">清除</button>';
-  html += '</div>';
+  const header = document.createElement('div');
+  header.className = 'search-history-header';
+  const headerText = document.createElement('span');
+  headerText.textContent = '搜索历史';
+  const clearBtn = document.createElement('button');
+  clearBtn.type = 'button'; // 默认是 submit，而历史面板挂在搜索 form 内，不设就会点清除直接提交跳转
+  clearBtn.id = 'clear-history';
+  clearBtn.className = 'search-history-clear';
+  clearBtn.textContent = '清除';
+  header.append(headerText, clearBtn);
 
+  // 关键词一律按文本渲染：拼进 innerHTML 会让历史里的标签被当元素解析并执行
+  const rows = document.createDocumentFragment();
   history.forEach((item, index) => {
-    html += '<div class="search-history-item" data-index="' + index + '">';
-    html += '<i class="ri-history-line"></i>';
-    html += '<span>' + item + '</span>';
-    html += '</div>';
+    const row = document.createElement('div');
+    row.className = 'search-history-item';
+    row.setAttribute('data-index', index);
+    const icon = document.createElement('i');
+    icon.className = 'ri-history-line';
+    const label = document.createElement('span');
+    label.textContent = item;
+    row.append(icon, label);
+    rows.appendChild(row);
   });
-  container.innerHTML = html;
+
+  container.replaceChildren(header, rows);
   container.style.display = 'block';
   
   // 添加历史记录项点击事件
@@ -222,7 +242,7 @@ function bindSectionToggleEvents() {
   const titles = document.querySelectorAll('.section-group-title');
 
   titles.forEach(title => {
-    const sectionId = title.textContent.trim();
+    const sectionId = title.dataset.key;
     const savedState = getSavedPreference(`section_${sectionId}`);
     if (savedState === false) {
       title.classList.add('collapsed');
@@ -290,6 +310,6 @@ function bindTabEvents() {
   });
 }
 
-export { bindSearchEvents, bindTabEvents, bindSectionToggleEvents, savePreference, getSavedPreference, clearAllPreferences };
+export { bindSearchEvents, bindTabEvents, bindSectionToggleEvents, clearAllPreferences };
 
 
