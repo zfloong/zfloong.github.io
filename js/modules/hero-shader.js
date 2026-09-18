@@ -17,8 +17,8 @@ const CONFIG = {
   speed: 28,            // 时间速度（实际倍率 = speed/100 = 0.28）
   grain: 0.005,         // 颗粒感
   maxDpr: 1.5,
-  targetFps: 30,
-  minFrameGap: 1000 / 30,
+  targetFps: 60,
+  minFrameGap: 1000 / 60,
   offsetX: -124,        // 噪声 X 偏移（/100 后 = -1.24）
   offsetY: -48,         // 噪声 Y 偏移（/100 后 = -0.48）
   // ── 5 色调色盘（DeepSeek 默认）──

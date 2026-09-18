@@ -5,11 +5,11 @@
 :root {
   /* 底色 + 导航栏 + 搜索历史 + 卡片，四者同色系：
      只改 --bg 而不管另外三个，导航栏和搜索历史会与底色"分家"。 */
-  --bg: #151a24;
-  --nav-bg-top: rgba(17,21,29,0.85);
-  --nav-bg-mid: rgba(17,21,29,0.45);
-  --history-bg: rgba(24,30,41,0.88);
-  --card-bg: rgba(255,255,255,0.05);
+  --bg: #0e1219;
+  --nav-bg-top: rgba(11,14,20,0.85);
+  --nav-bg-mid: rgba(11,14,20,0.45);
+  --history-bg: rgba(16,20,28,0.88);
+  --card-bg: rgba(10,14,22,0.25);
   --text: #e8e8ec;
   --text-sub: #8a8a9a;
   --primary: #d4b483;
@@ -44,8 +44,8 @@ body {
   min-height: 100vh;
   padding-top: 62px;
   background-image:
-    radial-gradient(circle at 30% 20%, rgba(80,60,180,0.12) 0%, transparent 45%),
-    radial-gradient(circle at 70% 70%, rgba(40,80,160,0.1) 0%, transparent 45%);
+    radial-gradient(circle at 30% 20%, rgba(80,60,180,0.07) 0%, transparent 45%),
+    radial-gradient(circle at 70% 70%, rgba(40,80,160,0.05) 0%, transparent 45%);
 }
 
 /* =========================================
@@ -205,7 +205,7 @@ body {
   padding-right: 3.5rem;
   border-radius: 20px;
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
+  background: rgba(10,14,22,0.25);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   color: var(--text);
@@ -361,7 +361,7 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1rem;
 }
 
@@ -387,7 +387,7 @@ body {
 }
 .card:hover {
   transform: translateY(-4px);
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.05);
   border-color: transparent;
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
