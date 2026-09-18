@@ -391,6 +391,12 @@ body {
   border-color: transparent;
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
+/* 键盘光标（keyboard-nav.js）：金色描边呼应品牌主色 */
+.card.kb-cursor {
+  background: rgba(255,255,255,0.05);
+  border-color: transparent;
+  box-shadow: 0 0 0 2px rgba(212,180,131,0.55), 0 10px 40px rgba(0,0,0,0.5);
+}
 /* 卡片内容浮在流光之上（相对定位 + z-index 1 压住 ::after 的光圈） */
 .card img, .card-info {
   position: relative;

@@ -8,6 +8,7 @@ import { bindSearchEvents, bindTabEvents, bindSectionToggleEvents } from './modu
 import { showLoading, hideLoading, showError, initNetworkListeners } from './modules/error-handler.js';
 import { initDeepBg } from './modules/deep-bg.js';
 import { initHeroShader } from './modules/hero-shader.js';
+import { initKeyboardNav } from './modules/keyboard-nav.js';
 
 async function loadDataAndInit() {
   try {
@@ -31,6 +32,7 @@ function initPage(data) {
 
   initDeepBg();
   initHeroShader();
+  initKeyboardNav();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
