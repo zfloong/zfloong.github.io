@@ -41,6 +41,12 @@ function onPointerDown(e) {
   const el = wrap || tab;
   if (!el) return;
 
+  // 卡片是 <a>、图标是 <img>，浏览器默认它们可"原生拖动"。不掐掉的话手速慢一点就会被
+  // 原生 dragstart 抢走，并回一个 pointercancel 把我们的指针流当场断掉 —— 表现为
+  // "有时能拖有时不能"（实测：不拦 4/4 次被抢走，拦了 0 次）。
+  // 触屏不拦：pointerdown 一旦被取消，触摸的 click 就不发了，点卡片开表单会失效。
+  if (e.pointerType !== 'touch') e.preventDefault();
+
   drag = {
     kind: wrap ? 'card' : 'tab',
     el,
