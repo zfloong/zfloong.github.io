@@ -11,7 +11,8 @@
  */
 async function fetchData() {
   try {
-    const response = await fetch('./data.json');
+    // no-store：推送后刷新页面必须拿到新文件，CDN 缓存里的旧 data.json 会让改动看起来没生效
+    const response = await fetch('./data.json', { cache: 'no-store' });
     if (!response.ok) throw new Error('网络响应异常');
     
     const data = await response.json();

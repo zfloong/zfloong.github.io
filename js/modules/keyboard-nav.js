@@ -78,6 +78,9 @@ function moveVertical(cards, idx, dir) {
 
 function onKeydown(e) {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  // 编辑模式/面板打开时键盘交给编辑：否则 ↓↓→ 会驱动卡片光标、
+  // 字母键会把焦点抢到搜索框（edit-mode / edit-open 由 editor.js 维护）
+  if (document.body.classList.contains('edit-mode') || document.body.classList.contains('edit-open')) return;
   const typing = isTypingTarget(document.activeElement);
   const inSearch = document.activeElement && document.activeElement.classList.contains('search-input');
 

@@ -1,7 +1,78 @@
 /**
  * 渲染模块
  * 处理DOM渲染功能
+ *
+ * 全部用 DOM API 构建，不用 innerHTML 拼数据：
+ * 编辑模式下卡片名/网址是手打进去的，拼 HTML 会把 < 之类当标签解析（页面会坏，
+ * 以后面板里存了 token 更是直接泄露）
  */
+
+/** 只放行 http(s) 与站内相对路径，其它协议（javascript: 等）不落地成可点链接 */
+function safeHref(url) {
+  const value = (url || '').trim();
+  if (!value) return '#';
+  if (/^https?:\/\//i.test(value)) return value;
+  return /^[a-z][a-z0-9+.-]*:/i.test(value) ? '#' : value;
+}
+
+/**
+ * 生成一张卡片
+ * @param {Object} item - 卡片数据
+ * @param {Object} ref - 定位信息 {cat, sec, idx}，拖拽排序靠它回写数据
+ */
+function buildCard(item, ref) {
+  const wrap = document.createElement('div');
+  wrap.className = 'card-wrap';
+  wrap.dataset.cat = ref.cat;
+  wrap.dataset.idx = String(ref.idx);
+  if (ref.sec != null) wrap.dataset.sec = String(ref.sec);
+
+  const card = document.createElement('a');
+  card.className = 'card';
+  card.href = safeHref(item.url);
+  card.target = '_blank';
+  card.rel = 'noopener noreferrer';
+
+  if (item.icon) {
+    const img = document.createElement('img');
+    img.src = item.icon;
+    img.alt = item.title || '';
+    img.addEventListener('error', () => { img.style.display = 'none'; });
+    card.appendChild(img);
+  } else if (item.iconSymbol) {
+    const icon = document.createElement('i');
+    icon.className = item.iconSymbol;
+    icon.style.cssText = `font-size: 36px; color: ${item.iconColor || 'inherit'}; background: ${item.iconBg || 'transparent'}; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;`;
+    card.appendChild(icon);
+  }
+
+  const info = document.createElement('div');
+  info.className = 'card-info';
+  const title = document.createElement('h3');
+  title.textContent = item.title || '';
+  info.appendChild(title);
+  card.appendChild(info);
+
+  wrap.appendChild(card);
+  return wrap;
+}
+
+/**
+ * 生成一组卡片的网格
+ * @param {Array} items - 卡片数组
+ * @param {string} catId - 所属分类 id
+ * @param {number|null} secIndex - 分组序号，扁平分类为 null
+ */
+function buildGrid(items, catId, secIndex) {
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  grid.dataset.cat = catId;
+  grid.dataset.sec = secIndex == null ? 'flat' : String(secIndex);
+  (items || []).forEach((item, idx) => {
+    grid.appendChild(buildCard(item, { cat: catId, sec: secIndex, idx }));
+  });
+  return grid;
+}
 
 /**
  * 渲染搜索区
@@ -35,9 +106,10 @@ function renderSearch(searchData) {
 
   searchData.quickLinks.forEach(link => {
     const linkElement = document.createElement('a');
-    linkElement.href = link.url;
+    linkElement.href = safeHref(link.url);
     linkElement.className = 'mini-icon';
     linkElement.target = '_blank';
+    linkElement.rel = 'noopener noreferrer';
     linkElement.title = link.title;
 
     const imgElement = document.createElement('img');
@@ -70,15 +142,73 @@ function renderSearch(searchData) {
   const searchBtn = document.createElement('button');
   searchBtn.type = 'submit';
   searchBtn.className = 'search-btn';
-  searchBtn.innerHTML = '<i class="ri-search-2-line"></i>';
+  const searchIcon = document.createElement('i');
+  searchIcon.className = 'ri-search-2-line';
+  searchBtn.appendChild(searchIcon);
 
   searchBox.appendChild(searchInput);
   searchBox.appendChild(searchBtn);
   searchForm.appendChild(searchBox);
   fragment.appendChild(searchForm);
 
-  searchContainer.innerHTML = '';
-  searchContainer.appendChild(fragment);
+  searchContainer.replaceChildren(fragment);
+}
+
+/**
+ * 生成一个分类页签
+ */
+function buildTab(cat, index) {
+  const tabBtn = document.createElement('button');
+  tabBtn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+  tabBtn.setAttribute('data-target', cat.id);
+  tabBtn.dataset.idx = String(index);
+  if (cat.icon) {
+    const icon = document.createElement('i');
+    icon.className = cat.icon;
+    tabBtn.appendChild(icon);
+    tabBtn.appendChild(document.createTextNode(' '));
+  }
+  tabBtn.appendChild(document.createTextNode(cat.navTitle || cat.id));
+  return tabBtn;
+}
+
+/**
+ * 生成一个分类的内容区
+ */
+function buildCategorySection(cat, index) {
+  const section = document.createElement('div');
+  section.id = cat.id;
+  section.className = `category-section ${index === 0 ? 'active' : ''}`;
+
+  if (Array.isArray(cat.sections)) {
+    cat.sections.forEach((sectionData, si) => {
+      const sectionTitle = document.createElement('div');
+      sectionTitle.className = 'section-group-title';
+      // 折叠状态存 localStorage，必须用稳定标识；用文案当 key 的话改个名状态就丢
+      sectionTitle.dataset.key = `${cat.id}-${si}`;
+      sectionTitle.textContent = sectionData.name;
+      section.appendChild(sectionTitle);
+      section.appendChild(buildGrid(sectionData.items, cat.id, si));
+    });
+  } else {
+    const sectionHeader = document.createElement('div');
+    sectionHeader.className = 'section-header';
+    if (cat.icon) {
+      const icon = document.createElement('i');
+      icon.className = cat.icon;
+      icon.style.fontSize = '1.8rem';
+      if (cat.titleColor) icon.style.color = cat.titleColor;
+      sectionHeader.appendChild(icon);
+    }
+    const sectionTitle = document.createElement('div');
+    sectionTitle.className = 'section-title';
+    sectionTitle.textContent = cat.sectionTitle || cat.navTitle || '';
+    sectionHeader.appendChild(sectionTitle);
+    section.appendChild(sectionHeader);
+    section.appendChild(buildGrid(cat.items, cat.id, null));
+  }
+
+  return section;
 }
 
 /**
@@ -88,101 +218,19 @@ function renderSearch(searchData) {
 function renderNavAndContent(categories) {
   const navTabsContainer = document.getElementById('navTabs');
   const mainContentContainer = document.getElementById('main-content-area');
-  
+
   if (!navTabsContainer || !mainContentContainer) return;
 
   const navFragment = document.createDocumentFragment();
   const contentFragment = document.createDocumentFragment();
 
   categories.forEach((cat, index) => {
-    const tabBtn = document.createElement('button');
-    tabBtn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
-    tabBtn.setAttribute('data-target', cat.id);
-    tabBtn.innerHTML = `<i class="${cat.icon}"></i> ${cat.navTitle}`;
-    navFragment.appendChild(tabBtn);
-
-    const section = document.createElement('div');
-    section.id = cat.id;
-    section.className = `category-section ${index === 0 ? 'active' : ''}`;
-
-    if (cat.sections) {
-      cat.sections.forEach((sectionData, si) => {
-        const sectionTitle = document.createElement('div');
-        sectionTitle.className = 'section-group-title';
-        // 折叠状态存 localStorage，必须用稳定标识；用文案当 key 的话改个名状态就丢
-        sectionTitle.dataset.key = `${cat.id}-${si}`;
-        sectionTitle.textContent = sectionData.name;
-        section.appendChild(sectionTitle);
-
-        const grid = document.createElement('div');
-        grid.className = 'grid';
-
-        const cardsFragment = document.createDocumentFragment();
-        sectionData.items.forEach(item => {
-          const cardHtml = renderCards([item]);
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = cardHtml.trim();
-          cardsFragment.appendChild(tempDiv.firstElementChild);
-        });
-        grid.appendChild(cardsFragment);
-        section.appendChild(grid);
-      });
-    } else {
-      const sectionHeader = document.createElement('div');
-      sectionHeader.className = 'section-header';
-      sectionHeader.innerHTML = `
-        <i class="${cat.icon}" style="font-size: 1.8rem; color: ${cat.titleColor};"></i>
-        <div class="section-title">${cat.sectionTitle}</div>
-      `;
-      section.appendChild(sectionHeader);
-
-      const grid = document.createElement('div');
-      grid.className = 'grid';
-
-      const cardsFragment = document.createDocumentFragment();
-      cat.items.forEach(item => {
-        const cardHtml = renderCards([item]);
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = cardHtml.trim();
-        cardsFragment.appendChild(tempDiv.firstElementChild);
-      });
-      grid.appendChild(cardsFragment);
-      section.appendChild(grid);
-    }
-
-    contentFragment.appendChild(section);
+    navFragment.appendChild(buildTab(cat, index));
+    contentFragment.appendChild(buildCategorySection(cat, index));
   });
 
-  navTabsContainer.innerHTML = '';
-  navTabsContainer.appendChild(navFragment);
-  
-  mainContentContainer.innerHTML = '';
-  mainContentContainer.appendChild(contentFragment);
-}
-
-/**
- * 生成卡片 HTML
- * @param {Array} items - 项目数据数组
- * @returns {string} 卡片HTML字符串
- */
-function renderCards(items) {
-  return items.map(item => {
-    let iconHtml = '';
-    if (item.icon) {
-      iconHtml = `<img src="${item.icon}" alt="${item.title}" onerror="this.style.display='none'">`;
-    } else if (item.iconSymbol) {
-      iconHtml = `<i class="${item.iconSymbol}" style="font-size: 36px; color: ${item.iconColor}; background: ${item.iconBg || 'transparent'}; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"></i>`;
-    }
-
-    return `
-      <div class="card-wrap">
-        <a href="${item.url}" class="card" target="_blank">
-          ${iconHtml}
-          <div class="card-info"><h3>${item.title}</h3></div>
-        </a>
-      </div>
-    `;
-  }).join('');
+  navTabsContainer.replaceChildren(navFragment);
+  mainContentContainer.replaceChildren(contentFragment);
 }
 
 export { renderSearch, renderNavAndContent };

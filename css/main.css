@@ -529,4 +529,431 @@ footer a:hover {
   -webkit-mask: linear-gradient(rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0.55) 100%);
 }
 
+/* =========================================
+   在线编辑器（js/modules/editor.js）
+   入口：页脚 .edit-entry —— 按钮常驻可见，编辑器模块点击后才动态加载
+   ========================================= */
+.edit-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1rem;
+  padding: 0.35rem 0.9rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--text-sub);
+  font-family: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.edit-entry:hover {
+  color: var(--primary);
+  border-color: rgba(212,180,131,0.5);
+}
+.edit-entry i {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+body.edit-open {
+  overflow: hidden;
+}
+
+/* z-index 必须压过 .navbar(1000)：导航栏是 fixed 的 52px 顶栏，
+   否则面板头部（含「关闭」）会被它盖住点不到 */
+.edit-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.edit-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.edit-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1002;
+  display: flex;
+  flex-direction: column;
+  width: min(440px, 92vw);
+  height: 100%;
+  background: var(--history-bg);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.edit-panel.open {
+  transform: translateX(0);
+}
+
+.edit-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+.edit-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.edit-title span {
+  margin-left: 6px;
+  color: var(--text-sub);
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+.edit-close {
+  padding: 2px 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-sub);
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.edit-close:hover {
+  color: var(--text);
+}
+
+.edit-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.9rem 1.1rem 1.2rem;
+}
+
+.edit-field {
+  margin-bottom: 0.95rem;
+}
+.edit-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--text-sub);
+  font-size: 0.72rem;
+}
+.edit-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.7rem;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.82rem;
+}
+.edit-input:focus {
+  outline: none;
+  border-color: rgba(212,180,131,0.5);
+}
+.edit-hint {
+  margin-top: 0.3rem;
+  color: var(--text-sub);
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+.edit-error {
+  min-height: 1rem;
+  color: #e0a458;
+  font-size: 0.72rem;
+}
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+.edit-btn {
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.edit-btn:hover {
+  border-color: rgba(255,255,255,0.18);
+}
+.edit-btn.primary {
+  background: var(--primary);
+  border-color: transparent;
+  color: #000;
+  font-weight: 600;
+}
+.edit-btn.danger {
+  color: #e0a458;
+}
+.edit-btn.danger:hover {
+  border-color: rgba(224,164,88,0.5);
+}
+.edit-btn.mini {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+/* 图标字段下面一行：预览缩略图 + 自动抓取 + 抓取结果 */
+.edit-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: -0.45rem 0 0.95rem;
+}
+.edit-icon-preview {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  object-fit: contain;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.edit-hint.grow {
+  flex: 1;
+  min-width: 0;
+  margin-top: 0;
+}
+.edit-link {
+  display: inline-block;
+  margin-top: 0.4rem;
+  color: var(--primary);
+  font-size: 0.72rem;
+  text-decoration: none;
+}
+.edit-link:hover {
+  text-decoration: underline;
+}
+
+/* 推送抽屉里的分块：连接状态 / 本次要提交的内容 */
+.edit-conn {
+  margin-bottom: 1rem;
+  padding: 0.7rem 0.8rem;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.edit-conn-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.edit-conn-sub {
+  margin-top: 0.35rem;
+  color: var(--text-sub);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  word-break: break-all;
+}
+.edit-conn .edit-actions {
+  margin-top: 0.7rem;
+}
+
+.edit-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0.8rem 1.1rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 0.72rem;
+}
+
+/* =========================================
+   编辑模式（js/modules/editor.js + drag-sort.js）
+   ========================================= */
+.edit-entry.on {
+  color: var(--primary);
+  border-color: rgba(212,180,131,0.5);
+}
+
+body.edit-mode .card-wrap,
+body.edit-mode .tab-btn {
+  cursor: grab;
+  touch-action: none;
+}
+body.edit-mode .card {
+  border-style: dashed;
+  border-color: rgba(212,180,131,0.35);
+}
+/* 编辑模式下不做悬停上浮：拖动时卡片跟着跑会看不清落点 */
+body.edit-mode .card:hover {
+  transform: none;
+  background: var(--card-bg);
+  box-shadow: none;
+  border-color: rgba(212,180,131,0.35);
+}
+body.edit-mode .grid {
+  min-height: 76px;
+}
+body.edit-mode .grid:empty::after {
+  content: '把卡片拖到这里';
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-sub);
+  font-size: 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 18px;
+}
+/* 编辑模式下折叠箭头靠右，＋ 紧跟在分组名后面 */
+body.edit-mode .section-group-title::after {
+  margin-left: auto;
+}
+
+.sec-add {
+  margin-left: 8px;
+  padding: 0 6px;
+  background: transparent;
+  border: 1px dashed rgba(212,180,131,0.5);
+  border-radius: 8px;
+  color: var(--primary);
+  font-family: inherit;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.sec-add:hover {
+  background: rgba(212,180,131,0.12);
+}
+.edit-add-group {
+  margin: 0.2rem 0 0 0.5rem;
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  border: 1px dashed rgba(212,180,131,0.45);
+  border-radius: 50px;
+  color: var(--primary);
+  font-family: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.edit-add-group:hover {
+  background: rgba(212,180,131,0.1);
+}
+.edit-add-cat {
+  margin-left: 6px;
+  padding: 0.35rem 0.7rem;
+  background: transparent;
+  border: 1px dashed rgba(212,180,131,0.5);
+  border-radius: 50px;
+  color: var(--primary);
+  font-family: inherit;
+  font-size: 0.82rem;
+  line-height: 1;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.edit-add-cat:hover {
+  background: rgba(212,180,131,0.12);
+}
+
+/* 拖动中：原件让出布局位置，占位符顶上 —— 只 visibility:hidden 的话原件仍占一格，
+   网格里等于多出一个格子，后面的卡片被挤位，落点判定就永远追不上指针 */
+.card-wrap.dragging,
+.tab-btn.dragging {
+  display: none;
+}
+.drag-ph {
+  box-sizing: border-box;
+  border: 1px dashed rgba(212,180,131,0.55);
+  border-radius: 18px;
+  background: rgba(212,180,131,0.05);
+}
+.drag-ph-tab {
+  border-radius: 50px;
+  background: rgba(212,180,131,0.08);
+}
+.drag-clone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3000;
+  pointer-events: none;
+  opacity: 0.92;
+  animation: none;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+  border-radius: 18px;
+}
+.tab-btn.drag-clone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20,26,36,0.95);
+  border: 1px solid rgba(212,180,131,0.5);
+  color: var(--text);
+  border-radius: 50px;
+}
+
+/* 编辑模式工具条：常驻左下角，避免压住右侧表单抽屉 */
+.edit-bar {
+  position: fixed;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 1003;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: calc(100vw - 2.5rem);
+  padding: 0.6rem 0.8rem;
+  background: var(--history-bg);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+.edit-bar-status {
+  margin-right: 0.4rem;
+  color: var(--text-sub);
+  font-size: 0.72rem;
+}
+.edit-bar-btn {
+  padding: 0.35rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.edit-bar-btn:hover {
+  border-color: rgba(255,255,255,0.2);
+}
+.edit-bar-btn.primary {
+  background: var(--primary);
+  border-color: transparent;
+  color: #000;
+  font-weight: 600;
+}
+/* 已连上 GitHub：推送按钮描个金边，一眼能看出不用重新粘 token */
+.edit-bar-btn.primary.ok {
+  box-shadow: 0 0 0 1px rgba(212,180,131,0.55);
+}
+.edit-bar-btn.danger {
+  color: #e0a458;
+}
+.edit-bar-btn.danger:hover {
+  border-color: rgba(224,164,88,0.5);
+}
+
 
