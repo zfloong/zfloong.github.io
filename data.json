@@ -65,9 +65,9 @@
               "icon": "icons/grok_com.png"
             },
             {
-              "title": "LM 模型竞技场",
-              "url": "https://lmarena.ai/zh",
-              "icon": "icons/lmarena_ai.png"
+              "title": "ChatGPT",
+              "url": "https://chatgpt.com/",
+              "icon": "icons/chatgpt_com.png"
             },
             {
               "title": "Google AI Studio",
@@ -75,9 +75,9 @@
               "icon": "icons/aistudio_google_com.png"
             },
             {
-              "title": "ChatGPT",
-              "url": "https://chatgpt.com/",
-              "icon": "icons/chatgpt_com.png"
+              "title": "LM 模型竞技场",
+              "url": "https://lmarena.ai/zh",
+              "icon": "icons/lmarena_ai.png"
             },
             {
               "title": "DeepSeek",
@@ -98,6 +98,11 @@
               "title": "Copilot",
               "url": "https://copilot.microsoft.com/",
               "icon": "icons/copilot_microsoft_com.png"
+            },
+            {
+              "title": "DeepSeek Harness",
+              "url": "https://www.deepseek.com/harness/",
+              "icon": "icons/deepseek_com.png"
             }
           ]
         },
@@ -126,11 +131,6 @@
               "icon": "icons/img_alicdn_com.svg"
             },
             {
-              "title": "腾讯混元",
-              "url": "https://yuanbao.tencent.com/",
-              "icon": "icons/yuanbao_tencent_com.png"
-            },
-            {
               "title": "豆包",
               "url": "https://www.doubao.com/chat/",
               "icon": "icons/www_doubao_com.png"
@@ -139,6 +139,11 @@
               "title": "文心一言",
               "url": "https://yiyan.baidu.com/",
               "icon": "icons/yiyan_baidu_com.png"
+            },
+            {
+              "title": "腾讯混元",
+              "url": "https://yuanbao.tencent.com/",
+              "icon": "icons/yuanbao_tencent_com.png"
             }
           ]
         }
