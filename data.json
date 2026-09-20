@@ -70,14 +70,14 @@
               "icon": "icons/chatgpt_com.png"
             },
             {
-              "title": "Google AI Studio",
-              "url": "https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview",
-              "icon": "icons/aistudio_google_com.png"
-            },
-            {
               "title": "LM 模型竞技场",
               "url": "https://lmarena.ai/zh",
               "icon": "icons/lmarena_ai.png"
+            },
+            {
+              "title": "AI Studio",
+              "url": "https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview",
+              "icon": "icons/aistudio_google_com.png"
             },
             {
               "title": "DeepSeek",
@@ -90,6 +90,11 @@
               "icon": "icons/aistudio_xiaomimimo_com.png"
             },
             {
+              "title": "Harness",
+              "url": "https://www.deepseek.com/harness/",
+              "icon": "icons/deepseek_com.png"
+            },
+            {
               "title": "QwenDome",
               "url": "https://www.qianwen.com/",
               "icon": "icons/img_alicdn_com.svg"
@@ -98,11 +103,6 @@
               "title": "Copilot",
               "url": "https://copilot.microsoft.com/",
               "icon": "icons/copilot_microsoft_com.png"
-            },
-            {
-              "title": "DeepSeek Harness",
-              "url": "https://www.deepseek.com/harness/",
-              "icon": "icons/deepseek_com.png"
             }
           ]
         },
