@@ -1,7 +1,7 @@
 /**
  * 本地草稿存储
  *
- * 编辑模式的改动先存在浏览器里（localStorage），刷新不丢；「复制 / 下载 data.json」
+ * 编辑模式的改动先存在浏览器里（localStorage），刷新不丢；「复制 data.json」
  * 按仓库约定序列化后交给用户自己提交。以后接上 GitHub Contents API 直推时，
  * 这里的 JSON 就是提交内容。
  */
@@ -49,18 +49,6 @@ function toRepoJson(data) {
   return JSON.stringify(data, null, 2).replace(/\r?\n/g, '\r\n') + '\r\n';
 }
 
-function downloadJson(text, filename = 'data.json') {
-  const blob = new Blob([text], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 async function copyText(text) {
   try {
     await navigator.clipboard.writeText(text);
@@ -71,4 +59,4 @@ async function copyText(text) {
   }
 }
 
-export { loadDraft, saveDraft, clearDraft, toRepoJson, downloadJson, copyText };
+export { loadDraft, saveDraft, clearDraft, toRepoJson, copyText };

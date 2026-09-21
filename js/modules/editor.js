@@ -8,7 +8,7 @@
  *   · 每个分组有 ＋ 加卡片、每个分类末尾有 ＋ 新增分组、顶部有 ＋ 新增分类
  *   · 点卡片不再跳转，而是弹出表单改名称/网址/图标，或删除
  *   · 图标留空时按网址自动抓一张，存进暂存区，推送时提交进仓库 icons/
- *   · 改动先写进浏览器本地草稿（draft-store），工具条给复制/下载 data.json
+ *   · 改动先写进浏览器本地草稿（draft-store），工具条可复制 data.json 内容
  *   · 「推送到 GitHub」直接把 data.json + 新图标提交成一个 commit（github-push）
  *
  * 两条硬约束：
@@ -18,7 +18,7 @@
  */
 
 import { initDragSort, cancelDrag, isDragClickSuppressed } from './drag-sort.js';
-import { loadDraft, saveDraft, clearDraft, toRepoJson, downloadJson, copyText } from './draft-store.js';
+import { loadDraft, saveDraft, clearDraft, toRepoJson, copyText } from './draft-store.js';
 import { grab, applyPendingIcons, pendingFor, pendingList, noteIconsPushed, clearPending } from './icon-fetch.js';
 import {
   getToken, setToken, clearToken,
@@ -544,7 +544,6 @@ function buildBar() {
     statusEl,
     pushBtnEl,
     mk('复制 data.json', '', onCopy),
-    mk('下载 data.json', '', onDownload),
     mk('放弃草稿', 'danger', onDiscard),
     mk('完成', '', exitEditMode),
   );
@@ -577,12 +576,7 @@ function updateBar() {
 
 async function onCopy() {
   const ok = await copyText(toRepoJson(ctx.getData()));
-  flash(ok ? '已复制，粘贴覆盖仓库里的 data.json 即可' : '复制失败，请用「下载 data.json」');
-}
-
-function onDownload() {
-  downloadJson(toRepoJson(ctx.getData()));
-  flash('已下载 data.json，覆盖仓库里的同名文件即可');
+  flash(ok ? '已复制，粘贴覆盖仓库里的 data.json 即可' : '复制失败：浏览器没给剪贴板权限，允许后重试');
 }
 
 function onDiscard() {
@@ -614,6 +608,8 @@ function exitEditMode() {
     pushBtnEl = null;
   }
   ctx.rerender();   // 重建 DOM，去掉加号与拖动标记
+  // 停在页面上接着看时，按加载时同一套规则把草稿状态摆出来，不必等刷新
+  ctx.refreshDraftNotice();
 }
 
 /**
@@ -713,7 +709,7 @@ function onKeydown(e) {
 
 function initEditor(options) {
   entryEl = options.entry;
-  ctx = { getData: options.getData, rerender: options.rerender };
+  ctx = { getData: options.getData, rerender: options.rerender, refreshDraftNotice: options.refreshDraftNotice };
   initDragSort({ onReorder: handleReorder });
   document.addEventListener('keydown', onKeydown);
   document.addEventListener('click', onEditClick, true);

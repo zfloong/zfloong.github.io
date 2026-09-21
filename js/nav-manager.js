@@ -73,6 +73,27 @@ function showDraftNotice(savedAt) {
   host.insertBefore(notice, host.firstChild);
 }
 
+/**
+ * 退出编辑模式时按和加载时同一套规则再判一次：
+ * 确知草稿 ≠ 文件才提示；一样（比如刚推完又拉取过）就把草稿收掉、横幅也收掉
+ */
+async function refreshDraftNotice() {
+  const existing = document.querySelector('.draft-notice');
+  const draft = loadDraft();
+  if (!draft) {
+    if (existing) existing.remove();
+    return;
+  }
+  const fresh = await fetchData().catch(() => null);
+  if (!fresh) return;
+  if (sameContent(fresh, draft.data)) {
+    clearDraft();
+    if (existing) existing.remove();
+    return;
+  }
+  showDraftNotice(draft.savedAt);
+}
+
 async function loadDataAndInit() {
   try {
     showLoading();
@@ -144,7 +165,7 @@ function bindEditEntry() {
     }
     try {
       editorApi = await import('./modules/editor.js');
-      editorApi.initEditor({ entry, getData: () => currentData, rerender });
+      editorApi.initEditor({ entry, getData: () => currentData, rerender, refreshDraftNotice });
     } catch (error) {
       console.error('编辑器加载失败:', error);
     }
