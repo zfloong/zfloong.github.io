@@ -30,6 +30,49 @@ function sameContent(a, b) {
   return JSON.stringify(sortKeys(a)) === JSON.stringify(sortKeys(b));
 }
 
+/**
+ * 草稿和线上文件不一致时，把"你现在看的是草稿"摆到明面上：
+ * 草稿按浏览器各存一份，闷声顶着线上数据的话，换个浏览器看就是另一个页面
+ */
+function showDraftNotice(savedAt) {
+  const host = document.querySelector('.main-content');
+  if (!host || host.querySelector('.draft-notice')) return;
+
+  const t = new Date(savedAt || Date.now());
+  const pad = (n) => String(n).padStart(2, '0');
+  const when = `${pad(t.getMonth() + 1)}-${pad(t.getDate())} ${pad(t.getHours())}:${pad(t.getMinutes())}`;
+
+  const notice = document.createElement('div');
+  notice.className = 'draft-notice';
+
+  const text = document.createElement('div');
+  text.className = 'draft-notice-text';
+  const title = document.createElement('strong');
+  title.textContent = `本机有一份未提交的草稿 · ${when}`;
+  const sub = document.createElement('span');
+  sub.textContent = '和线上 data.json 不一致，页面现在显示的是草稿';
+  text.append(title, sub);
+
+  const useRemote = document.createElement('button');
+  useRemote.type = 'button';
+  useRemote.className = 'edit-bar-btn primary';
+  useRemote.textContent = '用线上最新';
+  useRemote.addEventListener('click', () => {
+    if (!window.confirm('放弃本机草稿，回到线上 data.json？')) return;
+    clearDraft();
+    location.reload();
+  });
+
+  const keep = document.createElement('button');
+  keep.type = 'button';
+  keep.className = 'edit-bar-btn';
+  keep.textContent = '继续用草稿';
+  keep.addEventListener('click', () => notice.remove());
+
+  notice.append(text, useRemote, keep);
+  host.insertBefore(notice, host.firstChild);
+}
+
 async function loadDataAndInit() {
   try {
     showLoading();
@@ -44,6 +87,8 @@ async function loadDataAndInit() {
         data = fresh;
       } else {
         data = draft.data;
+        // 断网时读不到文件、也就无从比较，这时候不吓人：只有确知不一致才提示
+        if (fresh) showDraftNotice(draft.savedAt);
       }
     } else {
       data = await fetchData();

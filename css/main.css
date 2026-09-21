@@ -956,4 +956,38 @@ body.edit-mode .section-group-title::after {
   border-color: rgba(224,164,88,0.5);
 }
 
+/* 草稿和线上不一致时贴在搜索框上方（按钮复用 .edit-bar-btn 那套胶囊样式）：
+   草稿按浏览器各存一份，不显式说明的话，换个浏览器看就是另一个页面 */
+.draft-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 600px;
+  margin: 0 auto 0.9rem auto;
+  padding: 0.55rem 0.7rem 0.55rem 0.9rem;
+  background: var(--history-bg);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+.draft-notice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-right: auto;
+  font-size: 0.72rem;
+  color: var(--text-sub);
+}
+.draft-notice-text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+/* 编辑模式下编辑器自己的工具条已经标了草稿状态，别顶两层提示 */
+body.edit-mode .draft-notice {
+  display: none;
+}
+
 
