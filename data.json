@@ -90,11 +90,6 @@
               "icon": "icons/aistudio_xiaomimimo_com.png"
             },
             {
-              "title": "Harness",
-              "url": "https://www.deepseek.com/harness/",
-              "icon": "icons/deepseek_com.png"
-            },
-            {
               "title": "QwenDome",
               "url": "https://www.qianwen.com/",
               "icon": "icons/img_alicdn_com.svg"
@@ -103,6 +98,11 @@
               "title": "Copilot",
               "url": "https://copilot.microsoft.com/",
               "icon": "icons/copilot_microsoft_com.png"
+            },
+            {
+              "title": "Harness",
+              "url": "https://www.deepseek.com/harness/",
+              "icon": "icons/deepseek_com.png"
             }
           ]
         },
