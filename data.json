@@ -603,7 +603,7 @@
       "titleColor": "#f43f5e",
       "sections": [
         {
-          "name": "🎮 娱乐",
+          "name": "🎮 娱乐与生活",
           "items": [
             {
               "title": "TikTok",
@@ -639,12 +639,7 @@
               "title": "PVZ  Wiki",
               "url": "https://wiki.biligame.com/pvzrh/%E9%A6%96%E9%A1%B5",
               "icon": "icons/wiki_biligame_com.ico"
-            }
-          ]
-        },
-        {
-          "name": "🛒 生活服务",
-          "items": [
+            },
             {
               "title": "京东",
               "url": "https://www.jd.com/",
@@ -668,13 +663,8 @@
           ]
         },
         {
-          "name": "🖥 VPS 相关",
+          "name": "🏪 VPS 商家",
           "items": [
-            {
-              "title": "NodeSeek",
-              "url": "https://www.nodeseek.com/",
-              "icon": "icons/nodeseek_com.png"
-            },
             {
               "title": "DMIT",
               "url": "https://www.dmit.io/clientarea.php",
@@ -719,6 +709,76 @@
               "title": "RackNerd",
               "url": "https://www.racknerd.com/",
               "icon": "icons/racknerd_com.png"
+            },
+            {
+              "title": "xTom",
+              "url": "https://xtom.com/",
+              "icon": "icons/xtom_com.png"
+            },
+            {
+              "title": "V.PS",
+              "url": "https://v.ps/",
+              "icon": "icons/v_ps.png"
+            },
+            {
+              "title": "绿云 GreenCloud",
+              "url": "https://greencloudvps.com/",
+              "icon": "icons/greencloudvps_com.png"
+            },
+            {
+              "title": "RAKsmart",
+              "url": "https://www.raksmart.com/",
+              "icon": "icons/raksmart_com.png"
+            },
+            {
+              "title": "CloudCone",
+              "url": "https://cloudcone.com/",
+              "icon": "icons/cloudcone_com.png"
+            },
+            {
+              "title": "Evoxt",
+              "url": "https://evoxt.com/",
+              "icon": "icons/evoxt_com.png"
+            },
+            {
+              "title": "ZgoCloud",
+              "url": "https://zgovps.com/",
+              "icon": "icons/zgovps_com.png"
+            },
+            {
+              "title": "Lightlayer",
+              "url": "https://lightlayer.com/",
+              "icon": "icons/lightlayer_com.png"
+            },
+            {
+              "title": "狗妈 GoMami",
+              "url": "https://gomami.io/",
+              "icon": "icons/gomami_io.png"
+            },
+            {
+              "title": "Isvoro",
+              "url": "https://isvoro.com/",
+              "icon": "icons/isvoro_com.png"
+            },
+            {
+              "title": "ByteVirt",
+              "url": "https://bytevirt.com/",
+              "icon": "icons/bytevirt_com.png"
+            },
+            {
+              "title": "奶爸 Neburst",
+              "url": "https://neburst.com/",
+              "icon": "icons/neburst_com.png"
+            }
+          ]
+        },
+        {
+          "name": "💬 社区论坛",
+          "items": [
+            {
+              "title": "NodeSeek",
+              "url": "https://www.nodeseek.com/",
+              "icon": "icons/nodeseek_com.png"
             },
             {
               "title": "LowEndTalk",
