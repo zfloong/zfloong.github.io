@@ -706,7 +706,7 @@
               "icon": "icons/neburst_com.png"
             },
             {
-              "title": "绿云 GreenCloud",
+              "title": "GreenCloud",
               "url": "https://greencloudvps.com/",
               "icon": "icons/greencloudvps_com.png"
             },
@@ -726,19 +726,34 @@
               "icon": "icons/zouter_io.png"
             },
             {
+              "title": "Acck",
+              "url": "https://acck.io/",
+              "icon": "icons/acck_io.png"
+            },
+            {
+              "title": "RackNerd",
+              "url": "https://www.racknerd.com/",
+              "icon": "icons/racknerd_com.png"
+            },
+            {
               "title": "Lightlayer",
               "url": "https://lightlayer.com/",
               "icon": "icons/lightlayer_com.png"
             },
             {
-              "title": "ByteVirt",
-              "url": "https://bytevirt.com/",
-              "icon": "icons/bytevirt_com.png"
-            },
-            {
               "title": "DediRock",
               "url": "https://billing.dedirock.com/index.php",
               "icon": "icons/dedirock_com.png"
+            },
+            {
+              "title": "ZgoCloud",
+              "url": "https://zgovps.com/",
+              "icon": "icons/zgovps_com.png"
+            },
+            {
+              "title": "ByteVirt",
+              "url": "https://bytevirt.com/",
+              "icon": "icons/bytevirt_com.png"
             },
             {
               "title": "RAKsmart",
@@ -751,24 +766,9 @@
               "icon": "icons/cloudcone_com.png"
             },
             {
-              "title": "ZgoCloud",
-              "url": "https://zgovps.com/",
-              "icon": "icons/zgovps_com.png"
-            },
-            {
-              "title": "Acck",
-              "url": "https://acck.io/",
-              "icon": "icons/acck_io.png"
-            },
-            {
               "title": "Akile",
               "url": "https://akile.ai/",
               "icon": "icons/akile_ai.png"
-            },
-            {
-              "title": "RackNerd",
-              "url": "https://www.racknerd.com/",
-              "icon": "icons/racknerd_com.png"
             }
           ]
         },
