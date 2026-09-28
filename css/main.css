@@ -648,6 +648,40 @@ footer a:hover {
 /* =========================================
    流动背景容器
    ========================================= */
+/* 夜间壁纸：最底层（z-index:-4），只在夜间主题显示。
+   把 tom.png 大幅模糊 + 叠深色遮罩，只留蓝/棕色调做氛围底，看不出具体卡通，
+   界面仍是深色夜间，白字与玻璃卡片清晰。
+   桌面/手机两档图片由 sharp 预生成（images/tom-*.webp），这里按视口宽度选图。
+   day / flow 主题下 display:none —— 隐藏元素的背景图不会被浏览器下载，
+   所以只有夜间用户才会拉这两张图。 */
+#bg-wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: -4;   /* 比光带(-3)还深，是最底下的一层 */
+  pointer-events: none;
+  /* 放大 1.2：filter 会把四边 blur 成半透明，靠 scale 把透明边推出可视区 */
+  transform: scale(1.2);
+  filter: blur(60px) saturate(1.15);
+  background-image:
+    /* 深色遮罩：把模糊后的亮蓝天空压成夜间氛围 */
+    linear-gradient(180deg, rgba(9,13,21,0.62) 0%, rgba(9,13,21,0.78) 55%, rgba(9,13,21,0.9) 100%),
+    url("../images/tom-desktop.webp");
+  background-size: 100% 100%, cover;
+  background-position: center, center;
+  background-repeat: no-repeat;
+}
+:root[data-theme="day"] #bg-wallpaper,
+:root[data-theme="flow"] #bg-wallpaper {
+  display: none;
+}
+@media (max-width: 640px) {
+  #bg-wallpaper {
+    background-image:
+      linear-gradient(180deg, rgba(9,13,21,0.62) 0%, rgba(9,13,21,0.78) 55%, rgba(9,13,21,0.9) 100%),
+      url("../images/tom-mobile.webp");
+  }
+}
+
 /* Hero 区流动光带（WebGL）：只铺首屏一条，底部渐隐后交给下面的 CSS 网格。
    ⚠️ 兜底色**不能是近黑**：本层 z-index:-3，画在 body 背景之前，
    如果给它一个近黑底（曾经是 #050a18），在 WebGL 画出第一帧之前

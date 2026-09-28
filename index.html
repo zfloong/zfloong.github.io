@@ -48,6 +48,10 @@
 </head>
 <body>
 
+  <!-- 夜间壁纸：最底层（z-index:-4），仅夜间主题显示；
+       day / flow 主题下 display:none —— 浏览器不会下载隐藏元素的背景图 -->
+  <div id="bg-wallpaper" aria-hidden="true"></div>
+
   <!-- 流动背景：hero 光带（WebGL）+ 交互网格 -->
   <div id="hero-shader" aria-hidden="true"></div>
   <div id="deep-bg">
