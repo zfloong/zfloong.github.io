@@ -81,6 +81,8 @@ let mouse = { x: -9999, y: -9999 }; // 鼠标位置
 // 一旦据此停掉 canvas，背景流动和网格互动会整片消失。
 // 只保留「标签页切到后台暂停渲染」这一条纯省电优化。
 let paused = false;
+/** 主题是否要求显示网格：只有「流光」主题为 true，由 start/stopDeepBg 控制 */
+let active = false;
 
 // ── 交互式网格 ───────────────────────────────────
 
@@ -255,7 +257,7 @@ function pauseAnimation() {
 }
 
 function resumeAnimation() {
-  if (!paused || !initialized) return;
+  if (!active || !paused || !initialized) return;
   paused = false;
   // 跳过暂停期间累积的时间，避免恢复瞬间网格跳一帧
   lastTime = performance.now();
@@ -266,7 +268,7 @@ function handleVisibilityChange() {
   // 切到后台就停掉 rAF，省电、避免无意义的重绘
   if (document.hidden) {
     pauseAnimation();
-  } else {
+  } else if (active) {
     resumeAnimation();
     // 回前台再同步一次 CSS 参数：改完样式后刷新、设备从休眠唤醒都走这条路径。
     refreshTuning();
@@ -331,7 +333,29 @@ function initDeepBg() {
     animId = requestAnimationFrame(animate);
   }
 
+  active = true;
   initialized = true;
 }
 
-export { initDeepBg };
+/**
+ * 开始显示并渲染网格（主题切到「流光」时调用）。
+ * 首次调用会完成初始化；已初始化就直接恢复渲染。
+ */
+function startDeepBg() {
+  if (!initialized) initDeepBg();
+  active = true;
+  if (canvasGrid) canvasGrid.style.display = '';
+  resumeAnimation();
+}
+
+/**
+ * 停止渲染并隐藏网格（主题切到「夜间 / 白天」时调用）。
+ * 保留 canvas 与顶点，切回「流光」无需重建。
+ */
+function stopDeepBg() {
+  active = false;
+  pauseAnimation();
+  if (canvasGrid) canvasGrid.style.display = 'none';
+}
+
+export { initDeepBg, startDeepBg, stopDeepBg };

@@ -210,6 +210,39 @@ body {
 }
 .nav-tabs::-webkit-scrollbar { display: none; }
 
+/* ---- 主题切换按钮（导航栏右上角）----
+   绝对定位，不参与 .nav-tabs 的居中布局，所以不会把标签挤偏。
+   底色用 --history-bg（各主题下都接近不透明），即使压在标签上也看得清。
+   图标由 js/modules/theme-switcher.js 按当前主题切换。 */
+.theme-toggle {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--history-bg);
+  color: var(--text);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+.theme-toggle:hover {
+  background: rgba(var(--ink-rgb),0.12);
+  border-color: rgba(var(--ink-rgb),0.3);
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--focus-glow);
+  outline-offset: 2px;
+}
+
 .tab-btn {
   background: transparent;
   border: 1px solid transparent;

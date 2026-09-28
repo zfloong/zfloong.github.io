@@ -192,13 +192,15 @@ let lastTime = 0;
 let timeAcc = Math.random() * 1000;
 let paused = false;
 let initialized = false;
+/** 主题是否要求渲染：只有「流光」主题为 true，由 start/stopHeroShader 控制 */
+let active = false;
 const U = {};
 let frameCount = 0;
 let lastError = null;
 
 if (typeof window !== 'undefined') {
   window.__heroShader = {
-    state: () => ({ frames: frameCount, time: +timeAcc.toFixed(3), paused, rafId, timerId, error: lastError }),
+    state: () => ({ frames: frameCount, time: +timeAcc.toFixed(3), paused, active, rafId, timerId, error: lastError }),
   };
 }
 
@@ -294,9 +296,38 @@ export function initHeroShader() {
   document.addEventListener('visibilitychange', onVisibility);
 
   lastTime = performance.now();
-  schedule();
+  paused = document.hidden;
   initialized = true;
   return true;
+}
+
+/**
+ * 开始渲染（主题切到「流光」时调用）。
+ * 首次调用会先构建 WebGL 资源；已构建过就只放行渲染循环。
+ * 构建失败（WebGL 不可用）返回 false，此时由 #hero-shader 的 CSS 兜底光晕接管。
+ */
+export function startHeroShader() {
+  if (!initialized && !initHeroShader()) return false;
+  if (active) return true;
+
+  active = true;
+  paused = document.hidden;
+  if (canvas) canvas.style.display = '';
+  if (!paused) {
+    lastTime = performance.now();
+    schedule();
+  }
+  return true;
+}
+
+/**
+ * 停止渲染并隐藏 canvas（主题切到「夜间 / 白天」时调用）。
+ * 只停循环、不销毁资源：切回「流光」能立刻恢复，不用重建 WebGL 上下文。
+ */
+export function stopHeroShader() {
+  active = false;
+  stopLoop();
+  if (canvas) canvas.style.display = 'none';
 }
 
 function resize() {
@@ -317,6 +348,8 @@ function onVisibility() {
     paused = true;
   } else {
     paused = false;
+    // 主题没开特效时，回前台也不要启动渲染
+    if (!active) return;
     lastTime = performance.now();
     schedule();
   }
@@ -333,7 +366,7 @@ function render(dt) {
 }
 
 function schedule() {
-  if (paused || !gl) return;
+  if (!active || paused || !gl) return;
   if (rafId === null && timerId === null) {
     rafId = requestAnimationFrame(tick);
     timerId = setTimeout(() => {
