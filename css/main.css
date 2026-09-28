@@ -84,7 +84,7 @@
   --nav-bg-top: rgba(244,246,249,0.55);
   --nav-bg-mid: rgba(244,246,249,0.18);
   --history-bg: rgba(252,253,255,0.94);
-  --card-bg: rgba(255,255,255,0.72);
+  --card-bg: rgba(255,255,255,0.5);
   --text: #1b2333;
   --text-sub: #667085;
 
@@ -93,9 +93,20 @@
   --ink-shadow-rgb: 255,255,255;  /* 浅底上压白晕，不再压黑晕 */
   --shade-rgb: 100,116,139;       /* 阴影/遮罩改用冷灰：浅底上纯黑太硬 */
 
-  --glass-core: rgba(255,255,255,0.75);
-  --glass-edge: linear-gradient(135deg, rgba(var(--ink-rgb),0.3) 0%, rgba(var(--ink-rgb),0.06) 35%, rgba(var(--ink-rgb),0.04) 65%, rgba(var(--ink-rgb),0.2) 100%);
-  --glass-glow: 0 0 16px rgba(var(--shade-rgb),0.16), 0 0 32px rgba(var(--shade-rgb),0.08);
+  /* 冷白底上的玻璃三件套：夜间那组是从 --ink-rgb（白）派生的，
+     13% 白叠在深底上就是磨砂玻璃；同一套公式搬到浅底上会变成"灰泥块"，
+     所以这三个值在冷白主题里另写一份：
+       · --glass-core 用低不透明度白：让 backdrop-filter 糊过的壁纸透出来。
+         原来 0.75 等于实心白，胶囊就成了硬片，透明感全失。
+       · --glass-edge 改走白色系：浅底上深色描边会读成一道灰框，很生硬。
+       · --glass-glow 从"四向光晕"改成"向下投影"：浅底上靠投影浮起来才像玻璃，
+         对称光晕只会糊一圈灰。 */
+  --glass-core: rgba(255,255,255,0.42);
+  --glass-edge: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.35) 35%, rgba(255,255,255,0.2) 65%, rgba(255,255,255,0.75) 100%);
+  --glass-glow: 0 1px 2px rgba(var(--shade-rgb),0.14), 0 4px 16px rgba(var(--shade-rgb),0.18);
+  /* 胶囊顶部那道 1px 内高光的基色。夜间是"白线亮边"，浅底上必须同样是白，
+     否则 --ink-rgb 的深墨色会在白胶囊顶上压出一道黑线，像刻进去一样。 */
+  --glass-inset-rgb: 255,255,255;
   --border: rgba(var(--ink-rgb),0.1);
   --danger: #3f6ea8;
   --error: #c0392b;
@@ -253,19 +264,22 @@ body {
      最终决定保持原样，不要再改）。
      依赖三个已有 token：
        --glass-edge      135° 渐变描边（左上最亮 → 右下次亮），从 border-box 画
-       --glass-glow      0 0 16px + 0 0 32px 的外光晕
+       --glass-glow      外光晕 / 投影
        --ink-shadow-rgb  文字投影基色（深底压黑晕、浅底压白晕）
-     注意：外光晕要伸出 32px，所以 .nav-tabs 的裁切余地必须 ≥ 32px（见该处注释）。 */
+     --glass-inset-rgb 只是把下面那道 1px 内高光的基色提出来（默认回落 --ink-rgb，
+                       所以夜间取值一字未变；冷白主题单独给白色，否则白胶囊顶上
+                       会被 --ink-rgb 的深墨色压出一道黑线）。
+     注意：夜间的外光晕要伸出 32px，所以 .nav-tabs 的裁切余地必须 ≥ 32px（见该处注释）。 */
   background: linear-gradient(var(--glass-core), var(--glass-core)) padding-box, var(--glass-edge) border-box;
   color: var(--ink);
   text-shadow: 0 0 0.5px currentColor, 0 1px 2px rgba(var(--ink-shadow-rgb),0.45);
   opacity: 1;
   border-color: transparent;
   backdrop-filter: blur(12px) saturate(1.35);
-  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--ink-rgb),0.45);
+  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--glass-inset-rgb, var(--ink-rgb)),0.45);
 }
 .tab-btn.active:hover {
-  box-shadow: 0 4px 14px rgba(var(--ink-rgb),0.18), var(--glass-glow), inset 0 1px 1px rgba(var(--ink-rgb),0.8);
+  box-shadow: 0 4px 14px rgba(var(--ink-rgb),0.18), var(--glass-glow), inset 0 1px 1px rgba(var(--glass-inset-rgb, var(--ink-rgb)),0.8);
 }
 
 /* =========================================
@@ -344,7 +358,7 @@ body {
   border-color: transparent;
   font-weight: 600;
   backdrop-filter: blur(12px) saturate(1.35);
-  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--ink-rgb),0.45);
+  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--glass-inset-rgb, var(--ink-rgb)),0.45);
   text-shadow: 0 1px 2px rgba(var(--ink-shadow-rgb),0.45);
 }
 
@@ -865,7 +879,7 @@ body.edit-open {
   font-weight: 600;
   backdrop-filter: blur(12px) saturate(1.35);
   text-shadow: 0 1px 2px rgba(var(--ink-shadow-rgb),0.45);
-  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--ink-rgb),0.45);
+  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--glass-inset-rgb, var(--ink-rgb)),0.45);
 }
 .edit-btn.danger {
   color: var(--danger);
@@ -1119,7 +1133,7 @@ body.edit-mode .section-group-title::after {
   font-weight: 600;
   backdrop-filter: blur(12px) saturate(1.35);
   text-shadow: 0 1px 2px rgba(var(--ink-shadow-rgb),0.45);
-  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--ink-rgb),0.45);
+  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--glass-inset-rgb, var(--ink-rgb)),0.45);
 }
 /* 已连上 GitHub：推送按钮描个亮白边，一眼能看出不用重新粘 token */
 .edit-bar-btn.primary.ok {
