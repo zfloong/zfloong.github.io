@@ -2,11 +2,10 @@
    FlyLoong Navigation — 主题色板
    =========================================
 
-   三套主题共用同一组 token 名字，靠 <html data-theme="…"> 整族切换：
+   两套主题共用同一组 token 名字，靠 <html data-theme="…"> 整族切换：
 
-     默认（无属性）      主题①「夜间」 深色·轻量   ← 首屏默认，不跑任何动态特效
+     默认（无属性）      主题①「夜间」 深色·轻量   ← 首屏默认
      data-theme="day"    主题②「白天」 冷白·轻量
-     data-theme="flow"   主题③「流光」 深色·动态背景（原「深色流光」，逐字保留）
 
    真正的基色只有下面五个，其余 token 都从它们推导 —— 调主题优先只动这几个：
      --bg              底色
@@ -14,8 +13,6 @@
      --ink             实心前景（按钮文字等）
      --ink-shadow-rgb  文字投影基色（与 --ink 反向：深底压黑晕、浅底压白晕）
      --shade-rgb       中性阴影 / 遮罩 / 内凹面基色
-
-   特效（WebGL 光带、动态网格）不在 CSS 里表达，由 js 按主题启停。
    ========================================= */
 
 /* ---- 主题①「夜间」（默认）---- */
@@ -62,19 +59,11 @@
   --focus-glow-soft: rgba(150, 180, 255, 0.18);
   --focus-glow-inset: rgba(180, 200, 255, 0.1);
   --focus-ring: rgba(90,120,220,0.14);     /* 输入框聚焦时的外发光 */
-  /* 没有 WebGL 光带，背景就靠这两道静态 tint + #hero-shader 的兜底光晕撑住空气感 */
+  /* 没有动态背景，背景就靠这两道静态 tint + #hero-shader 那层静态光晕撑住空气感 */
   --bg-tint-a: rgba(96,74,208,0.1);        /* body 光晕：左上偏紫 */
   --bg-tint-b: rgba(46,92,180,0.08);       /* body 光晕：右下偏蓝 */
-  --hero-glow-a: rgba(30,64,126,0.5);      /* #hero-shader 兜底光晕 */
+  --hero-glow-a: rgba(30,64,126,0.5);      /* #hero-shader 静态光晕 */
   --hero-glow-b: rgba(36,84,140,0.4);
-
-  /* --- 背景观感参数（由 js/modules/deep-bg.js 的 readCssTuning() 读取）---
-     参考 dsh-plugin-backdrop 逆向项目的默认值 */
-  --bg-grid-cell: 90;            /* 格距（DeepSeek 默认 90px）*/
-  --bg-grid-line: 0.06;          /* 网格线不透明度（DeepSeek 默认 0.06）*/
-  --bg-grid-dot-r: 1.8;          /* 顶点半径（DeepSeek 默认 1.8）*/
-  --bg-grid-dot: 0.12;           /* 顶点不透明度（DeepSeek 默认 0.12）*/
-  --bg-grid-highlight: 255,255,255;  /* 鼠标附近的高亮色（DeepSeek 用纯白）*/
 
   /* --- 夜间壁纸参数（#bg-wallpaper）---
      壁纸的可调项集中在这几个变量里。白天主题在下面
@@ -134,45 +123,6 @@
   --wp-scale: 1;
   --wp-overlay: 0.5;
   --wp-overlay-rgb: 244,246,249;  /* 遮罩色：白天压白色（= 白天 --bg）*/
-}
-
-/* ---- 主题③「流光」----
-   原先的「深色流光」，配色逐字保留、不做任何改动。
-   与另外两套的唯一区别是动态特效：WebGL 光带与动态网格只在这套主题下启动。 */
-:root[data-theme="flow"] {
-  --bg: #0e1219;
-  --nav-bg-top: rgba(11,14,20,0.85);
-  --nav-bg-mid: rgba(11,14,20,0.45);
-  --history-bg: rgba(16,20,28,0.88);
-  --card-bg: rgba(10,14,22,0.25);
-  --text: #e8e8ec;
-  --text-sub: #8a8a9a;
-
-  --ink-rgb: 255,255,255;
-  --ink: #ffffff;
-  --ink-shadow-rgb: 0,0,0;
-  --shade-rgb: 0,0,0;
-
-  --glass-core: rgba(var(--ink-rgb),0.13);
-  --glass-edge: linear-gradient(135deg, rgba(var(--ink-rgb),0.75) 0%, rgba(var(--ink-rgb),0.08) 35%, rgba(var(--ink-rgb),0.04) 65%, rgba(var(--ink-rgb),0.5) 100%);
-  --glass-glow: 0 0 16px rgba(var(--ink-rgb),0.1), 0 0 32px rgba(var(--ink-rgb),0.05);
-  --border: rgba(var(--ink-rgb),0.07);
-  --danger: #9fb4cf;
-  --error: #e39b95;
-  --shadow: 0 8px 32px rgba(var(--shade-rgb),0.5);
-
-  --text-faint: #cfd0d1;
-  --placeholder: #bbbdbf;
-  --drag-bg: rgba(20,26,36,0.95);
-  --danger-border: rgba(159,180,207,0.5);
-  --focus-glow: rgba(180, 200, 255, 0.5);
-  --focus-glow-soft: rgba(150, 180, 255, 0.2);
-  --focus-glow-inset: rgba(180, 200, 255, 0.12);
-  --focus-ring: rgba(60,80,180,0.1);
-  --bg-tint-a: rgba(80,60,180,0.07);
-  --bg-tint-b: rgba(40,80,160,0.05);
-  --hero-glow-a: rgba(26,56,112,0.55);
-  --hero-glow-b: rgba(32,74,126,0.45);
 }
 
 /* =========================================
@@ -682,23 +632,21 @@ footer a:hover {
 
 /* 注意：这里刻意不做 prefers-reduced-motion 适配。
    Windows 的「显示动画」开关(MinAnimate)会映射成 prefers-reduced-motion: reduce 且全局生效，
-   一旦用它关停流光/入场动画，页面在关掉系统动画的机器上会整片失去动效。
-   目前代码里没有任何 reduced-motion 开关（deep-bg.js 与 hero-shader.js 都没有），
-   如需恢复该适配，要在两个渲染循环里各自加判断。 */
+   一旦用它关停入场动画，页面在关掉系统动画的机器上会整片失去动效。
+   页面现在只剩 CSS 入场动画（js 侧已无任何渲染循环），如需适配就在这里加判断。 */
 
 
 
 /* =========================================
-   流动背景容器
+   背景层（壁纸 + 光晕）
    ========================================= */
-/* 夜间 / 白天壁纸：最底层（z-index:-4），这两套主题共用同一张图与同一套机制，
+/* 夜间 / 白天壁纸：最底层（z-index:-4），两套主题共用同一张图与同一套机制，
    只是各自在 :root 与 :root[data-theme="day"] 里写了不同的 --wp-* 参数
-   （模糊、遮罩浓度、遮罩色都不同，见上面的变量注释）。
-   流光主题不用壁纸，下面 display:none —— 隐藏元素的背景图不会被下载。 */
+   （模糊、遮罩浓度、遮罩色都不同，见上面的变量注释）。 */
 #bg-wallpaper {
   position: fixed;
   inset: 0;
-  z-index: -4;   /* 比光带(-3)还深，是最底下的一层 */
+  z-index: -4;   /* 最底下的一层 */
   pointer-events: none;
   /* scale 把 blur 糊出来的透明边推出可视区 */
   transform: scale(var(--wp-scale, 1));
@@ -723,59 +671,29 @@ footer a:hover {
   );
   opacity: var(--wp-overlay, 1);
 }
-:root[data-theme="flow"] #bg-wallpaper {
-  display: none;
-}
 @media (max-width: 640px) {
   #bg-wallpaper {
     background-image: url("../images/tom-mobile.webp");
   }
 }
 
-/* Hero 区流动光带（WebGL）：只铺首屏一条，底部渐隐后交给下面的 CSS 网格。
-   ⚠️ 兜底色**不能是近黑**：本层 z-index:-3，画在 body 背景之前，
-   如果给它一个近黑底（曾经是 #050a18），在 WebGL 画出第一帧之前
-   整屏会先黑一下再变亮 —— 就是"进页面突然黑屏"的原因。
-   这里只保留很淡的蓝色光晕，底色交给 body（透明）。 */
+/* Hero 区静态光晕（纯 CSS）：只铺首屏一条，底部渐隐。
+   ⚠️ 底色**不能是近黑**：本层 z-index:-3，画在 body 背景之前，
+   如果给它一个近黑底（曾经是 #050a18），会整屏先黑一下再变亮 ——
+   就是"进页面突然黑屏"的原因。这里只保留很淡的蓝色光晕，底色交给 body（透明）。 */
 #hero-shader {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -3;   /* 光带在最底，网格(-1) 盖在上面 */
+  z-index: -3;   /* 压在壁纸(-4)之上、内容之下 */
   pointer-events: none;
   background:
     radial-gradient(ellipse 70% 60% at 62% 28%, var(--hero-glow-a) 0%, transparent 62%),
     radial-gradient(ellipse 90% 70% at 40% 45%, var(--hero-glow-b) 0%, transparent 70%);
   -webkit-mask: linear-gradient(rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.91) 12%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.72) 100%);
   mask: linear-gradient(rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.91) 12%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.72) 100%);
-}
-#hero-shader canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-
-#deep-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* 网格层：CSS mask 从上到下渐隐（参考 dsh-plugin-backdrop） */
-.deep-bg-grid {
-  position: absolute;
-  inset: 0;
-  z-index: 8;
-  mask: linear-gradient(rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0.55) 100%);
-  -webkit-mask: linear-gradient(rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0.55) 100%);
 }
 
 /* =========================================

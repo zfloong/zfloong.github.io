@@ -12,15 +12,14 @@
   <link rel="stylesheet" href="css/main.css">
   <!-- 首帧底色 + 整页淡入，必须是「内联且靠前」的：
        默认底色来自浏览器，而 main.css 是外链 —— 在它生效之前会先画一帧默认色，
-       看起来就是"进页面黑一下/白一下"。这里把三套主题的底色和淡入写进文档开头，
+       看起来就是"进页面黑一下/白一下"。这里把两套主题的底色和淡入写进文档开头，
        再由紧跟着的内联脚本在 CSS 生效前把主题定下来，从第一个字节起就是正确颜色，
        内容整体「从暗渐渐浮现」，与官网那种"先暗、再慢慢显出内容"的入场一致。
-       这三行底色必须与 css/main.css 里各主题的 --bg 保持一致。 -->
+       这两行底色必须与 css/main.css 里各主题的 --bg 保持一致。 -->
   <style>
     html { background-color: #090d15; }                 /* 兜底：无 JS 或主题识别不出来 */
     html[data-theme="night"] { background-color: #090d15; }
     html[data-theme="day"]   { background-color: #f4f6f9; }
-    html[data-theme="flow"]  { background-color: #0e1219; }
     body {
       margin: 0;
       animation: bootFade 1.5s ease-in-out both;
@@ -35,7 +34,7 @@
        所以存储键在这里是硬编码的 —— 必须与 js/modules/theme.js 里的 STORAGE_KEY 一致。 -->
   <script>
     (function () {
-      var KNOWN = { night: 1, day: 1, flow: 1 };
+      var KNOWN = { night: 1, day: 1 };
       var id = 'night';
       try {
         id = localStorage.getItem('flyloong_theme') || 'night';
@@ -48,15 +47,11 @@
 </head>
 <body>
 
-  <!-- 夜间壁纸：最底层（z-index:-4），仅夜间主题显示；
-       day / flow 主题下 display:none —— 浏览器不会下载隐藏元素的背景图 -->
+  <!-- 壁纸层：最底层（z-index:-4），夜间 / 白天共用同一张图，只有参数不同（见 main.css 的 --wp-*） -->
   <div id="bg-wallpaper" aria-hidden="true"></div>
 
-  <!-- 流动背景：hero 光带（WebGL）+ 交互网格 -->
+  <!-- Hero 区静态光晕（纯 CSS：最底层之上、内容之下） -->
   <div id="hero-shader" aria-hidden="true"></div>
-  <div id="deep-bg">
-    <div class="deep-bg-grid"></div>
-  </div>
 
   <nav class="navbar">
     <div class="nav-container">
