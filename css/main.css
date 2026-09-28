@@ -228,12 +228,13 @@ body {
   gap: 0.5rem;
   /* 横向滚动用的容器。注意：只要 overflow-x 不是 visible，overflow-y 就会被算成 auto，
      于是这个容器会把按钮的 box-shadow（那圈外晕/光晕）沿上下边切成平口 —— 看起来
-     "胶囊被一个框切掉了"。所以上下各留 18px 的裁切余地。
+     "胶囊被一个框切掉了"。按钮最外那层投影是 0 5px 18px，向下要伸出 5+18=23px，
+     所以上下必须留出比 23px 更多的裁切余地（这里取 30px）。
      配合同样的负 margin 把布局高度抵消，标签的位置与间距完全不变。 */
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 18px 0;
-  margin: -18px 0;
+  padding: 30px 0;
+  margin: -30px 0;
 }
 .nav-tabs::-webkit-scrollbar { display: none; }
 
