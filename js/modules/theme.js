@@ -1,24 +1,21 @@
 /**
  * 主题管理
  *
- * 三套主题（夜间 / 白天 / 流光）都用 <html data-theme="…"> 驱动：
+ * 两套主题（夜间 / 白天）都用 <html data-theme="…"> 驱动：
  * main.css 里每套主题是一个 `:root[data-theme="…"]` 变量覆写块，
  * 这里只负责「选哪一套」和「记住哪一套」，不碰任何配色值。
  *
  * 首帧防闪在 index.html 的内联脚本里做 —— 那段必须在 CSS 生效前同步跑完，
  * 不能写成模块。所以存储键在那边是硬编码的，两边必须保持一致。
- *
- * 特效（WebGL 光带 / 动态网格）不归这里管：调用方监听 themechange 后自行启停。
  */
 
 const STORAGE_KEY = 'flyloong_theme';
 const DEFAULT_THEME = 'night';
 
-/** 三套主题的元信息，供切换入口渲染用 */
+/** 两套主题的元信息，供切换入口渲染用 */
 export const THEMES = [
   { id: 'night', label: '夜间', hint: '深色 · 轻量' },
   { id: 'day',   label: '白天', hint: '冷白 · 轻量' },
-  { id: 'flow',  label: '流光', hint: '深色 · 动态背景' },
 ];
 
 const IDS = THEMES.map((t) => t.id);

@@ -6,11 +6,8 @@ import { fetchData } from './modules/data-service.js';
 import { renderSearch, renderNavAndContent } from './modules/renderer.js';
 import { bindSearchEvents, bindTabEvents, bindSectionToggleEvents } from './modules/event-handler.js';
 import { showLoading, hideLoading, showError, initNetworkListeners } from './modules/error-handler.js';
-import { startDeepBg, stopDeepBg } from './modules/deep-bg.js';
-import { startHeroShader, stopHeroShader } from './modules/hero-shader.js';
 import { initKeyboardNav } from './modules/keyboard-nav.js';
 import { initThemeSwitcher } from './modules/theme-switcher.js';
-import { getTheme } from './modules/theme.js';
 import { loadDraft, clearDraft } from './modules/draft-store.js';
 
 let currentData = null;
@@ -140,21 +137,6 @@ function rerender() {
   }
 }
 
-/**
- * 按当前主题启停动态特效：只有「流光」跑 WebGL 光带 + 动态网格，
- * 夜间 / 白天一律停（背景退回 CSS 静态兜底：body 两道 tint + #hero-shader 的兜底光晕）。
- * 切换主题会触发 themechange，重跑这里即可。
- */
-function applyThemeEffects() {
-  if (getTheme() === 'flow') {
-    startHeroShader();
-    startDeepBg();
-  } else {
-    stopHeroShader();
-    stopDeepBg();
-  }
-}
-
 function initPage(data) {
   currentData = data;
 
@@ -165,7 +147,6 @@ function initPage(data) {
   bindTabEvents();
   bindSectionToggleEvents();
 
-  applyThemeEffects();
   initKeyboardNav();
 }
 
@@ -190,7 +171,6 @@ function bindEditEntry() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemeSwitcher();
-  document.addEventListener('themechange', applyThemeEffects);
   initNetworkListeners();
   loadDataAndInit();
   bindEditEntry();
