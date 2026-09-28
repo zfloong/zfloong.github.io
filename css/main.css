@@ -73,6 +73,15 @@
   --bg-grid-dot-r: 1.8;          /* 顶点半径（DeepSeek 默认 1.8）*/
   --bg-grid-dot: 0.12;           /* 顶点不透明度（DeepSeek 默认 0.12）*/
   --bg-grid-highlight: 255,255,255;  /* 鼠标附近的高亮色（DeepSeek 用纯白）*/
+
+  /* --- 夜间壁纸参数（#bg-wallpaper）---
+     壁纸的可调项集中在这几个变量里。白天主题在下面
+     :root[data-theme="day"] 里另写一份自己的值，结构与这里一一对应。 */
+  --wp-blur: 12px;         /* 模糊半径：越大越看不清原图，只留色调 */
+  --wp-sat: 1;             /* 饱和度 */
+  --wp-scale: 1;           /* 放大倍数：blur 会把四边糊成半透明，靠它推出可视区 */
+  --wp-overlay: 1;         /* 遮罩浓度 0–1：越小背景越亮、越"看得见图" */
+  --wp-overlay-rgb: 9,13,21;  /* 遮罩色：夜间压深色（= 夜间 --bg）*/
 }
 
 /* ---- 主题②「白天」----
@@ -112,6 +121,16 @@
   --bg-tint-b: rgba(70,120,200,0.06);
   --hero-glow-a: rgba(190,210,255,0.45);
   --hero-glow-b: rgba(205,222,255,0.35);
+
+  /* --- 白天壁纸参数（与夜间同结构，仅取值不同）---
+     白天是冷白底 + 深墨色文字，所以遮罩必须走**白色系**：
+     用深色遮罩会把背景压暗，深色文字就读不清了。
+     浓度比夜间低（0.5），让图更透出来一点，仍是"冷白"的观感。 */
+  --wp-blur: 6px;
+  --wp-sat: 1;
+  --wp-scale: 1;
+  --wp-overlay: 0.5;
+  --wp-overlay-rgb: 244,246,249;  /* 遮罩色：白天压白色（= 白天 --bg）*/
 }
 
 /* ---- 主题③「流光」----
@@ -648,37 +667,44 @@ footer a:hover {
 /* =========================================
    流动背景容器
    ========================================= */
-/* 夜间壁纸：最底层（z-index:-4），只在夜间主题显示。
-   把 tom.png 大幅模糊 + 叠深色遮罩，只留蓝/棕色调做氛围底，看不出具体卡通，
-   界面仍是深色夜间，白字与玻璃卡片清晰。
-   桌面/手机两档图片由 sharp 预生成（images/tom-*.webp），这里按视口宽度选图。
-   day / flow 主题下 display:none —— 隐藏元素的背景图不会被浏览器下载，
-   所以只有夜间用户才会拉这两张图。 */
+/* 夜间 / 白天壁纸：最底层（z-index:-4），这两套主题共用同一张图与同一套机制，
+   只是各自在 :root 与 :root[data-theme="day"] 里写了不同的 --wp-* 参数
+   （模糊、遮罩浓度、遮罩色都不同，见上面的变量注释）。
+   流光主题不用壁纸，下面 display:none —— 隐藏元素的背景图不会被下载。 */
 #bg-wallpaper {
   position: fixed;
   inset: 0;
   z-index: -4;   /* 比光带(-3)还深，是最底下的一层 */
   pointer-events: none;
-  /* 放大 1.2：filter 会把四边 blur 成半透明，靠 scale 把透明边推出可视区 */
-  transform: scale(1.2);
-  filter: blur(60px) saturate(1.15);
-  background-image:
-    /* 深色遮罩：把模糊后的亮蓝天空压成夜间氛围 */
-    linear-gradient(180deg, rgba(9,13,21,0.62) 0%, rgba(9,13,21,0.78) 55%, rgba(9,13,21,0.9) 100%),
-    url("../images/tom-desktop.webp");
-  background-size: 100% 100%, cover;
-  background-position: center, center;
+  /* scale 把 blur 糊出来的透明边推出可视区 */
+  transform: scale(var(--wp-scale, 1));
+  filter: blur(var(--wp-blur, 12px)) saturate(var(--wp-sat, 1));
+  background-image: url("../images/tom-desktop.webp");
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
 }
-:root[data-theme="day"] #bg-wallpaper,
+/* 遮罩：单独一层伪元素（而非叠在 background-image 里），
+   这样浓度只用一个变量 --wp-overlay 调，颜色用 --wp-overlay-rgb 按主题换。
+   注意它会被父级的 filter:blur 一起糊掉 —— 线性渐变糊过仍是线性渐变，无影响。 */
+#bg-wallpaper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--wp-overlay-rgb, 9,13,21), 0.62) 0%,
+    rgba(var(--wp-overlay-rgb, 9,13,21), 0.78) 55%,
+    rgba(var(--wp-overlay-rgb, 9,13,21), 0.9) 100%
+  );
+  opacity: var(--wp-overlay, 1);
+}
 :root[data-theme="flow"] #bg-wallpaper {
   display: none;
 }
 @media (max-width: 640px) {
   #bg-wallpaper {
-    background-image:
-      linear-gradient(180deg, rgba(9,13,21,0.62) 0%, rgba(9,13,21,0.78) 55%, rgba(9,13,21,0.9) 100%),
-      url("../images/tom-mobile.webp");
+    background-image: url("../images/tom-mobile.webp");
   }
 }
 
