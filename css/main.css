@@ -286,20 +286,29 @@ body {
   background: rgba(var(--ink-rgb),0.05);
 }
 .tab-btn.active {
-  /* 只留「一层半透明底 + 一枚细描边」，不再做立体压印：
-     原先描边用 --glass-edge 的 135° 渐变，会在左上/右下描出一圈亮弧，
-     再叠 inset 顶部高光与文字投影，整体像被"压"出来的立体按钮、边缘很硬。
-     去干净后边缘只剩圆角轮廓，观感圆润。 */
-  background: var(--glass-core);
+  /* 柔和但不单薄：不要再回到"立体压印"（渐变亮弧 + 顶部高光 + 文字投影），
+     而是给边缘"加重量"——
+     · 底色在 glass-core 上再叠一层很淡的白，胶囊才立得起来，不至于发飘；
+     · 边缘用 box-shadow 的 1px 阴影环 + 一圈更淡的外晕来画，而不是 border 实线：
+       阴影环有抗锯齿、外晕把 1px 撑成视觉上的"两三层"，线条就不细也不锋利；
+     · 投影分近/远两层，给一点圆润的浮起感。 */
+  background: linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08)), var(--glass-core);
   color: var(--ink);
   opacity: 1;
-  border-color: rgba(var(--ink-rgb),0.16);
+  border-color: transparent;
   backdrop-filter: blur(12px) saturate(1.35);
-  box-shadow: 0 2px 10px rgba(var(--shade-rgb),0.22);
+  box-shadow:
+    0 0 0 1px rgba(var(--ink-rgb),0.2),
+    0 0 0 3px rgba(var(--ink-rgb),0.07),
+    0 1px 4px rgba(var(--shade-rgb),0.22),
+    0 5px 18px rgba(var(--shade-rgb),0.18);
 }
 .tab-btn.active:hover {
-  border-color: rgba(var(--ink-rgb),0.26);
-  box-shadow: 0 3px 14px rgba(var(--shade-rgb),0.3);
+  box-shadow:
+    0 0 0 1px rgba(var(--ink-rgb),0.3),
+    0 0 0 3px rgba(var(--ink-rgb),0.1),
+    0 1px 4px rgba(var(--shade-rgb),0.24),
+    0 7px 22px rgba(var(--shade-rgb),0.24);
 }
 
 /* =========================================
@@ -371,14 +380,18 @@ body {
   border-color: rgba(var(--ink-rgb),0.15);
 }
 .engine-btn.active {
-  /* 与 .tab-btn.active 同一套「柔和胶囊」：无渐变描边、无顶部高光、无文字投影 */
+  /* 与 .tab-btn.active 同一套「柔和但有厚度」：阴影环当边缘 + 外晕 + 近/远两层投影 */
   opacity: 1;
-  background: var(--glass-core);
+  background: linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08)), var(--glass-core);
   color: var(--ink);
-  border-color: rgba(var(--ink-rgb),0.16);
+  border-color: transparent;
   font-weight: 600;
   backdrop-filter: blur(12px) saturate(1.35);
-  box-shadow: 0 2px 10px rgba(var(--shade-rgb),0.22);
+  box-shadow:
+    0 0 0 1px rgba(var(--ink-rgb),0.2),
+    0 0 0 3px rgba(var(--ink-rgb),0.07),
+    0 1px 4px rgba(var(--shade-rgb),0.22),
+    0 5px 18px rgba(var(--shade-rgb),0.18);
 }
 
 .search-box {
