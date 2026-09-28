@@ -227,17 +227,17 @@ body {
   display: flex;
   gap: 0.5rem;
   /* 横向滚动用的容器。注意：只要 overflow-x 不是 visible，overflow-y 就会被算成 auto，
-     于是这个容器会把按钮的 box-shadow（那圈外晕/光晕）沿四条边切成平口 —— 看起来就是
+     于是这个容器会把按钮的 box-shadow 沿四条边切成平口 —— 看起来就是
      "有个方框把胶囊切了、显示不全"。
-     · 上下：最外那层投影是 0 5px 18px，向下伸出 5+18=23px；
+     · 上下：激活态按钮最外的 --glass-glow 是 0 0 16px + 0 0 32px，四向各伸出 32px；
      · 左右：容器左右的 padding 原本是 0，裁切边界正好压在首/尾标签自己的边缘上，
        光晕被齐根切平。
-     所以四边都放开 30px；再用同样的负 margin 把布局尺寸抵消掉，
-     标签的位置、间距、导航栏高度都不变（实测按钮 top 仍为 11.83px）。 */
+     所以四边都放开 36px（比 32px 多留 4px 富余）；再用同样的负 margin 把布局尺寸
+     抵消掉，标签的位置、间距、导航栏高度都不变（实测按钮 top 仍为 11.83px）。 */
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 30px;
-  margin: -30px;
+  padding: 36px;
+  margin: -36px;
 }
 .nav-tabs::-webkit-scrollbar { display: none; }
 
@@ -250,7 +250,7 @@ body {
   right: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  /* .nav-tabs 为了给阴影留裁切余地而向外扩了 30px（用了负 margin）。
+  /* .nav-tabs 为了给光晕留裁切余地而向外扩了 36px（用了负 margin）。
      标签多到铺满一行时，那块透明的扩展区会盖到本按钮上，这里抬到它上面，
      保证按钮始终可点、且压在标签之上。 */
   z-index: 1;
@@ -299,29 +299,23 @@ body {
   background: rgba(var(--ink-rgb),0.05);
 }
 .tab-btn.active {
-  /* 柔和但不单薄：不要再回到"立体压印"（渐变亮弧 + 顶部高光 + 文字投影），
-     而是给边缘"加重量"——
-     · 底色在 glass-core 上再叠一层很淡的白，胶囊才立得起来，不至于发飘；
-     · 边缘用 box-shadow 的 1px 阴影环 + 一圈更淡的外晕来画，而不是 border 实线：
-       阴影环有抗锯齿、外晕把 1px 撑成视觉上的"两三层"，线条就不细也不锋利；
-     · 投影分近/远两层，给一点圆润的浮起感。 */
-  background: linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08)), var(--glass-core);
+  /* 这是 GitHub 线上那版的「立体压印」原样配方（曾试过三套更素/更厚的方案都不满意，
+     最终决定保持原样，不要再改）。
+     依赖三个已有 token：
+       --glass-edge      135° 渐变描边（左上最亮 → 右下次亮），从 border-box 画
+       --glass-glow      0 0 16px + 0 0 32px 的外光晕
+       --ink-shadow-rgb  文字投影基色（深底压黑晕、浅底压白晕）
+     注意：外光晕要伸出 32px，所以 .nav-tabs 的裁切余地必须 ≥ 32px（见该处注释）。 */
+  background: linear-gradient(var(--glass-core), var(--glass-core)) padding-box, var(--glass-edge) border-box;
   color: var(--ink);
+  text-shadow: 0 0 0.5px currentColor, 0 1px 2px rgba(var(--ink-shadow-rgb),0.45);
   opacity: 1;
   border-color: transparent;
   backdrop-filter: blur(12px) saturate(1.35);
-  box-shadow:
-    0 0 0 1px rgba(var(--ink-rgb),0.2),
-    0 0 0 3px rgba(var(--ink-rgb),0.07),
-    0 1px 4px rgba(var(--shade-rgb),0.22),
-    0 5px 18px rgba(var(--shade-rgb),0.18);
+  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--ink-rgb),0.45);
 }
 .tab-btn.active:hover {
-  box-shadow:
-    0 0 0 1px rgba(var(--ink-rgb),0.3),
-    0 0 0 3px rgba(var(--ink-rgb),0.1),
-    0 1px 4px rgba(var(--shade-rgb),0.24),
-    0 7px 22px rgba(var(--shade-rgb),0.24);
+  box-shadow: 0 4px 14px rgba(var(--ink-rgb),0.18), var(--glass-glow), inset 0 1px 1px rgba(var(--ink-rgb),0.8);
 }
 
 /* =========================================
@@ -393,18 +387,15 @@ body {
   border-color: rgba(var(--ink-rgb),0.15);
 }
 .engine-btn.active {
-  /* 与 .tab-btn.active 同一套「柔和但有厚度」：阴影环当边缘 + 外晕 + 近/远两层投影 */
+  /* 同 .tab-btn.active：GitHub 线上那版的「立体压印」原样配方（谷歌/百度/必应） */
   opacity: 1;
-  background: linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08)), var(--glass-core);
+  background: linear-gradient(var(--glass-core), var(--glass-core)) padding-box, var(--glass-edge) border-box;
   color: var(--ink);
   border-color: transparent;
   font-weight: 600;
   backdrop-filter: blur(12px) saturate(1.35);
-  box-shadow:
-    0 0 0 1px rgba(var(--ink-rgb),0.2),
-    0 0 0 3px rgba(var(--ink-rgb),0.07),
-    0 1px 4px rgba(var(--shade-rgb),0.22),
-    0 5px 18px rgba(var(--shade-rgb),0.18);
+  box-shadow: var(--glass-glow), inset 0 1px 1px rgba(var(--ink-rgb),0.45);
+  text-shadow: 0 1px 2px rgba(var(--ink-shadow-rgb),0.45);
 }
 
 .search-box {
