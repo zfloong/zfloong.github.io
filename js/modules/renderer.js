@@ -194,8 +194,11 @@ function buildCategorySection(cat, index) {
     cat.sections.forEach((sectionData, si) => {
       const sectionTitle = document.createElement('div');
       sectionTitle.className = 'section-group-title';
-      // 折叠状态存 localStorage，必须用稳定标识；用文案当 key 的话改个名状态就丢
-      sectionTitle.dataset.key = `${cat.id}-${si}`;
+      // 折叠状态存 localStorage，用 cat.id + 分组名当 key：分组重排/删除后索引会错位，
+      // 名字是这一段里唯一稳定的东西（改名的代价只是这一组折叠状态丢失）
+      sectionTitle.dataset.key = `${cat.id}-${sectionData.name}`;
+      // 编辑模式靠它知道这是第几个分组（加卡片要写回 cat.sections[si]），别再解析 key
+      sectionTitle.dataset.sec = String(si);
       sectionTitle.textContent = sectionData.name;
       section.appendChild(sectionTitle);
       section.appendChild(buildGrid(sectionData.items, cat.id, si));

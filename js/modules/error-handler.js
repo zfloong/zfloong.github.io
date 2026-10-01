@@ -28,10 +28,11 @@ function showLoading() {
         align-items: center;
         gap: 10px;
       `;
-      loadingElement.innerHTML = `
-        <div style="width: 20px; height: 20px; border: 2px solid var(--primary); border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        <span>加载中...</span>
-      `;
+      const spinner = document.createElement('div');
+      spinner.style.cssText = 'width: 20px; height: 20px; border: 2px solid var(--primary); border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;';
+      const label = document.createElement('span');
+      label.textContent = '加载中...';
+      loadingElement.append(spinner, label);
       document.body.appendChild(loadingElement);
     }
     loadingElement.style.display = 'flex';
@@ -80,19 +81,19 @@ function showError(message) {
       document.body.appendChild(errorElement);
     }
     
-    errorElement.innerHTML = `
-      <h3 style="color: #ef4444; margin-bottom: 10px;">错误</h3>
-      <p style="margin-bottom: 20px;">${message}</p>
-      <button id="retry-button" style="
-        background: var(--primary);
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: 500;
-      ">重试</button>
-    `;
+    // 用 DOM API 拼，不拼 innerHTML：面板里存着 token，手打的字段一旦被当 HTML 解析就等于递出写权限
+    const heading = document.createElement('h3');
+    heading.style.cssText = 'color: #ef4444; margin-bottom: 10px;';
+    heading.textContent = '错误';
+    const para = document.createElement('p');
+    para.style.cssText = 'margin-bottom: 20px;';
+    para.textContent = message;
+    const retryBtn = document.createElement('button');
+    retryBtn.id = 'retry-button';
+    retryBtn.type = 'button';
+    retryBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: 500;';
+    retryBtn.textContent = '重试';
+    errorElement.replaceChildren(heading, para, retryBtn);
     errorElement.style.display = 'block';
     
     // 添加重试按钮事件

@@ -597,8 +597,7 @@ function decorate() {
 
   document.querySelectorAll('.category-section .section-group-title').forEach(title => {
     const section = title.closest('.category-section');
-    const key = title.dataset.key || '';
-    const si = Number(key.slice(key.lastIndexOf('-') + 1));
+    const si = Number(title.dataset.sec);
     if (!section || !Number.isFinite(si)) return;
     const add = el('button', 'sec-add', '＋');
     add.type = 'button';

@@ -1,11 +1,11 @@
-﻿/**
+/**
  * 图标预取脚本
  * 从 data.json 中提取所有外部图标 URL，下载并本地化，然后重写 data.json
  *
  * 用法：node scripts/fetch-icons.mjs
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -42,6 +42,20 @@ function isExternalUrl(url) {
   return /^https?:\/\//.test(url);
 }
 
+/**
+ * 按文件头字节认真实格式。URL 里写的后缀经常和实际内容对不上
+ * （.ico 的地址返回 png、没后缀的返回 jpeg），只按路径猜会写出假扩展名。
+ * @returns {string|null} 扩展名（不含点），认不出返回 null
+ */
+function sniffKind(buffer) {
+  if (buffer.length >= 4 && buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) return 'png';
+  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) return 'jpg';
+  if (buffer.length >= 4 && buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) return 'gif';
+  if (buffer.length >= 12 && buffer.toString('latin1', 0, 4) === 'RIFF' && buffer.toString('latin1', 8, 12) === 'WEBP') return 'webp';
+  if (buffer.length >= 4 && buffer[0] === 0x00 && buffer[1] === 0x00 && buffer[2] === 0x01 && buffer[3] === 0x00) return 'ico';
+  return null;
+}
+
 // ========== 核心逻辑 ==========
 
 async function main() {
@@ -56,15 +70,8 @@ async function main() {
     if (!url || !isExternalUrl(url)) return;
     if (iconMap.has(url)) return;
     const slug = extractSlug(url);
-    let ext = '.png';
-    try {
-      const pathname = new URL(url).pathname;
-      if (pathname.endsWith('.svg')) ext = '.svg';
-      else if (pathname.endsWith('.ico')) ext = '.ico';
-      else if (pathname.endsWith('.jpg') || pathname.endsWith('.jpeg')) ext = '.jpg';
-    } catch {}
-    iconMap.set(url, { slug, ext });
-    collected.push({ url, slug, ext });
+    iconMap.set(url, { slug });
+    collected.push({ url, slug });
   }
 
   if (data.search?.quickLinks) {
@@ -89,17 +96,21 @@ async function main() {
     console.log(`创建目录: icons/\n`);
   }
 
+  // slug → 已有文件名：后缀由上次按字节嗅探决定，这里只按 slug 认，避免重复下载
+  const existingFiles = new Map();
+  for (const name of readdirSync(ICONS_DIR)) {
+    const dot = name.lastIndexOf('.');
+    if (dot > 0) existingFiles.set(name.slice(0, dot), name);
+  }
+
   const urlToLocal = {};
   let success = 0, skipped = 0, failed = 0;
 
-  for (const { url, slug, ext } of collected) {
-    const outExt = ext === '.ico' ? '.png' : ext;
-    const filename = `${slug}${outExt}`;
-    const outPath = join(ICONS_DIR, filename);
-
-    if (existsSync(outPath)) {
-      console.log(`[跳过] ${url} → icons/${filename}`);
-      urlToLocal[url] = `icons/${filename}`;
+  for (const { url, slug } of collected) {
+    const hit = existingFiles.get(slug);
+    if (hit) {
+      console.log(`[跳过] ${url} → icons/${hit}`);
+      urlToLocal[url] = `icons/${hit}`;
       skipped++;
       continue;
     }
@@ -113,28 +124,31 @@ async function main() {
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
+      let buffer = Buffer.from(await response.arrayBuffer());
 
-      if (ext === '.ico' && buffer.length > 0) {
+      const kind = sniffKind(buffer);
+      if (!kind) throw new Error('认不出的图片格式，跳过以免写出假扩展名');
+
+      let outExt = kind;
+      if (kind === 'ico') {
+        // 能转就转成 png（体积小、缩放稳），转出来的字节确实是 png，后缀跟着改；
+        // 转不了就按原始 ico 存，保证后缀与字节一致
         try {
           const sharp = (await import('sharp')).default;
-          const pngBuffer = await sharp(buffer)
+          buffer = await sharp(buffer)
             .resize(64, 64, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
             .png()
             .toBuffer();
-          writeFileSync(outPath, pngBuffer);
-          console.log(`  → icons/${filename} (ico→png, ${pngBuffer.length} bytes)`);
-        } catch {
-          writeFileSync(outPath, buffer);
-          console.log(`  → icons/${filename} (raw, ${buffer.length} bytes)`);
-        }
-      } else {
-        writeFileSync(outPath, buffer);
-        console.log(`  → icons/${filename} (${buffer.length} bytes)`);
+          outExt = 'png';
+        } catch { /* 保留原始 ico */ }
       }
 
+      const filename = `${slug}.${outExt}`;
+      const outPath = join(ICONS_DIR, filename);
+      writeFileSync(outPath, buffer);
+      existingFiles.set(slug, filename);
       urlToLocal[url] = `icons/${filename}`;
+      console.log(`  → icons/${filename} (${buffer.length} bytes)`);
       success++;
     } catch (err) {
       console.log(`  ✗ 失败: ${err.message}`);
