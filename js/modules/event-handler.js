@@ -33,21 +33,6 @@ function getSavedPreference(key, defaultValue = null) {
 }
 
 /**
- * 清除所有用户偏好
- */
-function clearAllPreferences() {
-  try {
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('userPreference_')) {
-        localStorage.removeItem(key);
-      }
-    });
-  } catch (error) {
-    console.error('清除偏好设置失败:', error);
-  }
-}
-
-/**
  * 绑定搜索切换事件
  * 为搜索引擎按钮添加点击事件，切换搜索引擎
  * @param {Object} searchData - 搜索相关配置数据
@@ -310,6 +295,6 @@ function bindTabEvents() {
   });
 }
 
-export { bindSearchEvents, bindTabEvents, bindSectionToggleEvents, clearAllPreferences };
+export { bindSearchEvents, bindTabEvents, bindSectionToggleEvents };
 
 

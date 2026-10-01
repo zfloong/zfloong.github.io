@@ -837,8 +837,4 @@ function initEditor(options) {
   enterEditMode();
 }
 
-function isEditMode() {
-  return document.body.classList.contains('edit-mode');
-}
-
-export { initEditor, toggleEditMode, isEditMode };
+export { initEditor, toggleEditMode };

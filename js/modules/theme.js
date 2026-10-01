@@ -12,8 +12,8 @@
 const STORAGE_KEY = 'flyloong_theme';
 const DEFAULT_THEME = 'night';
 
-/** 两套主题的元信息，供切换入口渲染用 */
-export const THEMES = [
+/** 两套主题的元信息，id 用于校验传入的主题名 */
+const THEMES = [
   { id: 'night', label: '夜间', hint: '深色 · 轻量' },
   { id: 'day',   label: '白天', hint: '冷白 · 轻量' },
 ];
@@ -29,7 +29,7 @@ export function getTheme() {
   return normalize(document.documentElement.getAttribute('data-theme'));
 }
 
-/** 切主题：写 DOM、存本地、广播 themechange */
+/** 切主题：写 DOM、存本地 */
 export function setTheme(id) {
   const next = normalize(id);
   document.documentElement.setAttribute('data-theme', next);
@@ -38,6 +38,5 @@ export function setTheme(id) {
   } catch (e) {
     // 隐私模式 / 存储被禁：本次会话内仍然生效，只是记不住
   }
-  document.dispatchEvent(new CustomEvent('themechange', { detail: { theme: next } }));
   return next;
 }

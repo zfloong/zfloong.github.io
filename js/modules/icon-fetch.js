@@ -121,10 +121,6 @@ async function loadIndex(force) {
   return index;
 }
 
-function refreshIndex() {
-  return loadIndex(true);
-}
-
 /** 仓库里已经有这个域名的图标就直接复用，不重复下载 */
 function existingPath(host) {
   if (!index) return null;
@@ -276,6 +272,5 @@ function applyPendingIcons(root = document) {
 
 export {
   grab, grabFromUrl, applyPendingIcons,
-  pendingList, pendingFor, noteIconsPushed, clearPending, loadPending,
-  hostOf, baseFor,
+  pendingList, pendingFor, noteIconsPushed, clearPending,
 };
