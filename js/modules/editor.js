@@ -611,6 +611,21 @@ function decorate() {
     title.appendChild(add);
   });
 
+  // 扁平分类没有分组标题，加卡片入口挂在分类区顶部那条 section-header 上
+  document.querySelectorAll('.category-section .section-header').forEach(header => {
+    const section = header.closest('.category-section');
+    if (!section) return;
+    const add = el('button', 'sec-add', '＋');
+    add.type = 'button';
+    add.title = '在这个分类里加一张卡片';
+    add.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      openCardForm({ cat: section.id, sec: null, idx: null });
+    });
+    header.appendChild(add);
+  });
+
   ctx.getData().categories.forEach(cat => {
     if (!Array.isArray(cat.sections)) return;
     const section = document.getElementById(cat.id);
