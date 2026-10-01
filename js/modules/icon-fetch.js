@@ -213,6 +213,54 @@ async function grab(url, token = getToken()) {
   throw new Error('这个网站没给可用的图标，可以先留空或手填');
 }
 
+/**
+ * 用别人（用户或网页版 AI）找到的一张图片直链换图标。
+ *
+ * 直链多半不带 CORS 头，浏览器照样读不到字节，所以还是塞进 wsrv.nl：
+ * 它对非图片直接 404（正好挡住「AI 给的是网页地址」这种情况），并且能读 svg、
+ * 统一栅格成 256px 的 png —— 从来路不明的链接里收图，走代理转一道才敢落盘。
+ *
+ * @param {string} iconUrl 图片直链
+ * @param {string} siteUrl 卡片网址，用来决定图标存成什么名字
+ * @returns {Promise<{path:string, dataUrl:string}>}
+ */
+async function grabFromUrl(iconUrl, siteUrl, token = getToken()) {
+  const host = hostOf(siteUrl);
+  if (!host) throw new Error('先把上面的网址填完整，图标要按它的域名命名');
+  const raw = String(iconUrl || '').trim();
+  if (!/^https?:\/\//i.test(raw)) throw new Error('图片链接要以 http:// 或 https:// 开头');
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), SOURCE_TIMEOUT);
+  try {
+    // fit=contain：不是正方形的 logo 也整个装进去，别裁掉半截
+    const proxied = `https://wsrv.nl/?url=${encodeURIComponent(raw)}&output=png&w=256&h=256&fit=contain`;
+    const res = await fetch(proxied, { mode: 'cors', cache: 'no-store', signal: controller.signal });
+    if (!res.ok) throw new Error('这个链接取不到图片，确认它打开就是一张图而不是网页');
+    const type = res.headers.get('content-type') || '';
+    if (!type.startsWith('image/')) throw new Error('这个链接返回的不是图片');
+    const blob = await res.blob();
+    if (blob.size < 200 || blob.size > 300 * 1024) {
+      throw new Error(`这张图 ${Math.round(blob.size / 1024)}KB，超出 200B~300KB 的可用范围`);
+    }
+    const kind = sniffKind(new Uint8Array(await blob.arrayBuffer()));
+    if (!kind) throw new Error('认不出这张图的格式，换成 png / jpg / ico 直链试试');
+
+    const path = `${ICON_DIR}/${baseFor(host)}.${kind.ext}`;
+    const dataUrl = await blobToDataUrl(new Blob([blob], { type: kind.mime }));
+    const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+    if (!addPending(path, { dataUrl, base64, host, at: Date.now() })) {
+      throw new Error('浏览器存储满了，先推送或清掉草稿再抓');
+    }
+    return { path, dataUrl };
+  } catch (error) {
+    if (error.name === 'AbortError') throw new Error('取这个链接超时了，换一个试试');
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /** 已抓到的图标贴回卡片：刷新后 data.json 里的路径还没有对应文件，这里用暂存的图顶上 */
 function applyPendingIcons(root = document) {
   const map = loadPending();
@@ -227,7 +275,7 @@ function applyPendingIcons(root = document) {
 }
 
 export {
-  grab, applyPendingIcons,
+  grab, grabFromUrl, applyPendingIcons,
   pendingList, pendingFor, noteIconsPushed, clearPending, loadPending,
   hostOf, baseFor,
 };

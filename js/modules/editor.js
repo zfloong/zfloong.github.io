@@ -19,7 +19,7 @@
 
 import { initDragSort, cancelDrag, isDragClickSuppressed } from './drag-sort.js';
 import { loadDraft, saveDraft, clearDraft, toRepoJson, copyText } from './draft-store.js';
-import { grab, applyPendingIcons, pendingFor, pendingList, noteIconsPushed, clearPending } from './icon-fetch.js';
+import { grab, grabFromUrl, applyPendingIcons, pendingFor, pendingList, noteIconsPushed, clearPending } from './icon-fetch.js';
 import {
   getToken, setToken, clearToken,
   getBase, setBase,
@@ -60,6 +60,17 @@ function urlKind(url) {
   if (!value) return 'empty';
   if (/^https?:\/\//i.test(value)) return 'http';
   return /^[a-z][a-z0-9+.-]*:/i.test(value) ? 'scheme' : 'relative';
+}
+
+/**
+ * 给网页版 AI 的一句话：让它去站上找图标，并回一个「打开就是图片」的直链。
+ * 重点是把「不要给网页地址」写死，否则十有八九会甩回来一个页面链接。
+ */
+function iconPrompt(siteUrl) {
+  const site = (siteUrl || '').trim() || '（网址还没填）';
+  return `请访问 ${site} ，帮我找到这个网站的图标（favicon 或站点 logo）。`
+    + '给我一个可以直接下载的图片地址：打开就是图片本身（形如 https://…/icon.png），不要给我网页地址。'
+    + '尽量正方形、边长 128px 以上，优先 apple-touch-icon 或站点 logo 原图。只回复这一个链接，不要解释。';
 }
 
 function catById(data, id) {
@@ -209,8 +220,63 @@ function openCardForm(target) {
     || url.input.value.trim() !== original.url
     || icon.input.value.trim() !== original.icon;
 
+  // 兜底图 / 完全抓不到时的补救入口。静态站自己够不着 AI（没有 key 也没有后端），
+  // 所以只生成一句话让用户去网页端跑腿；链接拿回来之后的取图、校验、随 data.json
+  // 提交进 icons/ 全归我们，用户只需要粘贴 + 保存。
+  const promptBox = el('div', 'edit-prompt', '');
+  const refreshPrompt = () => { promptBox.textContent = iconPrompt(url.input.value); };
+  const rescueTip = el('div', 'edit-hint grow', '抓到的图不对？把下面这句发给能联网的 AI（豆包 / ChatGPT 等），再把它给的图片直链贴回来：');
+  const rescueHead = el('div', 'edit-rescue-head');
+  rescueHead.append(rescueTip, button('复制这句话', 'mini', onCopyPrompt));
+  const linkInput = el('input', 'edit-input');
+  linkInput.type = 'text';
+  linkInput.spellcheck = false;
+  linkInput.placeholder = '粘贴 AI 给的图片直链';
+  const useMsg = el('span', 'edit-hint grow', '');
+  const useBtn = button('用这张', 'mini', onUseLink);
+  const linkRow = el('div', 'edit-icon-row');
+  linkRow.append(linkInput, useBtn, useMsg);
+  const rescue = el('div', 'edit-rescue');
+  rescue.append(rescueHead, promptBox, linkRow);
+  rescue.hidden = true;
+
+  const setUseMsg = (text, warn) => {
+    useMsg.textContent = text;
+    useMsg.classList.toggle('warn', !!warn);
+  };
+  const showRescue = (on) => {
+    rescue.hidden = !on;
+    if (on) refreshPrompt();
+  };
+  // 网址改了就重算提示词，否则 AI 会照着上一个域名找
+  url.input.addEventListener('input', () => { if (!rescue.hidden) refreshPrompt(); });
+
   const error = el('div', 'edit-error');
-  panelBody.append(name.wrap, url.wrap, icon.wrap, iconRow, error);
+  panelBody.append(name.wrap, url.wrap, icon.wrap, iconRow, rescue, error);
+
+  async function onCopyPrompt() {
+    refreshPrompt();
+    const ok = await copyText(promptBox.textContent);
+    setUseMsg(ok ? '已复制，去网页端粘贴' : '复制失败：浏览器没给剪贴板权限，手动选中上面那段也行', !ok);
+  }
+
+  async function onUseLink() {
+    const link = linkInput.value.trim();
+    if (!link) { setUseMsg('先粘贴一个图片直链', true); return; }
+    useBtn.disabled = true;
+    setUseMsg('取图中…', false);
+    try {
+      const got = await grabFromUrl(link, url.input.value);
+      icon.input.value = got.path;
+      showPreview(got.path);
+      setGrabMsg('');
+      setUseMsg(`已用这张（${got.path}），推送时一起提交`, false);
+    } catch (err) {
+      setUseMsg(err.message, true);
+    } finally {
+      useBtn.disabled = false;
+    }
+  }
 
   async function onGrab() {
     const raw = url.input.value.trim();
@@ -221,11 +287,15 @@ function openCardForm(target) {
       const got = await grab(raw);
       icon.input.value = got.path;
       showPreview(got.path);
-      setGrabMsg(got.reused ? '仓库里已经有这张图标了，直接用'
-        : got.generic ? '只从兜底服务拿到一张通用图标，多半不是这个网站的，建议换一张'
-          : '已抓到，推送时和 data.json 一起提交', !!got.generic);
+      // 这一次是兜底图才需要补救入口；换成好图之后要收回去，别一直杵在那
+      const needRescue = !got.reused && !!got.generic;
+      showRescue(needRescue);
+      if (got.reused) setGrabMsg('仓库里已经有这张图标了，直接用');
+      else if (needRescue) setGrabMsg('只从兜底服务拿到一张通用图标，多半不是这个网站的，建议换一张', true);
+      else setGrabMsg('已抓到，推送时和 data.json 一起提交');
     } catch (err) {
       setGrabMsg(err.message, true);
+      showRescue(true);   // 一张都没抓到的时候，这条路最有用
     } finally {
       grabBtn.disabled = false;
     }
@@ -277,7 +347,7 @@ async function autoIcon(target) {
     target.icon = got.path;
     applyChange();
     flash(got.reused ? `已套用仓库里现成的 ${got.path}`
-      : got.generic ? '图标来自兜底服务，可能只是通用图标，建议核对'
+      : got.generic ? '只抓到兜底图，可能不是这个站的图标；再点开这张卡片可以换成 AI 找的图'
         : '已抓取图标，推送时一起提交');
   } catch (error) {
     flash(`图标没抓到（${error.message}）`);

@@ -917,6 +917,42 @@ body.edit-open {
   min-width: 0;
   margin-top: 0;
 }
+
+/* 抓不到 / 只抓到兜底图时才展开的补救区：复制一句话去网页版 AI 问，再把图片直链贴回来。
+   虚线框是为了让人一眼看出「这是另一条路」，默认整块 hidden。 */
+.edit-rescue {
+  margin: -0.35rem 0 0.95rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+}
+.edit-rescue-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+.edit-prompt {
+  margin: 0.55rem 0;
+  padding: 0.5rem 0.6rem;
+  max-height: 5.6rem;
+  overflow-y: auto;
+  color: var(--text);
+  font-size: 0.66rem;
+  line-height: 1.6;
+  background: rgba(var(--shade-rgb),0.25);
+  border-radius: 8px;
+  word-break: break-word;   /* 提示词里嵌着网址，不让它把抽屉撑破 */
+}
+/* 借图标行来排「输入框 + 用这张 + 结果」，但它在外面是贴着字段的负边距，进这块要归零 */
+.edit-rescue .edit-icon-row {
+  margin: 0.55rem 0 0;
+}
+.edit-rescue .edit-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.74rem;
+}
 /* 「只抓到兜底图 / 三源全废」这类提醒：默认那档灰太轻，一扫就过去了，
    换成琥珀实色并加一点字重，视线会停一下 */
 .edit-hint.warn {
