@@ -215,7 +215,9 @@ function openCardForm(target) {
       const got = await grab(raw);
       icon.input.value = got.path;
       showPreview(got.path);
-      grabMsg.textContent = got.reused ? '仓库里已经有这张图标了，直接用' : '已抓到，推送时和 data.json 一起提交';
+      grabMsg.textContent = got.reused ? '仓库里已经有这张图标了，直接用'
+        : got.generic ? '只从兜底服务拿到一张通用图标，多半不是这个网站的，建议核对'
+          : '已抓到，推送时和 data.json 一起提交';
     } catch (err) {
       grabMsg.textContent = err.message;
     } finally {
@@ -268,7 +270,9 @@ async function autoIcon(target) {
     if (target.icon || !stillInData(target)) return;
     target.icon = got.path;
     applyChange();
-    flash(got.reused ? `已套用仓库里现成的 ${got.path}` : '已抓取图标，推送时一起提交');
+    flash(got.reused ? `已套用仓库里现成的 ${got.path}`
+      : got.generic ? '图标来自兜底服务，可能只是通用图标，建议核对'
+        : '已抓取图标，推送时一起提交');
   } catch (error) {
     flash(`图标没抓到（${error.message}）`);
   }

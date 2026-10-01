@@ -166,7 +166,8 @@ function sniffKind(bytes) {
 
 /**
  * 给一个网址找图标：仓库里已有就复用，否则从带 CORS 的源抓一张存进暂存区
- * @returns {Promise<{path:string, reused:boolean, dataUrl?:string}>}
+ * @returns {Promise<{path:string, reused:boolean, dataUrl?:string, generic?:boolean}>}
+ *          generic 为 true 表示只有兜底源命中，图可能只是通用图标，需人工核对
  */
 async function grab(url, token = getToken()) {
   const host = hostOf(url);
@@ -181,11 +182,11 @@ async function grab(url, token = getToken()) {
   const reused = existingPath(host);
   if (reused) return { path: reused, reused: true };
 
-  for (const makeUrl of SOURCES) {
+  for (let i = 0; i < SOURCES.length; i += 1) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), SOURCE_TIMEOUT);
     try {
-      const res = await fetch(makeUrl(host), { mode: 'cors', cache: 'no-store', signal: controller.signal });
+      const res = await fetch(SOURCES[i](host), { mode: 'cors', cache: 'no-store', signal: controller.signal });
       if (!res.ok) continue;
       const type = res.headers.get('content-type') || '';
       if (!type.startsWith('image/')) continue;
@@ -196,10 +197,12 @@ async function grab(url, token = getToken()) {
       const path = `${ICON_DIR}/${baseFor(host)}.${kind.ext}`;
       const dataUrl = await blobToDataUrl(new Blob([blob], { type: kind.mime }));
       const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
-      if (!addPending(path, { dataUrl, base64, host, at: Date.now() })) {
+      // 兜底源（icon.horse）给陌生域名发的是一张通用图标，骗过校验却不像真图标，得提醒一句
+      const generic = i === SOURCES.length - 1;
+      if (!addPending(path, { dataUrl, base64, host, generic, at: Date.now() })) {
         throw new Error('浏览器存储满了，先推送或清掉草稿再抓');
       }
-      return { path, reused: false, dataUrl };
+      return { path, reused: false, dataUrl, generic };
     } catch (error) {
       if (/存储满/.test(error.message)) throw error;
       // 换下一个源（超时中断也走这里）
