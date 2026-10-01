@@ -148,6 +148,22 @@ function blobToDataUrl(blob) {
 }
 
 /**
+ * 按文件头字节认真实格式。源一（wsrv 转 png）永远是 png，但源三 icon.horse
+ * 不认 output=png，会把 ico / jpeg 原样丢回来 —— 一律写 .png 的话仓库里就会
+ * 出现「名字是 png、内容是 ico」的假货（128 个图标里有 24 个中招）。
+ * @returns {{ext:string, mime:string}|null}
+ */
+function sniffKind(bytes) {
+  const b = bytes;
+  if (b.length >= 4 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return { ext: 'png', mime: 'image/png' };
+  if (b.length >= 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return { ext: 'jpg', mime: 'image/jpeg' };
+  if (b.length >= 4 && b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46) return { ext: 'gif', mime: 'image/gif' };
+  if (b.length >= 12 && b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 && b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50) return { ext: 'webp', mime: 'image/webp' };
+  if (b.length >= 4 && b[0] === 0x00 && b[1] === 0x00 && b[2] === 0x01 && b[3] === 0x00) return { ext: 'ico', mime: 'image/x-icon' };
+  return null;   // 认不出的格式宁可换下一个源，也不硬塞成 png
+}
+
+/**
  * 给一个网址找图标：仓库里已有就复用，否则从带 CORS 的源抓一张存进暂存区
  * @returns {Promise<{path:string, reused:boolean, dataUrl?:string}>}
  */
@@ -164,7 +180,6 @@ async function grab(url, token = getToken()) {
   const reused = existingPath(host);
   if (reused) return { path: reused, reused: true };
 
-  const path = `${ICON_DIR}/${baseFor(host)}.png`;
   for (const makeUrl of SOURCES) {
     try {
       const res = await fetch(makeUrl(host), { mode: 'cors', cache: 'no-store' });
@@ -173,7 +188,10 @@ async function grab(url, token = getToken()) {
       if (!type.startsWith('image/')) continue;
       const blob = await res.blob();
       if (blob.size < 200 || blob.size > 300 * 1024) continue;   // 1×1 的占位图 / 过大的图都不要
-      const dataUrl = await blobToDataUrl(blob);
+      const kind = sniffKind(new Uint8Array(await blob.arrayBuffer()));
+      if (!kind) continue;                                       // 认不出的格式换下一个源，别写错扩展名
+      const path = `${ICON_DIR}/${baseFor(host)}.${kind.ext}`;
+      const dataUrl = await blobToDataUrl(new Blob([blob], { type: kind.mime }));
       const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
       if (!addPending(path, { dataUrl, base64, host, at: Date.now() })) {
         throw new Error('浏览器存储满了，先推送或清掉草稿再抓');
