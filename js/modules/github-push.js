@@ -21,6 +21,7 @@ const API = 'https://api.github.com';
 const REPO_PATH = `${OWNER}/${REPO}`;
 const REPO_URL = `https://github.com/${REPO_PATH}`;
 const TOKEN_NEW_URL = 'https://github.com/settings/personal-access-tokens/new';
+const API_TIMEOUT = 15000;   // 单个 API 调用最多等 15 秒，避免推送卡死时没有任何反馈
 
 /** 草稿是基于哪个线上版本做的，用来发现「线上被别人改过」 */
 let baseSha = null;
@@ -69,19 +70,25 @@ async function gh(path, options = {}) {
   if (token) headers.Authorization = `Bearer ${token}`;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), API_TIMEOUT);
   let res;
+  let text;
   try {
     res = await fetch(`${API}${path}`, {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
       cache: 'no-store',
+      signal: controller.signal,
     });
+    text = await res.text();
   } catch (error) {
+    if (error && error.name === 'AbortError') throw new PushError('GitHub 请求超时了，稍后重试', 'network');
     throw new PushError('网络请求失败，检查一下网络连接', 'network');
+  } finally {
+    clearTimeout(timer);
   }
-
-  const text = await res.text();
   let payload = null;
   if (text) { try { payload = JSON.parse(text); } catch (error) { payload = null; } }
   if (!res.ok) throw httpError(res.status, payload);

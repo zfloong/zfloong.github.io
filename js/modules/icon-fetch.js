@@ -18,6 +18,7 @@ import { listDir, getToken } from './github-push.js';
 const PENDING_KEY = 'flyloong_edit_icons';
 const ICON_DIR = 'icons';
 const INDEX_TTL = 10 * 60 * 1000;   // 仓库图标清单缓存时长
+const SOURCE_TIMEOUT = 8000;        // 单个源最多等 8 秒；没有这道闸，一个挂死的源会让按钮一直转
 
 const SOURCES = [
   (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://www.google.com/s2/favicons?domain=${host}&sz=128`)}&output=png&w=128&h=128`,
@@ -181,8 +182,10 @@ async function grab(url, token = getToken()) {
   if (reused) return { path: reused, reused: true };
 
   for (const makeUrl of SOURCES) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), SOURCE_TIMEOUT);
     try {
-      const res = await fetch(makeUrl(host), { mode: 'cors', cache: 'no-store' });
+      const res = await fetch(makeUrl(host), { mode: 'cors', cache: 'no-store', signal: controller.signal });
       if (!res.ok) continue;
       const type = res.headers.get('content-type') || '';
       if (!type.startsWith('image/')) continue;
@@ -199,7 +202,9 @@ async function grab(url, token = getToken()) {
       return { path, reused: false, dataUrl };
     } catch (error) {
       if (/存储满/.test(error.message)) throw error;
-      // 换下一个源
+      // 换下一个源（超时中断也走这里）
+    } finally {
+      clearTimeout(timer);
     }
   }
   throw new Error('这个网站没给可用的图标，可以先留空或手填');
