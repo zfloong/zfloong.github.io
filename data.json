@@ -801,6 +801,17 @@
               "title": "RAKsmart",
               "url": "https://www.raksmart.com/",
               "icon": "icons/raksmart_com.png"
+            },
+            {
+              "title": "咸鱼云 SaltyFish",
+              "url": "https://portal.saltyfish.io/",
+              "icon": "icons/saltyfish_io.png"
+            },
+            {
+              "title": "白丝云 CloudSilk",
+              "url": "https://cloudsilk.io/",
+              "iconSymbol": "ri-cloud-line",
+              "iconColor": "var(--text)"
             }
           ]
         },
