@@ -831,6 +831,11 @@
               "title": "DediRock",
               "url": "https://billing.dedirock.com/index.php",
               "icon": "icons/dedirock_com.png"
+            },
+            {
+              "title": "PanstarCloud",
+              "url": "https://panstar.ai/",
+              "icon": "icons/panstar_ai.jpg"
             }
           ]
         }
