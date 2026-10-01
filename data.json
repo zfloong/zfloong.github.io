@@ -26,7 +26,7 @@
       {
         "title": "QQ邮箱",
         "url": "https://mail.qq.com/",
-        "icon": "icons/mail_qq_com.png"
+        "icon": "icons/mail_qq_com.ico"
       },
       {
         "title": "Outlook",
@@ -97,7 +97,7 @@
             {
               "title": "Copilot",
               "url": "https://copilot.microsoft.com/",
-              "icon": "icons/copilot_microsoft_com.png"
+              "icon": "icons/copilot_microsoft_com.ico"
             },
             {
               "title": "豆包",
@@ -123,12 +123,12 @@
             {
               "title": "Bilibili",
               "url": "https://www.bilibili.com/",
-              "icon": "icons/bilibili_com.png"
+              "icon": "icons/bilibili_com.ico"
             },
             {
               "title": "YouTube",
               "url": "https://www.youtube.com/",
-              "icon": "icons/youtube_com.png"
+              "icon": "icons/youtube_com.ico"
             },
             {
               "title": "Qwen.ai",
@@ -143,7 +143,7 @@
             {
               "title": "Google Cloud",
               "url": "https://cloud.google.com/",
-              "icon": "icons/cloud_google_com.png"
+              "icon": "icons/cloud_google_com.ico"
             },
             {
               "title": "Cloudflare",
@@ -245,7 +245,7 @@
             {
               "title": "Speedtest",
               "url": "https://fiber.google.com/speedtest/",
-              "icon": "icons/fiber_google_com.png"
+              "icon": "icons/fiber_google_com.ico"
             },
             {
               "title": "网络测速-国内",
@@ -285,12 +285,12 @@
             {
               "title": "WallHaven-壁纸",
               "url": "https://wallhaven.cc/",
-              "icon": "icons/wallhaven_cc.png"
+              "icon": "icons/wallhaven_cc.ico"
             },
             {
               "title": "Unsplash-摄影",
               "url": "https://unsplash.com/",
-              "icon": "icons/unsplash_com.png"
+              "icon": "icons/unsplash_com.ico"
             },
             {
               "title": "Icon-Alibaba",
@@ -320,7 +320,7 @@
             {
               "title": "Gitee",
               "url": "https://gitee.com/explore",
-              "icon": "icons/gitee_com.png"
+              "icon": "icons/gitee_com.ico"
             },
             {
               "title": "APKMirror",
@@ -385,12 +385,12 @@
             {
               "title": "键鼠在线测试",
               "url": "https://www.mchose.com.cn/#/test-keyboard",
-              "icon": "icons/mchose_com_cn.png"
+              "icon": "icons/mchose_com_cn.ico"
             },
             {
               "title": "CloudConvert",
               "url": "https://cloudconvert.com/",
-              "icon": "icons/cloudconvert_com.png"
+              "icon": "icons/cloudconvert_com.jpg"
             },
             {
               "title": "GeoGebra计算器",
@@ -468,7 +468,7 @@
             {
               "title": "Oracle",
               "url": "https://www.oracle.com/cn/cloud/",
-              "icon": "icons/oracle_com.png"
+              "icon": "icons/oracle_com.ico"
             },
             {
               "title": "火山引擎",
@@ -485,12 +485,12 @@
             {
               "title": "阿里云",
               "url": "https://www.aliyun.com/",
-              "icon": "icons/img_alicdn_com.png"
+              "icon": "icons/img_alicdn_com.ico"
             },
             {
               "title": "腾讯云",
               "url": "https://www.tencentcloud.com/",
-              "icon": "icons/tencentcloud_com.png"
+              "icon": "icons/tencentcloud_com.ico"
             }
           ]
         },
@@ -510,12 +510,12 @@
             {
               "title": "魔塔社区",
               "url": "https://www.modelscope.cn/home",
-              "icon": "icons/g_alicdn_com.png"
+              "icon": "icons/g_alicdn_com.ico"
             },
             {
               "title": "Replicate",
               "url": "https://replicate.com/",
-              "icon": "icons/replicate_com.png"
+              "icon": "icons/replicate_com.jpg"
             },
             {
               "title": "OpenRouter",
@@ -535,7 +535,7 @@
             {
               "title": "Google Stitch",
               "url": "https://stitch.withgoogle.com/",
-              "icon": "icons/stitch_withgoogle_com.png"
+              "icon": "icons/stitch_withgoogle_com.jpg"
             },
             {
               "title": "可灵AI",
@@ -613,12 +613,12 @@
             {
               "title": "抖音",
               "url": "https://www.douyin.com/",
-              "icon": "icons/douyin_com.png"
+              "icon": "icons/douyin_com.ico"
             },
             {
               "title": "快手",
               "url": "https://www.kuaishou.com/new-reco",
-              "icon": "icons/kuaishou_com.png"
+              "icon": "icons/kuaishou_com.ico"
             },
             {
               "title": "Instagram",
@@ -633,7 +633,7 @@
             {
               "title": "BetterGI-腾讯频道",
               "url": "https://pd.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=2knUxQTSdCl&businessType=9",
-              "icon": "icons/pd_qq_com.png"
+              "icon": "icons/pd_qq_com.jpg"
             },
             {
               "title": "PVZ  Wiki",
@@ -648,7 +648,7 @@
             {
               "title": "淘宝",
               "url": "https://www.taobao.com/",
-              "icon": "icons/taobao_com.png"
+              "icon": "icons/taobao_com.jpg"
             },
             {
               "title": "小米云服务",
@@ -678,7 +678,7 @@
             {
               "title": "VM Rack",
               "url": "https://www.vmrack.net/zh-CN",
-              "icon": "icons/vmrack_net.png"
+              "icon": "icons/vmrack_net.jpg"
             },
             {
               "title": "VMiss",
@@ -718,7 +718,7 @@
             {
               "title": "Isvoro",
               "url": "https://isvoro.com/",
-              "icon": "icons/isvoro_com.png"
+              "icon": "icons/isvoro_com.jpg"
             },
             {
               "title": "Zouter",
@@ -788,7 +788,7 @@
             {
               "title": "NodeLoc",
               "url": "https://www.nodeloc.com/",
-              "icon": "icons/nodeloc_com.png"
+              "icon": "icons/nodeloc_com.jpg"
             },
             {
               "title": "IDC Flare",
