@@ -59,7 +59,11 @@ function urlKind(url) {
   const value = (url || '').trim();
   if (!value) return 'empty';
   if (/^https?:\/\//i.test(value)) return 'http';
-  return /^[a-z][a-z0-9+.-]*:/i.test(value) ? 'scheme' : 'relative';
+  // 协议相对地址（//host）实际指向外站，不能当站内相对路径放行
+  if (/^\/[\/\\]/.test(value)) return 'scheme';
+  // 去掉空白/控制字符再判一次，堵住 java\tscript: 这类伪协议
+  const compact = value.replace(/[\s\u0000-\u001f\u007f]/g, '');
+  return /^[a-z][a-z0-9+.-]*:/i.test(compact) ? 'scheme' : 'relative';
 }
 
 /**

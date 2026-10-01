@@ -12,7 +12,12 @@ function safeHref(url) {
   const value = (url || '').trim();
   if (!value) return '#';
   if (/^https?:\/\//i.test(value)) return value;
-  return /^[a-z][a-z0-9+.-]*:/i.test(value) ? '#' : value;
+  // 协议相对地址（//evil.com、/\evil.com）会被浏览器当成外站 https 链接，不能当相对路径放行
+  if (/^\/[\/\\]/.test(value)) return '#';
+  // 浏览器解析 scheme 时会剥掉中间的制表符/换行，java\tscript: 会被当成 javascript:；
+  // 先去掉空白与控制字符再判一次，堵住这种伪协议
+  const compact = value.replace(/[\s\u0000-\u001f\u007f]/g, '');
+  return /^[a-z][a-z0-9+.-]*:/i.test(compact) ? '#' : value;
 }
 
 /**
