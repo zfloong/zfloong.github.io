@@ -12,6 +12,7 @@
  */
 
 let cursorCard = null;
+let initialized = false;
 
 function isTypingTarget(el) {
   return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
@@ -141,6 +142,10 @@ function onKeydown(e) {
 }
 
 function initKeyboardNav() {
+  // 重试加载（retryFetchData → loadDataAndInit → initPage）会再调一次，
+  // 监听器挂在 document 上、回调都现查 DOM，绑多次只会重复触发，这里只绑一次
+  if (initialized) return;
+  initialized = true;
   document.addEventListener('keydown', onKeydown);
   // 鼠标一动就退出键盘光标，避免双光标混淆
   document.addEventListener('mousemove', clearCursor);
