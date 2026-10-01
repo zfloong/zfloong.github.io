@@ -178,6 +178,12 @@ function openCardForm(target) {
   const iconRow = el('div', 'edit-icon-row');
   iconRow.append(preview, grabBtn, grabMsg);
 
+  // 抓取结果统一走这里：warn 为真就换琥珀色粗体，兜底和失败才用得上
+  const setGrabMsg = (text, warn) => {
+    grabMsg.textContent = text;
+    grabMsg.classList.toggle('warn', !!warn);
+  };
+
   const showPreview = (value) => {
     const path = (value || '').trim();
     if (!path) {
@@ -208,18 +214,18 @@ function openCardForm(target) {
 
   async function onGrab() {
     const raw = url.input.value.trim();
-    if (urlKind(raw) !== 'http') { grabMsg.textContent = '先把网址填成 http(s) 开头的完整地址'; return; }
+    if (urlKind(raw) !== 'http') { setGrabMsg('先把网址填成 http(s) 开头的完整地址', true); return; }
     grabBtn.disabled = true;
-    grabMsg.textContent = '抓取中…';
+    setGrabMsg('抓取中…', false);
     try {
       const got = await grab(raw);
       icon.input.value = got.path;
       showPreview(got.path);
-      grabMsg.textContent = got.reused ? '仓库里已经有这张图标了，直接用'
-        : got.generic ? '只从兜底服务拿到一张通用图标，多半不是这个网站的，建议核对'
-          : '已抓到，推送时和 data.json 一起提交';
+      setGrabMsg(got.reused ? '仓库里已经有这张图标了，直接用'
+        : got.generic ? '只从兜底服务拿到一张通用图标，多半不是这个网站的，建议换一张'
+          : '已抓到，推送时和 data.json 一起提交', !!got.generic);
     } catch (err) {
-      grabMsg.textContent = err.message;
+      setGrabMsg(err.message, true);
     } finally {
       grabBtn.disabled = false;
     }

@@ -47,6 +47,7 @@
   /* 警示色：危险按钮用冷蓝灰、错误文字用柔红，都不抢视觉焦点 */
   --danger: #9fb4cf;
   --error: #e39b95;
+  --warn: #e3b57e;                         /* 「这张图可能不对」这类提醒：琥珀色，比说明文字亮一档 */
   --shadow: 0 8px 32px rgba(var(--shade-rgb),0.6);
   --glass: blur(30px);
 
@@ -110,6 +111,7 @@
   --border: rgba(var(--ink-rgb),0.1);
   --danger: #3f6ea8;
   --error: #c0392b;
+  --warn: #9a6320;                         /* 冷白底上要压暗才看得清，跟 --error 一样走实色 */
   --shadow: 0 8px 32px rgba(var(--shade-rgb),0.22);
 
   --text-faint: #6b7280;
@@ -914,6 +916,12 @@ body.edit-open {
   flex: 1;
   min-width: 0;
   margin-top: 0;
+}
+/* 「只抓到兜底图 / 三源全废」这类提醒：默认那档灰太轻，一扫就过去了，
+   换成琥珀实色并加一点字重，视线会停一下 */
+.edit-hint.warn {
+  color: var(--warn);
+  font-weight: 500;
 }
 .edit-link {
   display: inline-block;
