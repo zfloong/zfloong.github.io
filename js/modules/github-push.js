@@ -123,6 +123,23 @@ async function listDir(dir, token = getToken()) {
 }
 
 /**
+ * 收集 data.json 里所有以 icons/ 开头的图标引用（外链与 remixicon 类名不算）。
+ * 推送前用它核对：被引用的图必须在仓库里已有、或这次一起提交，否则线上就是 404。
+ */
+function iconsReferenced(jsonText) {
+  let data;
+  try { data = JSON.parse(jsonText); } catch (error) { return []; }
+  const out = new Set();
+  const walk = (node) => {
+    if (!node || typeof node !== 'object') return;
+    if (typeof node.icon === 'string' && node.icon.startsWith('icons/')) out.add(node.icon);
+    Object.values(node).forEach(walk);
+  };
+  walk(data);
+  return [...out];
+}
+
+/**
  * 把 data.json 与图标提交成一个 commit
  * @param {Object} options
  * @param {string} options.message 提交信息
@@ -137,6 +154,20 @@ async function commitAll(options) {
   const remote = await readRemoteJson(token);
   if (expectedSha && remote.sha !== expectedSha) {
     throw new PushError('线上 data.json 被改过了（不是从你看的版本开始的改动）', 'conflict');
+  }
+
+  // 悬空图标校验：被引用的 icons/* 得在仓库里已有，或这次一起提交。少一张就拦下 ——
+  // 本机草稿会拿暂存的图顶上预览，看不太出漏，推上去才发现在线上是 404
+  const referenced = iconsReferenced(jsonText);
+  if (referenced.length) {
+    const existing = await listDir('icons', token);
+    const willHave = new Set(existing.keys());
+    icons.forEach(icon => willHave.add(icon.path));
+    const missing = referenced.filter(path => !willHave.has(path));
+    if (missing.length) {
+      const shown = missing.slice(0, 5).join('、');
+      throw new PushError(`有 ${missing.length} 个图标仓库里还没有：${shown}${missing.length > 5 ? ' 等' : ''}。给这些卡片重新抓一次图标，或先把它们删掉再推送`, 'missing-icon');
+    }
   }
 
   const ref = await gh(`/repos/${REPO_PATH}/git/ref/heads/${BRANCH}`, { token });
