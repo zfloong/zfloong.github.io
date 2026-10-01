@@ -83,7 +83,7 @@ function groupName(cat, sec) {
 
 function buildShell() {
   backdrop = el('div', 'edit-backdrop');
-  backdrop.addEventListener('click', closeForm);
+  backdrop.addEventListener('click', () => closeForm());
 
   panel = el('aside', 'edit-panel');
   panel.setAttribute('role', 'dialog');
@@ -94,7 +94,7 @@ function buildShell() {
   panelTitle = el('div', 'edit-title', '编辑');
   const closeBtn = el('button', 'edit-close', '关闭');
   closeBtn.type = 'button';
-  closeBtn.addEventListener('click', closeForm);
+  closeBtn.addEventListener('click', () => closeForm());
   head.append(panelTitle, closeBtn);
 
   panelBody = el('div', 'edit-body');
@@ -116,7 +116,15 @@ function openPanel(title) {
   panel.classList.add('open');
 }
 
-function closeForm() {
+/**
+ * 关抽屉。抽屉里填了一半就点遮罩 / 按 Esc / 点「关闭」的话，改动会直接消失，
+ * 所以表单自己挂一个 form.dirty()，关之前问一句。
+ * force = true 用于"数据已经落地"的路径（保存、删除、主动退出编辑），不再追问。
+ */
+function closeForm(force) {
+  if (!force && form && form.dirty && form.dirty()) {
+    if (!window.confirm('抽屉里的改动还没保存，关掉就不生效了。确定要关闭吗？')) return;
+  }
   const opener = form ? lastFocus : null;
   form = null;
   if (!panel) return;
@@ -185,6 +193,16 @@ function openCardForm(target) {
   icon.input.addEventListener('input', () => showPreview(icon.input.value));
   showPreview(item ? item.icon : '');
 
+  // 跟进来时的值比一比：动过才拦。新增表单全空，没打字就不算脏
+  const original = {
+    title: ((item && item.title) || '').trim(),
+    url: ((item && item.url) || '').trim(),
+    icon: ((item && item.icon) || '').trim(),
+  };
+  form.dirty = () => name.input.value.trim() !== original.title
+    || url.input.value.trim() !== original.url
+    || icon.input.value.trim() !== original.icon;
+
   const error = el('div', 'edit-error');
   panelBody.append(name.wrap, url.wrap, icon.wrap, iconRow, error);
 
@@ -210,11 +228,11 @@ function openCardForm(target) {
     actions.append(button('删除', 'danger', () => {
       if (!window.confirm(`删除「${item.title || '这张卡片'}」？`)) return;
       arr.splice(target.idx, 1);
-      closeForm();
+      closeForm(true);
       applyChange();
     }));
   }
-  actions.append(button('取消', '', closeForm));
+  actions.append(button('取消', '', () => closeForm()));
   actions.append(button('保存', 'primary', () => {
     const title = name.input.value.trim();
     const value = url.input.value.trim();
@@ -234,7 +252,7 @@ function openCardForm(target) {
       if (iconValue) item.icon = iconValue;
       else delete item.icon;
     }
-    closeForm();
+    closeForm(true);
     applyChange();
     // 没填图标就按网址抓一张（抓不到也不拦着，只是没图标）
     if (!saved.icon && urlKind(saved.url) === 'http') autoIcon(saved);
@@ -274,14 +292,15 @@ function openGroupForm(catId) {
   const name = field('分组名称', '', '例如：研习之路');
   const error = el('div', 'edit-error');
   panelBody.append(name.wrap, error);
+  form.dirty = () => name.input.value.trim() !== '';
 
   const actions = el('div', 'edit-actions');
-  actions.append(button('取消', '', closeForm));
+  actions.append(button('取消', '', () => closeForm()));
   actions.append(button('保存', 'primary', () => {
     const value = name.input.value.trim();
     if (!value) { error.textContent = '分组名称不能为空'; return; }
     cat.sections.push({ name: value, items: [] });
-    closeForm();
+    closeForm(true);
     applyChange();
   }));
   panelBody.append(actions);
@@ -304,9 +323,10 @@ function openCategoryForm() {
   const icon = field('图标（可选）', '', 'remixicon 类名，例如 ri-robot-line；留空用 ri-folder-line');
   const error = el('div', 'edit-error');
   panelBody.append(name.wrap, icon.wrap, error);
+  form.dirty = () => name.input.value.trim() !== '' || icon.input.value.trim() !== '';
 
   const actions = el('div', 'edit-actions');
-  actions.append(button('取消', '', closeForm));
+  actions.append(button('取消', '', () => closeForm()));
   actions.append(button('保存', 'primary', () => {
     const value = name.input.value.trim();
     const iconValue = icon.input.value.trim();
@@ -318,7 +338,7 @@ function openCategoryForm() {
       icon: iconValue || 'ri-folder-line',
       sections: [{ name: '默认分组', items: [] }],
     });
-    closeForm();
+    closeForm(true);
     applyChange();
     activateCategory(id);
   }));
@@ -395,7 +415,7 @@ function renderPush() {
 
   const out = el('div', 'edit-error');
   const row = el('div', 'edit-actions');
-  row.append(button('取消', '', closeForm));
+  row.append(button('取消', '', () => closeForm()));
   const go = button('推送', 'primary', () => onPush({ go, out, message }));
   row.append(go);
   panelBody.append(out, row);
@@ -463,7 +483,7 @@ function renderPushed(result) {
   link.rel = 'noopener noreferrer';
   box.append(link);
   const row = el('div', 'edit-actions');
-  row.append(button('关闭', 'primary', closeForm));
+  row.append(button('关闭', 'primary', () => closeForm()));
   panelBody.append(
     box,
     el('div', 'edit-hint', 'GitHub Pages 大约 1 分钟后重建，线上就是刚提交的版本。本机这份 clone 里的 data.json 和图标要 git pull 才会同步（页面显示的是本机草稿，所以这里看到的一样是新内容）。'),
@@ -545,7 +565,8 @@ function buildBar() {
     pushBtnEl,
     mk('复制 data.json', '', onCopy),
     mk('放弃草稿', 'danger', onDiscard),
-    mk('完成', '', exitEditMode),
+    // 叫「完成」容易被读成"保存/提交"，但它只是退出编辑模式，什么都不推
+    mk('退出编辑', '', exitEditMode),
   );
   document.body.appendChild(bar);
 }
@@ -596,7 +617,7 @@ function enterEditMode() {
 }
 
 function exitEditMode() {
-  closeForm();
+  closeForm(true);
   cancelDrag();
   document.body.classList.remove('edit-mode');
   entryEl.classList.remove('on');
