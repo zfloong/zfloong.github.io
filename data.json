@@ -661,29 +661,71 @@
               "icon": "icons/mail_163_com.png"
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "vps",
+      "navTitle": "VPS",
+      "icon": "ri-server-line",
+      "sections": [
         {
-          "name": "🏪 VPS 商家",
+          "name": "社区论坛",
           "items": [
             {
-              "title": "DMIT",
-              "url": "https://www.dmit.io/clientarea.php",
-              "icon": "icons/dmit_io.png"
+              "title": "NodeSeek",
+              "url": "https://www.nodeseek.com/",
+              "icon": "icons/nodeseek_com.png"
             },
+            {
+              "title": "NodeLoc",
+              "url": "https://www.nodeloc.com/",
+              "icon": "icons/nodeloc_com.jpg"
+            },
+            {
+              "title": "LowEndTalk",
+              "url": "https://lowendtalk.com/",
+              "icon": "icons/lowendtalk_com.png"
+            },
+            {
+              "title": "IDC Flare",
+              "url": "https://idcflare.com/",
+              "icon": "icons/idcflare_com.png"
+            },
+            {
+              "title": "IDCJK",
+              "url": "https://www.idcjk.com/",
+              "icon": "icons/idcjk_com.svg"
+            },
+            {
+              "title": "LowEndBox",
+              "url": "https://www.lowendbox.com/",
+              "icon": "icons/lowendbox_com.png"
+            },
+            {
+              "title": "全球主机交流论坛",
+              "url": "https://hostloc.com/",
+              "icon": "icons/hostloc_com.png"
+            },
+            {
+              "title": "DigVPS",
+              "url": "https://digvps.com/",
+              "icon": "icons/digvps_com.png"
+            }
+          ]
+        },
+        {
+          "name": "VPS T0",
+          "items": [
             {
               "title": "搬瓦工",
               "url": "https://bandwagonhost.com/index.php",
               "icon": "icons/bandwagonhost_com.png"
             },
             {
-              "title": "VM Rack",
-              "url": "https://www.vmrack.net/zh-CN",
-              "icon": "icons/vmrack_net.jpg"
-            },
-            {
-              "title": "VMiss",
-              "url": "https://app.vmiss.com/index.php",
-              "icon": "icons/vmiss_com.png"
+              "title": "DMIT",
+              "url": "https://www.dmit.io/clientarea.php",
+              "icon": "icons/dmit_io.png"
             },
             {
               "title": "xTom",
@@ -701,20 +743,70 @@
               "icon": "icons/gomami_io.png"
             },
             {
-              "title": "奶爸 Neburst",
-              "url": "https://neburst.com/",
-              "icon": "icons/neburst_com.png"
-            },
+              "title": "RackNerd",
+              "url": "https://www.racknerd.com/",
+              "icon": "icons/racknerd_com.png"
+            }
+          ]
+        },
+        {
+          "name": "VPS T1",
+          "items": [
             {
               "title": "GreenCloud",
               "url": "https://greencloudvps.com/",
               "icon": "icons/greencloudvps_com.png"
             },
             {
+              "title": "CloudCone",
+              "url": "https://cloudcone.com/",
+              "icon": "icons/cloudcone_com.png"
+            },
+            {
               "title": "Evoxt",
               "url": "https://evoxt.com/",
               "icon": "icons/evoxt_com.png"
             },
+            {
+              "title": "Akile",
+              "url": "https://akile.ai/",
+              "icon": "icons/akile_ai.png"
+            },
+            {
+              "title": "VMiss",
+              "url": "https://app.vmiss.com/index.php",
+              "icon": "icons/vmiss_com.png"
+            },
+            {
+              "title": "VM Rack",
+              "url": "https://www.vmrack.net/zh-CN",
+              "icon": "icons/vmrack_net.jpg"
+            },
+            {
+              "title": "奶爸 Neburst",
+              "url": "https://neburst.com/",
+              "icon": "icons/neburst_com.png"
+            },
+            {
+              "title": "ByteVirt",
+              "url": "https://bytevirt.com/",
+              "icon": "icons/bytevirt_com.png"
+            },
+            {
+              "title": "ZgoCloud",
+              "url": "https://zgovps.com/",
+              "icon": "icons/zgovps_com.png"
+            },
+            {
+              "title": "RAKsmart",
+              "url": "https://www.raksmart.com/",
+              "icon": "icons/raksmart_com.png"
+            }
+          ]
+        },
+        {
+          "name": "其他",
+          "items": [
             {
               "title": "Isvoro",
               "url": "https://isvoro.com/",
@@ -731,11 +823,6 @@
               "icon": "icons/acck_io.png"
             },
             {
-              "title": "RackNerd",
-              "url": "https://www.racknerd.com/",
-              "icon": "icons/racknerd_com.png"
-            },
-            {
               "title": "Lightlayer",
               "url": "https://lightlayer.com/",
               "icon": "icons/lightlayer_com.png"
@@ -744,61 +831,6 @@
               "title": "DediRock",
               "url": "https://billing.dedirock.com/index.php",
               "icon": "icons/dedirock_com.png"
-            },
-            {
-              "title": "ZgoCloud",
-              "url": "https://zgovps.com/",
-              "icon": "icons/zgovps_com.png"
-            },
-            {
-              "title": "ByteVirt",
-              "url": "https://bytevirt.com/",
-              "icon": "icons/bytevirt_com.png"
-            },
-            {
-              "title": "RAKsmart",
-              "url": "https://www.raksmart.com/",
-              "icon": "icons/raksmart_com.png"
-            },
-            {
-              "title": "CloudCone",
-              "url": "https://cloudcone.com/",
-              "icon": "icons/cloudcone_com.png"
-            },
-            {
-              "title": "Akile",
-              "url": "https://akile.ai/",
-              "icon": "icons/akile_ai.png"
-            }
-          ]
-        },
-        {
-          "name": "💬 社区论坛",
-          "items": [
-            {
-              "title": "NodeSeek",
-              "url": "https://www.nodeseek.com/",
-              "icon": "icons/nodeseek_com.png"
-            },
-            {
-              "title": "LowEndTalk",
-              "url": "https://lowendtalk.com/",
-              "icon": "icons/lowendtalk_com.png"
-            },
-            {
-              "title": "NodeLoc",
-              "url": "https://www.nodeloc.com/",
-              "icon": "icons/nodeloc_com.jpg"
-            },
-            {
-              "title": "IDC Flare",
-              "url": "https://idcflare.com/",
-              "icon": "icons/idcflare_com.png"
-            },
-            {
-              "title": "IDCJK",
-              "url": "https://www.idcjk.com/",
-              "icon": "icons/idcjk_com.svg"
             }
           ]
         }
