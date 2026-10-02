@@ -131,14 +131,19 @@
               "icon": "icons/youtube_com.ico"
             },
             {
-              "title": "Qwen.ai",
-              "url": "https://chat.qwen.ai/",
-              "icon": "icons/img_alicdn_com.svg"
+              "title": "Z-Library",
+              "url": "https://zh.z-library.sk/",
+              "icon": "icons/zh_z-library_sk.png"
             },
             {
               "title": "文心一言",
               "url": "https://yiyan.baidu.com/",
               "icon": "icons/yiyan_baidu_com.png"
+            },
+            {
+              "title": "Qwen.ai",
+              "url": "https://chat.qwen.ai/",
+              "icon": "icons/img_alicdn_com.svg"
             },
             {
               "title": "Google Cloud",
@@ -166,11 +171,6 @@
               "title": "FMHY",
               "url": "https://fmhy.net/",
               "icon": "images/fmhy-play.svg"
-            },
-            {
-              "title": "Z-Library",
-              "url": "https://zh.z-library.sk/",
-              "icon": "icons/zh_z-library_sk.png"
             },
             {
               "title": "微信读书",
@@ -218,14 +218,14 @@
               "icon": "icons/ip_net_coffee.svg"
             },
             {
-              "title": "IPCheck",
-              "url": "https://ipcheck.ing/",
-              "icon": "icons/ipcheck_ing.png"
-            },
-            {
               "title": "IP泄露测试",
               "url": "https://ipleak.net/",
               "icon": "icons/ipleak_net.png"
+            },
+            {
+              "title": "IPCheck",
+              "url": "https://ipcheck.ing/",
+              "icon": "icons/ipcheck_ing.png"
             },
             {
               "title": "BrowserLeaks",
@@ -238,6 +238,11 @@
               "icon": "icons/itdog_cn.png"
             },
             {
+              "title": "网速单位换算",
+              "url": "https://netsconvert.654519996.xyz/",
+              "icon": "icons/netsconvert_654519996_xyz.svg"
+            },
+            {
               "title": "Speedtest",
               "url": "https://fiber.google.com/speedtest/",
               "icon": "icons/fiber_google_com.ico"
@@ -248,7 +253,7 @@
               "icon": "icons/speedtest_net.png"
             },
             {
-              "title": "网络测速-中科大",
+              "title": "中科大测速",
               "url": "https://test.ustc.edu.cn/",
               "icon": "icons/test_ustc_edu_cn.png"
             },
@@ -256,11 +261,6 @@
               "title": "节点订阅转换",
               "url": "https://sublinkworker.654519996.xyz/",
               "icon": "icons/sublinkworker_654519996_xyz.ico"
-            },
-            {
-              "title": "网速单位换算",
-              "url": "https://netsconvert.654519996.xyz/",
-              "icon": "icons/netsconvert_654519996_xyz.svg"
             },
             {
               "title": "Ping0-节点质量",
