@@ -60,14 +60,14 @@
               "icon": "icons/gemini_google_com.png"
             },
             {
+              "title": "AI Studio",
+              "url": "https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview",
+              "icon": "icons/aistudio_google_com.png"
+            },
+            {
               "title": "ChatGPT",
               "url": "https://chatgpt.com/",
               "icon": "icons/chatgpt_com.png"
-            },
-            {
-              "title": "Grok",
-              "url": "https://grok.com/",
-              "icon": "icons/grok_com.png"
             },
             {
               "title": "LM 模型竞技场",
@@ -75,14 +75,9 @@
               "icon": "icons/lmarena_ai.png"
             },
             {
-              "title": "AI Studio",
-              "url": "https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview",
-              "icon": "icons/aistudio_google_com.png"
-            },
-            {
-              "title": "DeepSeek",
-              "url": "https://chat.deepseek.com/",
-              "icon": "icons/chat_deepseek_com.png"
+              "title": "QwenDome",
+              "url": "https://www.qianwen.com/",
+              "icon": "icons/img_alicdn_com.svg"
             },
             {
               "title": "MiMo",
@@ -90,9 +85,14 @@
               "icon": "icons/aistudio_xiaomimimo_com.png"
             },
             {
-              "title": "QwenDome",
-              "url": "https://www.qianwen.com/",
-              "icon": "icons/img_alicdn_com.svg"
+              "title": "DeepSeek",
+              "url": "https://chat.deepseek.com/",
+              "icon": "icons/chat_deepseek_com.png"
+            },
+            {
+              "title": "Grok",
+              "url": "https://grok.com/",
+              "icon": "icons/grok_com.png"
             },
             {
               "title": "Copilot",
@@ -100,14 +100,14 @@
               "icon": "icons/copilot_microsoft_com.ico"
             },
             {
-              "title": "豆包",
-              "url": "https://www.doubao.com/chat/",
-              "icon": "icons/www_doubao_com.png"
-            },
-            {
               "title": "腾讯混元",
               "url": "https://yuanbao.tencent.com/",
               "icon": "icons/yuanbao_tencent_com.png"
+            },
+            {
+              "title": "豆包",
+              "url": "https://www.doubao.com/chat/",
+              "icon": "icons/www_doubao_com.png"
             }
           ]
         },
@@ -149,11 +149,6 @@
               "title": "Cloudflare",
               "url": "https://dash.cloudflare.com/",
               "icon": "icons/dash_cloudflare_com.png"
-            },
-            {
-              "title": "Harness",
-              "url": "https://www.deepseek.com/harness/",
-              "icon": "icons/deepseek_com.png"
             }
           ]
         }
@@ -414,6 +409,11 @@
               "title": "DeepSeek API",
               "url": "https://platform.deepseek.com/",
               "icon": "icons/platform_deepseek_com.png"
+            },
+            {
+              "title": "Harness",
+              "url": "https://www.deepseek.com/harness/",
+              "icon": "icons/deepseek_com.png"
             },
             {
               "title": "Grok API",
