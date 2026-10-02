@@ -703,11 +703,6 @@
               "icon": "icons/lowendbox_com.png"
             },
             {
-              "title": "全球主机交流论坛",
-              "url": "https://hostloc.com/",
-              "icon": "icons/hostloc_com.png"
-            },
-            {
               "title": "DigVPS",
               "url": "https://digvps.com/",
               "icon": "icons/digvps_com.png"
@@ -832,11 +827,6 @@
               "title": "Acck",
               "url": "https://acck.io/",
               "icon": "icons/acck_io.png"
-            },
-            {
-              "title": "Lightlayer",
-              "url": "https://lightlayer.com/",
-              "icon": "icons/lightlayer_com.png"
             },
             {
               "title": "DediRock",
