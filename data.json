@@ -731,6 +731,16 @@
               "title": "V.PS",
               "url": "https://v.ps/",
               "icon": "icons/v_ps.png"
+            }
+          ]
+        },
+        {
+          "name": "综合备选",
+          "items": [
+            {
+              "title": "RAKsmart",
+              "url": "https://www.raksmart.com/",
+              "icon": "icons/raksmart_com.png"
             },
             {
               "title": "VM Rack",
@@ -743,16 +753,6 @@
               "icon": "icons/vmiss_com.png"
             },
             {
-              "title": "RAKsmart",
-              "url": "https://www.raksmart.com/",
-              "icon": "icons/raksmart_com.png"
-            }
-          ]
-        },
-        {
-          "name": "综合备选",
-          "items": [
-            {
               "title": "咸鱼云 SaltyFish",
               "url": "https://portal.saltyfish.io/",
               "icon": "icons/saltyfish_io.png"
@@ -762,11 +762,6 @@
               "url": "https://cloudsilk.io/",
               "iconSymbol": "ri-cloud-line",
               "iconColor": "var(--text)"
-            },
-            {
-              "title": "Akile",
-              "url": "https://akile.ai/",
-              "icon": "icons/akile_ai.png"
             },
             {
               "title": "ZgoCloud",
@@ -817,6 +812,11 @@
               "title": "Acck",
               "url": "https://acck.io/",
               "icon": "icons/acck_io.png"
+            },
+            {
+              "title": "Akile",
+              "url": "https://akile.ai/",
+              "icon": "icons/akile_ai.png"
             },
             {
               "title": "Isvoro",
