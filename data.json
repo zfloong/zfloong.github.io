@@ -773,14 +773,19 @@
               "icon": "icons/akile_ai.png"
             },
             {
+              "title": "VM Rack",
+              "url": "https://www.vmrack.net/zh-CN",
+              "icon": "icons/vmrack_net.jpg"
+            },
+            {
               "title": "VMiss",
               "url": "https://app.vmiss.com/index.php",
               "icon": "icons/vmiss_com.png"
             },
             {
-              "title": "VM Rack",
-              "url": "https://www.vmrack.net/zh-CN",
-              "icon": "icons/vmrack_net.jpg"
+              "title": "RAKsmart",
+              "url": "https://www.raksmart.com/",
+              "icon": "icons/raksmart_com.png"
             },
             {
               "title": "奶爸 Neburst",
@@ -796,11 +801,6 @@
               "title": "ZgoCloud",
               "url": "https://zgovps.com/",
               "icon": "icons/zgovps_com.png"
-            },
-            {
-              "title": "RAKsmart",
-              "url": "https://www.raksmart.com/",
-              "icon": "icons/raksmart_com.png"
             },
             {
               "title": "咸鱼云 SaltyFish",
