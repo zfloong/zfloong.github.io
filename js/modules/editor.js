@@ -18,7 +18,7 @@
  */
 
 import { initDragSort, cancelDrag, isDragClickSuppressed } from './drag-sort.js';
-import { loadDraft, saveDraft, clearDraft, toRepoJson, copyText } from './draft-store.js';
+import { loadDraft, saveDraft, clearDraft, toRepoJson, copyText, markPushed, markLocalOnly, draftState } from './draft-store.js';
 import { grab, grabFromUrl, applyPendingIcons, pendingFor, pendingList, noteIconsPushed, clearPending } from './icon-fetch.js';
 import {
   getToken, setToken, clearToken,
@@ -500,9 +500,11 @@ function renderPush() {
   const out = el('div', 'edit-error');
   const row = el('div', 'edit-actions');
   row.append(button('取消', '', () => closeForm()));
-  const go = button('推送', 'primary', () => onPush({ go, out, message }));
+  // 推不上去时的退路容器，平时是空的，失败了才往里填东西
+  const fallback = el('div', 'edit-fallback');
+  const go = button('推送', 'primary', () => onPush({ go, out, message, fallback }));
   row.append(go);
-  panelBody.append(out, row);
+  panelBody.append(out, row, fallback);
 
   message.input.focus();
   precheck(summaryText, go);
@@ -526,7 +528,7 @@ async function precheck(summaryText, go) {
   }
 }
 
-async function onPush({ go, out, message }) {
+async function onPush({ go, out, message, fallback }) {
   if (!getToken()) { out.textContent = '先在上面粘贴 token 连上 GitHub'; return; }
   const conflict = go.dataset.conflict === '1';
   if (conflict && !window.confirm('线上 data.json 已经被改过，继续推送会覆盖线上的改动。确定要覆盖吗？')) return;
@@ -534,6 +536,7 @@ async function onPush({ go, out, message }) {
 
   go.disabled = true;
   out.textContent = '提交中…';
+  if (fallback) fallback.replaceChildren();
   try {
     const result = await commitAll({
       message: message.input.value.trim() || '更新 data.json（在线编辑）',
@@ -541,39 +544,151 @@ async function onPush({ go, out, message }) {
       icons: pendingList().map(item => ({ path: item.path, base64: item.base64 })),
       expectedSha: conflict ? null : getBase(),
     });
-    // 草稿留着不清：本机 clone 里的 data.json 要 git pull 才会更新，
-    // 清掉草稿页面会退回旧文件，看起来像刚推的东西丢了；基线跟上就行
+    // 草稿留着不清：本机 clone 里的 data.json 要 git pull 才会更新，清掉草稿
+    // 页面会退回旧文件，看起来像刚推的东西丢了。但**必须**标成已推送 ——
+    // 否则退出编辑模式时它会被当成"未提交的草稿"，刚推完就自己打自己脸。
     saveDraft(ctx.getData(), getBase());
+    markPushed(result.commit);
     noteIconsPushed(result.icons);
     updateBar();
     renderPushed(result);
   } catch (error) {
     out.textContent = error.message;
     go.disabled = false;
+    if (fallback) renderPushFallback(fallback);
   }
 }
 
+/**
+ * 推不上去时给出口，别把改动卡死在草稿里。
+ * 这个站可能还有别人在用，不是谁都有仓库权限 —— 让他自己拿走文件、自己决定怎么用，
+ * 之后也别再拿"未提交的草稿"催他。
+ */
+function renderPushFallback(fallback) {
+  fallback.replaceChildren();
+  fallback.append(el('div', 'edit-hint', '推不上去也不要紧 —— 改动可以只留在这台设备上自己用：'));
+  const row = el('div', 'edit-actions');
+  row.append(
+    button('改用本机保存', 'primary', onUseLocalOnly),
+    button('留在编辑里', '', () => fallback.replaceChildren()),
+  );
+  fallback.append(row);
+}
+
+function onUseLocalOnly() {
+  if (!window.confirm(
+    '改用本机保存后：\n'
+    + '· 这次改动只留在这台设备上，不会提交到 GitHub\n'
+    + '· 页面继续显示你改的内容\n'
+    + '· 顶部不再提示"未提交的草稿"\n'
+    + '· 我会把 data.json 下载给你，怎么用你自己定\n\n'
+    + '确定吗？'
+  )) return;
+  markLocalOnly();
+  downloadJson();
+  closeForm(true);
+  exitEditMode();
+  showResultNotice({
+    tone: 'local',
+    title: '改动已保存到你的电脑',
+    sub: 'data.json 已下载。本页继续显示这份内容，之后不再提示未提交草稿。想推到 GitHub 时，再点「编辑」→「推送到 GitHub」就行。',
+  });
+}
+
+/** 把当前数据按仓库格式存成 data.json 下载下来 —— 推送失败时的退路，用户自己拿去用 */
+function downloadJson() {
+  const blob = new Blob([toRepoJson(ctx.getData())], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'data.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/**
+ * 推送成功的收尾：抽屉原地变成功态 → 自动收起 → 自动退出编辑模式 → 顶部一条持久提示。
+ * 不留「关闭」按钮让人手点 —— 这四步是一个动作，做完了就该把他送回正常浏览状态。
+ */
 function renderPushed(result) {
+  const short = result.commit.slice(0, 7);
+  const extra = result.icons.length ? ` · 新增 ${result.icons.length} 个图标` : '';
+
   panelTitle.textContent = '推送完成';
   panelBody.replaceChildren();
   const box = el('div', 'edit-conn');
   box.append(
-    el('div', 'edit-conn-title', '已经提交到 GitHub'),
-    el('div', 'edit-conn-sub', `提交 ${result.commit.slice(0, 7)}${result.icons.length ? ` · 新增 ${result.icons.length} 个图标` : ''}`),
+    el('div', 'edit-conn-title', '✅ 已提交到 GitHub'),
+    el('div', 'edit-conn-sub', `提交 ${short}${extra}`),
+    el('div', 'edit-hint', '正在退出编辑模式…'),
   );
   const link = el('a', 'edit-link', '在 GitHub 上看这次提交 →');
   link.href = result.url;
   link.target = '_blank';
   link.rel = 'noopener noreferrer';
   box.append(link);
-  const row = el('div', 'edit-actions');
-  row.append(button('关闭', 'primary', () => closeForm()));
-  panelBody.append(
-    box,
-    el('div', 'edit-hint', 'GitHub Pages 大约 1 分钟后重建，线上就是刚提交的版本。本机这份 clone 里的 data.json 和图标要 git pull 才会同步（页面显示的是本机草稿，所以这里看到的一样是新内容）。'),
-    row,
-  );
-  flash('已推送 · GitHub Pages 约 1 分钟后生效');
+  panelBody.append(box);
+  flash('已推送');
+
+  setTimeout(() => {
+    closeForm(true);
+    exitEditMode();
+    showResultNotice({
+      tone: 'ok',
+      title: '✅ 已推送到 GitHub',
+      sub: `提交 ${short}${extra} · GitHub Pages 正在重建，通常 1-5 分钟生效，最长可能 10 分钟。生效前这一页显示的仍是你刚提交的内容。`,
+      link: { href: result.url, text: '查看提交 →' },
+      actions: [{ label: '继续编辑', onClick: () => { clearResultNotice(); enterEditMode(); } }],
+    });
+  }, 1200);
+}
+
+/* ---------------- 顶部持久提示条 ---------------- */
+/* flash() 那套 4 秒就消失的文案只适合"复制好了"这种小事；
+   推送结果、进入编辑模式这类要人看清的消息得留在页面上，等人自己收起。 */
+
+let noticeEl = null;
+
+function clearResultNotice() {
+  if (noticeEl) {
+    noticeEl.remove();
+    noticeEl = null;
+  }
+}
+
+function noticeBtn(label, cls, onClick) {
+  const node = el('button', `edit-bar-btn${cls ? ` ${cls}` : ''}`, label);
+  node.type = 'button';
+  node.addEventListener('click', onClick);
+  return node;
+}
+
+function showResultNotice({ tone = 'ok', title, sub, link = null, actions = [], autoHideMs = 0 }) {
+  clearResultNotice();
+  const host = document.querySelector('.main-content');
+  if (!host) return;
+
+  const notice = el('div', `result-notice tone-${tone}`);
+  const text = el('div', 'draft-notice-text');
+  text.append(el('strong', null, title));
+  if (sub) text.append(el('span', null, sub));
+  notice.append(text);
+
+  if (link) {
+    const a = el('a', 'edit-link', link.text);
+    a.href = link.href;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    notice.append(a);
+  }
+  actions.forEach((act) => notice.append(noticeBtn(act.label, act.cls || '', act.onClick)));
+  notice.append(noticeBtn('知道了', '', clearResultNotice));
+
+  noticeEl = notice;
+  host.insertBefore(notice, host.firstChild);
+  if (autoHideMs) setTimeout(clearResultNotice, autoHideMs);
 }
 
 function onDisconnect() {
@@ -685,12 +800,18 @@ function updateBar() {
   }
   const draft = loadDraft();
   if (!draft) {
-    statusEl.textContent = '拖动或点 ＋ 后，改动会先存在本机';
+    statusEl.textContent = '拖动卡片或页签可排序，点卡片改名称/网址';
     return;
   }
   const t = new Date(draft.savedAt);
   const pad = (n) => String(n).padStart(2, '0');
-  statusEl.textContent = `草稿已存本机 · ${pad(t.getMonth() + 1)}-${pad(t.getDate())} ${pad(t.getHours())}:${pad(t.getMinutes())}`;
+  const when = `${pad(t.getMonth() + 1)}-${pad(t.getDate())} ${pad(t.getHours())}:${pad(t.getMinutes())}`;
+  // 状态写在最前面：用户一眼要知道的是"推没推"，而不是"存没存"
+  statusEl.textContent = {
+    draft: `草稿已存本机 · 未推送 · ${when}`,
+    pushed: `已推送 · ${when}`,
+    local: `本机保存 · ${when}`,
+  }[draftState(draft)] || `草稿已存本机 · ${when}`;
 }
 
 async function onCopy() {
@@ -712,6 +833,14 @@ function enterEditMode() {
   if (!bar) buildBar();
   updateBar();
   decorate();
+  // 进来第一件事是告诉用户"你现在能干什么"，而不是让他自己摸。
+  // 10 秒后自动淡出，不长期占地方；工具条上的状态文案一直在，想看随时在。
+  showResultNotice({
+    tone: 'edit',
+    title: '已进入编辑模式',
+    sub: '拖动卡片或页签可排序。点卡片改名称、网址、图标 改动先存在本机草稿，推送到 GitHub 之后才会提交。',
+    autoHideMs: 3000,
+  });
 }
 
 function exitEditMode() {

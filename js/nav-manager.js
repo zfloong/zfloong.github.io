@@ -8,7 +8,7 @@ import { bindSearchEvents, bindTabEvents, bindSectionToggleEvents } from './modu
 import { showLoading, hideLoading, showError, initNetworkListeners } from './modules/error-handler.js';
 import { initKeyboardNav } from './modules/keyboard-nav.js';
 import { initThemeSwitcher } from './modules/theme-switcher.js';
-import { loadDraft, clearDraft } from './modules/draft-store.js';
+import { loadDraft, clearDraft, draftState } from './modules/draft-store.js';
 
 let currentData = null;
 let editorApi = null;
@@ -49,7 +49,7 @@ function showDraftNotice(savedAt) {
   const title = document.createElement('strong');
   title.textContent = `本机有一份未提交的草稿 · ${when}`;
   const sub = document.createElement('span');
-  sub.textContent = '和线上 data.json 不一致，页面现在显示的是草稿';
+  sub.textContent = '页面现在显示的是这份草稿，推送后才会提交到 GitHub';
   text.append(title, sub);
 
   const useRemote = document.createElement('button');
@@ -73,13 +73,25 @@ function showDraftNotice(savedAt) {
 }
 
 /**
- * 退出编辑模式时按和加载时同一套规则再判一次：
- * 确知草稿 ≠ 文件才提示；一样（比如刚推完又拉取过）就把草稿收掉、横幅也收掉
+ * 退出编辑模式时按和加载时同一套规则再判一次。
+ *
+ * 关键是先分清草稿的状态，再决定要不要开口：
+ *   pushed / local —— 内容已经是"要么推上去了、要么用户自己认了"，
+ *                     这时顶一条"未提交的草稿"纯属吓人，一律不提示；
+ *   draft —— 真的还没推，才拿它跟本页用的 data.json 比，确知不一致才提示。
+ * 注意 fetchData() 拿的是**本页正在用的** data.json（本机文件 / 线上部署版），
+ * 不等于 GitHub 上的最新版，所以刚推完那几分钟里两者必然不一致 —— 这不是"未提交"。
  */
 async function refreshDraftNotice() {
   const existing = document.querySelector('.draft-notice');
   const draft = loadDraft();
   if (!draft) {
+    if (existing) existing.remove();
+    return;
+  }
+  // 已推送 / 只存本机：都不再说"未提交"（前者在等 Pages 重建，后者是用户自己的选择）
+  const state = draftState(draft);
+  if (state === 'pushed' || state === 'local') {
     if (existing) existing.remove();
     return;
   }
@@ -107,8 +119,8 @@ async function loadDataAndInit() {
         data = fresh;
       } else {
         data = draft.data;
-        // 断网时读不到文件、也就无从比较，这时候不吓人：只有确知不一致才提示
-        if (fresh) showDraftNotice(draft.savedAt);
+        // 断网时读不到文件、也就无从比较，这时候不吓人：只有「真没推过」且确知不一致才提示
+        if (fresh && draftState(draft) === 'draft') showDraftNotice(draft.savedAt);
       }
     } else {
       data = await fetchData();

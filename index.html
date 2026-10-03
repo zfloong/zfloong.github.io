@@ -5,10 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FlyLoong Start</title>
   <link rel="icon" href="images/home.svg" type="image/x-icon">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- remixicon 与 Inter 都自托管在 vendor/，不走 CDN：
+       1. Google Fonts 在国内基本是超时，而字体是渲染阻塞资源 —— 慢的不是"少个字体"，是整个首屏等着它；
+       2. cdnjs 也要多一轮 DNS + TLS 握手，对一个静态起始页纯属白给；
+       3. 字体/图标库走同源后，整站只剩 GitHub Pages 一个外部来源，出问题只用查一处。
+       字体文件的取舍见 vendor/inter/inter.css 顶部注释。 -->
+  <link rel="stylesheet" href="vendor/remixicon/remixicon.min.css">
+  <link rel="stylesheet" href="vendor/inter/inter.css">
   <link rel="stylesheet" href="css/main.css">
   <!-- 首帧底色 + 整页淡入，必须是「内联且靠前」的：
        默认底色来自浏览器，而 main.css 是外链 —— 在它生效之前会先画一帧默认色，
@@ -56,10 +59,17 @@
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-tabs" id="navTabs"></div>
-      <!-- 主题切换（右上角，绝对定位，不挤动居中的 .nav-tabs）-->
-      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换主题" title="切换主题">
-        <i class="ri-moon-line" aria-hidden="true"></i>
-      </button>
+      <!-- 右上角动作区：编辑入口 + 主题切换。整组绝对定位，不挤动居中的 .nav-tabs。
+           编辑入口跟主题切换并排放在这一区，是因为它的反馈（顶部提示条、进入编辑模式的
+           说明）都出现在页面顶部 —— 原来孤零零待在页脚，点下去却往上看，反应是断的。 -->
+      <div class="nav-actions">
+        <button id="edit-entry" class="edit-entry" type="button" aria-haspopup="dialog" title="编辑导航内容">
+          <i class="ri-settings-3-line" aria-hidden="true"></i><span>编辑</span>
+        </button>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换主题" title="切换主题">
+          <i class="ri-moon-line" aria-hidden="true"></i>
+        </button>
+      </div>
     </div>
   </nav>
 
@@ -70,9 +80,6 @@
 
   <footer>
     <p><a href="https://github.com/zfloong/zfloong.github.io" target="_blank" rel="noopener noreferrer">LoongStart</a> · 文明其精神 野蛮其体魄</p>
-    <button id="edit-entry" class="edit-entry" type="button" aria-haspopup="dialog">
-      <i class="ri-settings-3-line" aria-hidden="true"></i><span>编辑</span>
-    </button>
   </footer>
 
   <script type="module" src="js/nav-manager.js"></script>
