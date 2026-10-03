@@ -201,6 +201,17 @@ body {
   scrollbar-width: none;
   padding: 36px;
   margin: -36px;
+  /* 这 36px 内边距是给按钮光晕留的裁切余量，但它同时也是**可命中区**：
+     容器下沿因此比 52px 的导航栏多探出 24px，那圈透明区压在页面上，
+     会把落在它下面的卡片 / 链接的 pointerdown 整个吃掉 —— 表现为
+     "某些卡片根本抓不住，换个滚动位置又好像能抓"，跟卡片本身无关。
+     所以容器不接收指针，交互交回给里面的按钮自己（子元素重新开启即可）。 */
+  pointer-events: none;
+}
+/* 容器已 pointer-events:none，这里把可交互的子元素放回来，标签的点击/拖动照旧 */
+.nav-tabs .tab-btn,
+.nav-tabs .edit-add-cat {
+  pointer-events: auto;
 }
 .nav-tabs::-webkit-scrollbar { display: none; }
 
