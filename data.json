@@ -70,24 +70,24 @@
               "icon": "icons/chatgpt_com.png"
             },
             {
-              "title": "LM 模型竞技场",
-              "url": "https://lmarena.ai/zh",
-              "icon": "icons/lmarena_ai.png"
-            },
-            {
               "title": "QwenDome",
               "url": "https://www.qianwen.com/",
               "icon": "icons/img_alicdn_com.svg"
             },
             {
-              "title": "MiMo",
-              "url": "https://aistudio.xiaomimimo.com/#/c",
-              "icon": "icons/aistudio_xiaomimimo_com.png"
+              "title": "LM 模型竞技场",
+              "url": "https://lmarena.ai/zh",
+              "icon": "icons/lmarena_ai.png"
             },
             {
               "title": "DeepSeek",
               "url": "https://chat.deepseek.com/",
               "icon": "icons/chat_deepseek_com.png"
+            },
+            {
+              "title": "MiMo",
+              "url": "https://aistudio.xiaomimimo.com/#/c",
+              "icon": "icons/aistudio_xiaomimimo_com.png"
             },
             {
               "title": "Grok",
@@ -108,6 +108,11 @@
               "title": "豆包",
               "url": "https://www.doubao.com/chat/",
               "icon": "icons/www_doubao_com.png"
+            },
+            {
+              "title": "Muse",
+              "url": "https://muse.ai/",
+              "icon": "icons/muse_ai.png"
             }
           ]
         },
