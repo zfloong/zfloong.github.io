@@ -61,7 +61,7 @@
             },
             {
               "title": "AI Studio",
-              "url": "https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview",
+              "url": "https://aistudio.google.com/prompts/new_chat",
               "icon": "icons/aistudio_google_com.png"
             },
             {
