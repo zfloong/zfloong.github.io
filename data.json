@@ -675,7 +675,7 @@
       "icon": "ri-server-line",
       "sections": [
         {
-          "name": "社区论坛",
+          "name": "💬 社区论坛",
           "items": [
             {
               "title": "NodeSeek",
@@ -715,7 +715,7 @@
           ]
         },
         {
-          "name": "优质路由",
+          "name": "🚀 优质路由",
           "items": [
             {
               "title": "搬瓦工",
@@ -735,7 +735,7 @@
           ]
         },
         {
-          "name": "综合备选",
+          "name": "🗂️ 综合备选",
           "items": [
             {
               "title": "RAKsmart",
@@ -781,7 +781,7 @@
           ]
         },
         {
-          "name": "适合落地",
+          "name": "🛬 适合落地",
           "items": [
             {
               "title": "GreenCloud",
@@ -806,7 +806,7 @@
           ]
         },
         {
-          "name": "待观察",
+          "name": "👀 待观察",
           "items": [
             {
               "title": "Acck",
