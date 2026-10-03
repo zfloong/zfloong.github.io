@@ -34,7 +34,7 @@ function initDragSort(options) {
 
 function onPointerDown(e) {
   if (!isEditMode() || e.button !== 0) return;
-  if (e.target.closest('.edit-panel, .edit-bar, .sec-add, .edit-add-group, .edit-add-cat')) return;
+  if (e.target.closest('.edit-panel, .edit-bar, .sec-add, .sec-rename, .edit-add-group, .edit-add-cat')) return;
 
   const wrap = e.target.closest('.card-wrap');
   const tab = e.target.closest('.tab-btn');

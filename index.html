@@ -61,10 +61,12 @@
       <div class="nav-tabs" id="navTabs"></div>
       <!-- 右上角动作区：编辑入口 + 主题切换。整组绝对定位，不挤动居中的 .nav-tabs。
            编辑入口跟主题切换并排放在这一区，是因为它的反馈（顶部提示条、进入编辑模式的
-           说明）都出现在页面顶部 —— 原来孤零零待在页脚，点下去却往上看，反应是断的。 -->
+           说明）都出现在页面顶部 —— 原来孤零零待在页脚，点下去却往上看，反应是断的。
+           不带文字：和主题切换一样收成一个纯图标圆钮，进没进编辑模式看钮的着色，
+           说明文字交给进入编辑模式时顶部那条提示。 -->
       <div class="nav-actions">
-        <button id="edit-entry" class="edit-entry" type="button" aria-haspopup="dialog" title="编辑导航内容">
-          <i class="ri-settings-3-line" aria-hidden="true"></i><span>编辑</span>
+        <button id="edit-entry" class="edit-entry" type="button" aria-haspopup="dialog" aria-label="编辑导航内容" title="编辑导航内容">
+          <i class="ri-settings-3-line" aria-hidden="true"></i>
         </button>
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换主题" title="切换主题">
           <i class="ri-moon-line" aria-hidden="true"></i>

@@ -1,11 +1,11 @@
 /**
  * 在线编辑（编辑模式）
  *
- * 入口：页脚 #edit-entry，点击时由 nav-manager 动态 import 本模块（访客不下载）。
+ * 入口：导航右上角 #edit-entry，点击时由 nav-manager 动态 import 本模块（访客不下载）。
  *
  *   · 卡片可拖（同组内 / 跨组 / 跨分类），分类页签也能拖着换序
  *   · 拖到某个页签上停一下会切到那个分类，于是卡片可以跨分类搬
- *   · 每个分组有 ＋ 加卡片、每个分类末尾有 ＋ 新增分组、顶部有 ＋ 新增分类
+ *   · 每个分组有 ＋ 加卡片和 ✎ 重命名、每个分类末尾有 ＋ 新增分组、顶部有 ＋ 新增分类
  *   · 点卡片不再跳转，而是弹出表单改名称/网址/图标，或删除
  *   · 图标留空时按网址自动抓一张，存进暂存区，推送时提交进仓库 icons/
  *   · 改动先写进浏览器本地草稿（draft-store），工具条可复制 data.json 内容
@@ -391,6 +391,38 @@ function openGroupForm(catId) {
   name.input.focus();
 }
 
+/** 重命名已有分组：只动 section.name，卡片和位置都不碰。
+ *  代价是这一组在 localStorage 里的折叠状态按旧名字存的，改完会回到展开（见 renderer.js）。 */
+function openRenameGroupForm(catId, secIndex) {
+  const data = ctx.getData();
+  const cat = catById(data, catId);
+  const section = cat && (cat.sections || [])[secIndex];
+  if (!section) return;
+
+  form = { kind: 'group' };
+  openPanel(`重命名分组 · ${cat.navTitle || cat.id}`);
+
+  const original = section.name;
+  const name = field('分组名称', original, '例如：研习之路');
+  const error = el('div', 'edit-error');
+  panelBody.append(name.wrap, error);
+  form.dirty = () => name.input.value.trim() !== original;
+
+  const actions = el('div', 'edit-actions');
+  actions.append(button('取消', '', () => closeForm()));
+  actions.append(button('保存', 'primary', () => {
+    const value = name.input.value.trim();
+    if (!value) { error.textContent = '分组名称不能为空'; return; }
+    if (value === original) { closeForm(true); return; }
+    section.name = value;
+    closeForm(true);
+    applyChange();
+  }));
+  panelBody.append(actions);
+  name.input.focus();
+  name.input.select();
+}
+
 function nextCategoryId(data) {
   const used = new Set((data.categories || []).map(c => c.id));
   let n = 1;
@@ -701,12 +733,7 @@ function onDisconnect() {
 
 /* ---------------- 编辑模式 ---------------- */
 
-function setEntryText(text) {
-  const label = entryEl.querySelector('span');
-  if (label) label.textContent = text;
-}
-
-/** 往现有 DOM 上挂编辑态装饰：分组 ＋、分类 ＋、顶部 ＋ 新增分类 */
+/** 往现有 DOM 上挂编辑态装饰：分组 ＋ 加卡片 / ✎ 重命名、分类 ＋、顶部 ＋ 新增分类 */
 function decorate() {
   if (!document.body.classList.contains('edit-mode')) return;
 
@@ -722,7 +749,19 @@ function decorate() {
       e.preventDefault();
       openCardForm({ cat: section.id, sec: si, idx: null });
     });
-    title.appendChild(add);
+    // 重命名入口：和 ＋ 并排。分组标题本身点击是折叠/展开，所以这里同样要 stopPropagation
+    const rename = el('button', 'sec-rename');
+    rename.type = 'button';
+    rename.title = '重命名这个分组';
+    const pen = el('i', 'ri-edit-line');
+    pen.setAttribute('aria-hidden', 'true');
+    rename.append(pen);
+    rename.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      openRenameGroupForm(section.id, si);
+    });
+    title.append(add, rename);
   });
 
   // 扁平分类没有分组标题，加卡片入口挂在分类区顶部那条 section-header 上
@@ -828,8 +867,7 @@ function onDiscard() {
 
 function enterEditMode() {
   document.body.classList.add('edit-mode');
-  entryEl.classList.add('on');
-  setEntryText('完成编辑');
+  entryEl.classList.add('on');   // 入口钮没有文字了，进编辑模式只靠这个 .on 着色
   if (!bar) buildBar();
   updateBar();
   decorate();
@@ -848,7 +886,6 @@ function exitEditMode() {
   cancelDrag();
   document.body.classList.remove('edit-mode');
   entryEl.classList.remove('on');
-  setEntryText('编辑');
   if (bar) {
     bar.remove();
     bar = null;

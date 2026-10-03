@@ -722,51 +722,42 @@ footer a:hover {
 
 /* =========================================
    在线编辑器（js/modules/editor.js）
-   入口：页脚 .edit-entry —— 按钮常驻可见，编辑器模块点击后才动态加载
+   入口：导航右上角 .edit-entry —— 按钮常驻可见，编辑器模块点击后才动态加载
    ========================================= */
-/* 编辑入口：和 .theme-toggle 同高同底色，两个才像一组。
-   特意带「编辑 / 完成编辑」文字而不是纯图标 —— 它兼当状态指示，
-   纯图标看不出你现在是进去了还是出来了。 */
+/* 编辑入口：和 .theme-toggle 同尺寸、同底色，两个并排才像一组。
+   纯图标不写文字 —— 原来是带「编辑 / 完成编辑」的长胶囊，压在标签上分量太重；
+   进没进编辑模式改由钮自身的着色表达（.on 见下方「编辑模式」一节）。 */
 .edit-entry {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  width: 34px;
   height: 34px;
-  padding: 0 0.85rem;
+  padding: 0;
   background: var(--history-bg);
   border: 1px solid var(--border);
-  border-radius: 50px;
-  color: var(--text);
-  font-family: inherit;
-  font-size: 0.78rem;
-  letter-spacing: 0;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
-}
-.edit-entry:hover {
-  color: var(--primary);
-  border-color: rgba(var(--ink-rgb),0.6);
-  background: rgba(var(--ink-rgb),0.12);
-}
-.edit-entry i {
+  border-radius: 50%;
+  color: var(--text-sub);
   font-size: 0.95rem;
   line-height: 1;
+  cursor: pointer;
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+.edit-entry:hover {
+  color: var(--text);
+  border-color: rgba(var(--ink-rgb),0.3);
+  background: rgba(var(--ink-rgb),0.12);
+}
+.edit-entry:focus-visible {
+  outline: 2px solid var(--focus-glow);
+  outline-offset: 2px;
 }
 
-/* 窄屏上 .nav-tabs 会铺满一行，右上角挤不下带文字的按钮 —— 收成纯图标 */
+/* 窄屏上 .nav-tabs 会铺满一行，右上角只够放下两个圆钮 */
 @media (max-width: 720px) {
   .nav-actions {
     right: 0.6rem;
     gap: 0.35rem;
-  }
-  .edit-entry {
-    width: 34px;
-    padding: 0;
-    justify-content: center;
-  }
-  .edit-entry span {
-    display: none;
   }
 }
 
@@ -1048,6 +1039,7 @@ body.edit-open {
 /* =========================================
    编辑模式（js/modules/editor.js + drag-sort.js）
    ========================================= */
+/* 编辑模式激活态：入口钮改成纯图标后，它是「你现在在编辑模式里」唯一的常驻标记 */
 .edit-entry.on {
   color: var(--primary);
   border-color: rgba(var(--ink-rgb),0.6);
@@ -1084,7 +1076,7 @@ body.edit-mode .grid:empty::after {
   border: 1px dashed var(--border);
   border-radius: 18px;
 }
-/* 编辑模式下折叠箭头靠右，＋ 紧跟在分组名后面 */
+/* 编辑模式下折叠箭头靠右，＋ / ✎ 紧跟在分组名后面 */
 body.edit-mode .section-group-title::after {
   margin-left: auto;
 }
@@ -1102,6 +1094,24 @@ body.edit-mode .section-group-title::after {
   cursor: pointer;
 }
 .sec-add:hover {
+  background: rgba(var(--ink-rgb),0.12);
+}
+/* 重命名分组入口：和 ＋ 同族的虚框小胶囊，换成图标、着色收一档（它是次要动作） */
+.sec-rename {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 0 6px;
+  background: transparent;
+  border: 1px dashed rgba(var(--ink-rgb),0.5);
+  border-radius: 8px;
+  color: var(--text-sub);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.sec-rename:hover {
+  color: var(--primary);
   background: rgba(var(--ink-rgb),0.12);
 }
 .edit-add-group {
