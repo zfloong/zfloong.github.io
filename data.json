@@ -715,7 +715,7 @@
           ]
         },
         {
-          "name": "VPS T0",
+          "name": "优质路由",
           "items": [
             {
               "title": "搬瓦工",
@@ -728,44 +728,9 @@
               "icon": "icons/dmit_io.png"
             },
             {
-              "title": "xTom",
-              "url": "https://xtom.com/",
-              "icon": "icons/xtom_com.png"
-            },
-            {
               "title": "V.PS",
               "url": "https://v.ps/",
               "icon": "icons/v_ps.png"
-            },
-            {
-              "title": "狗妈 GoMami",
-              "url": "https://gomami.io/",
-              "icon": "icons/gomami_io.png"
-            }
-          ]
-        },
-        {
-          "name": "VPS T1",
-          "items": [
-            {
-              "title": "GreenCloud",
-              "url": "https://greencloudvps.com/",
-              "icon": "icons/greencloudvps_com.png"
-            },
-            {
-              "title": "CloudCone",
-              "url": "https://cloudcone.com/",
-              "icon": "icons/cloudcone_com.png"
-            },
-            {
-              "title": "Evoxt",
-              "url": "https://evoxt.com/",
-              "icon": "icons/evoxt_com.png"
-            },
-            {
-              "title": "Akile",
-              "url": "https://akile.ai/",
-              "icon": "icons/akile_ai.png"
             },
             {
               "title": "VM Rack",
@@ -781,11 +746,41 @@
               "title": "RAKsmart",
               "url": "https://www.raksmart.com/",
               "icon": "icons/raksmart_com.png"
+            }
+          ]
+        },
+        {
+          "name": "综合备选",
+          "items": [
+            {
+              "title": "Evoxt",
+              "url": "https://evoxt.com/",
+              "icon": "icons/evoxt_com.png"
+            },
+            {
+              "title": "GreenCloud",
+              "url": "https://greencloudvps.com/",
+              "icon": "icons/greencloudvps_com.png"
+            },
+            {
+              "title": "Akile",
+              "url": "https://akile.ai/",
+              "icon": "icons/akile_ai.png"
+            },
+            {
+              "title": "狗妈 GoMami",
+              "url": "https://gomami.io/",
+              "icon": "icons/gomami_io.png"
             },
             {
               "title": "奶爸 Neburst",
               "url": "https://neburst.com/",
               "icon": "icons/neburst_com.png"
+            },
+            {
+              "title": "CloudCone",
+              "url": "https://cloudcone.com/",
+              "icon": "icons/cloudcone_com.png"
             },
             {
               "title": "ByteVirt",
@@ -807,17 +802,17 @@
               "url": "https://cloudsilk.io/",
               "iconSymbol": "ri-cloud-line",
               "iconColor": "var(--text)"
-            },
-            {
-              "title": "RackNerd",
-              "url": "https://www.racknerd.com/",
-              "icon": "icons/racknerd_com.png"
             }
           ]
         },
         {
-          "name": "其他",
+          "name": "适合落地",
           "items": [
+            {
+              "title": "RackNerd",
+              "url": "https://www.racknerd.com/",
+              "icon": "icons/racknerd_com.png"
+            },
             {
               "title": "Isvoro",
               "url": "https://isvoro.com/",
