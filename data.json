@@ -741,11 +741,6 @@
               "title": "狗妈 GoMami",
               "url": "https://gomami.io/",
               "icon": "icons/gomami_io.png"
-            },
-            {
-              "title": "RackNerd",
-              "url": "https://www.racknerd.com/",
-              "icon": "icons/racknerd_com.png"
             }
           ]
         },
@@ -812,6 +807,11 @@
               "url": "https://cloudsilk.io/",
               "iconSymbol": "ri-cloud-line",
               "iconColor": "var(--text)"
+            },
+            {
+              "title": "RackNerd",
+              "url": "https://www.racknerd.com/",
+              "icon": "icons/racknerd_com.png"
             }
           ]
         },
