@@ -753,19 +753,25 @@
           "name": "综合备选",
           "items": [
             {
-              "title": "Evoxt",
-              "url": "https://evoxt.com/",
-              "icon": "icons/evoxt_com.png"
+              "title": "咸鱼云 SaltyFish",
+              "url": "https://portal.saltyfish.io/",
+              "icon": "icons/saltyfish_io.png"
             },
             {
-              "title": "GreenCloud",
-              "url": "https://greencloudvps.com/",
-              "icon": "icons/greencloudvps_com.png"
+              "title": "白丝云 CloudSilk",
+              "url": "https://cloudsilk.io/",
+              "iconSymbol": "ri-cloud-line",
+              "iconColor": "var(--text)"
             },
             {
               "title": "Akile",
               "url": "https://akile.ai/",
               "icon": "icons/akile_ai.png"
+            },
+            {
+              "title": "ZgoCloud",
+              "url": "https://zgovps.com/",
+              "icon": "icons/zgovps_com.png"
             },
             {
               "title": "狗妈 GoMami",
@@ -776,32 +782,6 @@
               "title": "奶爸 Neburst",
               "url": "https://neburst.com/",
               "icon": "icons/neburst_com.png"
-            },
-            {
-              "title": "CloudCone",
-              "url": "https://cloudcone.com/",
-              "icon": "icons/cloudcone_com.png"
-            },
-            {
-              "title": "ByteVirt",
-              "url": "https://bytevirt.com/",
-              "icon": "icons/bytevirt_com.png"
-            },
-            {
-              "title": "ZgoCloud",
-              "url": "https://zgovps.com/",
-              "icon": "icons/zgovps_com.png"
-            },
-            {
-              "title": "咸鱼云 SaltyFish",
-              "url": "https://portal.saltyfish.io/",
-              "icon": "icons/saltyfish_io.png"
-            },
-            {
-              "title": "白丝云 CloudSilk",
-              "url": "https://cloudsilk.io/",
-              "iconSymbol": "ri-cloud-line",
-              "iconColor": "var(--text)"
             }
           ]
         },
@@ -809,29 +789,39 @@
           "name": "适合落地",
           "items": [
             {
+              "title": "GreenCloud",
+              "url": "https://greencloudvps.com/",
+              "icon": "icons/greencloudvps_com.png"
+            },
+            {
+              "title": "ByteVirt",
+              "url": "https://bytevirt.com/",
+              "icon": "icons/bytevirt_com.png"
+            },
+            {
               "title": "RackNerd",
               "url": "https://www.racknerd.com/",
               "icon": "icons/racknerd_com.png"
             },
             {
-              "title": "Isvoro",
-              "url": "https://isvoro.com/",
-              "icon": "icons/isvoro_com.jpg"
-            },
-            {
-              "title": "Zouter",
-              "url": "https://www.zouter.io/web/default/zh-CN/",
-              "icon": "icons/zouter_io.png"
-            },
+              "title": "DediRock",
+              "url": "https://billing.dedirock.com/index.php",
+              "icon": "icons/dedirock_com.png"
+            }
+          ]
+        },
+        {
+          "name": "待观察",
+          "items": [
             {
               "title": "Acck",
               "url": "https://acck.io/",
               "icon": "icons/acck_io.png"
             },
             {
-              "title": "DediRock",
-              "url": "https://billing.dedirock.com/index.php",
-              "icon": "icons/dedirock_com.png"
+              "title": "Isvoro",
+              "url": "https://isvoro.com/",
+              "icon": "icons/isvoro_com.jpg"
             },
             {
               "title": "PanstarCloud",
