@@ -764,11 +764,6 @@
               "iconColor": "var(--text)"
             },
             {
-              "title": "ZgoCloud",
-              "url": "https://zgovps.com/",
-              "icon": "icons/zgovps_com.png"
-            },
-            {
               "title": "RackNerd",
               "url": "https://www.racknerd.com/",
               "icon": "icons/racknerd_com.png"
