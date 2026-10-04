@@ -769,6 +769,16 @@
               "icon": "icons/zgovps_com.png"
             },
             {
+              "title": "RackNerd",
+              "url": "https://www.racknerd.com/",
+              "icon": "icons/racknerd_com.png"
+            },
+            {
+              "title": "DediRock",
+              "url": "https://billing.dedirock.com/index.php",
+              "icon": "icons/dedirock_com.png"
+            },
+            {
               "title": "狗妈 GoMami",
               "url": "https://gomami.io/",
               "icon": "icons/gomami_io.png"
@@ -794,14 +804,9 @@
               "icon": "icons/bytevirt_com.png"
             },
             {
-              "title": "RackNerd",
-              "url": "https://www.racknerd.com/",
-              "icon": "icons/racknerd_com.png"
-            },
-            {
-              "title": "DediRock",
-              "url": "https://billing.dedirock.com/index.php",
-              "icon": "icons/dedirock_com.png"
+              "title": "wap.ac",
+              "url": "https://wap.ac/index.php",
+              "icon": "icons/wap_ac.png"
             }
           ]
         },
