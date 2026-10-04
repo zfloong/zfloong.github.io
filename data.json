@@ -794,6 +794,11 @@
               "icon": "icons/acck_io.png"
             },
             {
+              "title": "Corenet",
+              "url": "https://www.corenetcloud.com/",
+              "icon": "icons/corenetcloud_com.png"
+            },
+            {
               "title": "Akile",
               "url": "https://akile.ai/",
               "icon": "icons/akile_ai.png"
@@ -819,14 +824,14 @@
               "icon": "icons/neburst_com.png"
             },
             {
-              "title": "PanstarCloud",
-              "url": "https://panstar.ai/",
-              "icon": "icons/panstar_ai.jpg"
-            },
-            {
               "title": "Isvoro",
               "url": "https://isvoro.com/",
               "icon": "icons/isvoro_com.jpg"
+            },
+            {
+              "title": "PanstarCloud",
+              "url": "https://panstar.ai/",
+              "icon": "icons/panstar_ai.jpg"
             }
           ]
         }
