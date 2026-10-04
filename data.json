@@ -762,26 +762,6 @@
               "url": "https://cloudsilk.io/",
               "iconSymbol": "ri-cloud-line",
               "iconColor": "var(--text)"
-            },
-            {
-              "title": "RackNerd",
-              "url": "https://www.racknerd.com/",
-              "icon": "icons/racknerd_com.png"
-            },
-            {
-              "title": "DediRock",
-              "url": "https://billing.dedirock.com/index.php",
-              "icon": "icons/dedirock_com.png"
-            },
-            {
-              "title": "狗妈 GoMami",
-              "url": "https://gomami.io/",
-              "icon": "icons/gomami_io.png"
-            },
-            {
-              "title": "奶爸 Neburst",
-              "url": "https://neburst.com/",
-              "icon": "icons/neburst_com.png"
             }
           ]
         },
@@ -806,7 +786,7 @@
           ]
         },
         {
-          "name": "👀 待观察",
+          "name": "🧩 尚未归置",
           "items": [
             {
               "title": "Acck",
@@ -819,14 +799,34 @@
               "icon": "icons/akile_ai.png"
             },
             {
-              "title": "Isvoro",
-              "url": "https://isvoro.com/",
-              "icon": "icons/isvoro_com.jpg"
+              "title": "RackNerd",
+              "url": "https://www.racknerd.com/",
+              "icon": "icons/racknerd_com.png"
+            },
+            {
+              "title": "DediRock",
+              "url": "https://billing.dedirock.com/index.php",
+              "icon": "icons/dedirock_com.png"
+            },
+            {
+              "title": "狗妈 GoMami",
+              "url": "https://gomami.io/",
+              "icon": "icons/gomami_io.png"
+            },
+            {
+              "title": "奶爸 Neburst",
+              "url": "https://neburst.com/",
+              "icon": "icons/neburst_com.png"
             },
             {
               "title": "PanstarCloud",
               "url": "https://panstar.ai/",
               "icon": "icons/panstar_ai.jpg"
+            },
+            {
+              "title": "Isvoro",
+              "url": "https://isvoro.com/",
+              "icon": "icons/isvoro_com.jpg"
             }
           ]
         }
