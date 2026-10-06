@@ -611,6 +611,11 @@
           "name": "🎮 娱乐与生活",
           "items": [
             {
+              "title": "Komari",
+              "url": "https://monitor.654519996.xyz/",
+              "icon": "icons/monitor_654519996_xyz.png"
+            },
+            {
               "title": "TikTok",
               "url": "https://www.tiktok.com/explore",
               "icon": "icons/tiktok_com.png"
