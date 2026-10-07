@@ -75,11 +75,6 @@
               "icon": "icons/img_alicdn_com.svg"
             },
             {
-              "title": "LM 模型竞技场",
-              "url": "https://lmarena.ai/zh",
-              "icon": "icons/lmarena_ai.png"
-            },
-            {
               "title": "DeepSeek",
               "url": "https://chat.deepseek.com/",
               "icon": "icons/chat_deepseek_com.png"
@@ -95,14 +90,9 @@
               "icon": "icons/grok_com.png"
             },
             {
-              "title": "Copilot",
-              "url": "https://copilot.microsoft.com/",
-              "icon": "icons/copilot_microsoft_com.ico"
-            },
-            {
-              "title": "腾讯混元",
-              "url": "https://yuanbao.tencent.com/",
-              "icon": "icons/yuanbao_tencent_com.png"
+              "title": "LM 模型竞技场",
+              "url": "https://lmarena.ai/zh",
+              "icon": "icons/lmarena_ai.png"
             },
             {
               "title": "豆包",
@@ -110,9 +100,24 @@
               "icon": "icons/www_doubao_com.png"
             },
             {
+              "title": "Copilot",
+              "url": "https://copilot.microsoft.com/",
+              "icon": "icons/copilot_microsoft_com.ico"
+            },
+            {
+              "title": "文心一言",
+              "url": "https://yiyan.baidu.com/",
+              "icon": "icons/yiyan_baidu_com.png"
+            },
+            {
               "title": "Muse",
               "url": "https://muse.ai/",
               "icon": "icons/muse_ai.png"
+            },
+            {
+              "title": "腾讯混元",
+              "url": "https://yuanbao.tencent.com/",
+              "icon": "icons/yuanbao_tencent_com.png"
             }
           ]
         },
@@ -136,21 +141,6 @@
               "icon": "icons/youtube_com.ico"
             },
             {
-              "title": "Z-Library",
-              "url": "https://zh.z-library.sk/",
-              "icon": "icons/zh_z-library_sk.png"
-            },
-            {
-              "title": "文心一言",
-              "url": "https://yiyan.baidu.com/",
-              "icon": "icons/yiyan_baidu_com.png"
-            },
-            {
-              "title": "Qwen.ai",
-              "url": "https://chat.qwen.ai/",
-              "icon": "icons/img_alicdn_com.svg"
-            },
-            {
               "title": "Google Cloud",
               "url": "https://cloud.google.com/",
               "icon": "icons/cloud_google_com.ico"
@@ -159,6 +149,21 @@
               "title": "Cloudflare",
               "url": "https://dash.cloudflare.com/",
               "icon": "icons/dash_cloudflare_com.png"
+            },
+            {
+              "title": "Z-Library",
+              "url": "https://zh.z-library.sk/",
+              "icon": "icons/zh_z-library_sk.png"
+            },
+            {
+              "title": "樊登读书",
+              "url": "https://www.dushu365.com/",
+              "icon": "icons/dushu365_com.png"
+            },
+            {
+              "title": "微信读书",
+              "url": "https://weread.qq.com/web/shelf",
+              "icon": "icons/rescdn_qqmail_com.png"
             }
           ]
         }
@@ -178,9 +183,9 @@
               "icon": "images/fmhy-play.svg"
             },
             {
-              "title": "微信读书",
-              "url": "https://weread.qq.com/web/shelf",
-              "icon": "icons/rescdn_qqmail_com.png"
+              "title": "ClouDNS",
+              "url": "https://www.cloudns.net/",
+              "icon": "icons/cloudns_net.png"
             },
             {
               "title": "Google翻译",
@@ -191,27 +196,17 @@
               "title": "DeepL翻译",
               "url": "https://www.deepl.com/zh/translator",
               "icon": "icons/deepl_com.png"
-            },
-            {
-              "title": "樊登读书",
-              "url": "https://www.dushu365.com/",
-              "icon": "icons/dushu365_com.png"
-            },
-            {
-              "title": "Spaceship",
-              "url": "https://www.spaceship.com/zh/",
-              "icon": "icons/spaceship-cdn_com.svg"
-            },
-            {
-              "title": "ClouDNS",
-              "url": "https://www.cloudns.net/",
-              "icon": "icons/cloudns_net.png"
             }
           ]
         },
         {
           "name": "🌐 网络工具",
           "items": [
+            {
+              "title": "Spaceship",
+              "url": "https://www.spaceship.com/zh/",
+              "icon": "icons/spaceship-cdn_com.svg"
+            },
             {
               "title": "IPLark",
               "url": "https://iplark.com/",
@@ -561,6 +556,11 @@
               "title": "通义万相",
               "url": "https://tongyi.aliyun.com/want",
               "icon": "icons/tongyi_aliyun_com.png"
+            },
+            {
+              "title": "Qwen.ai",
+              "url": "https://chat.qwen.ai/",
+              "icon": "icons/img_alicdn_com.svg"
             }
           ]
         }
