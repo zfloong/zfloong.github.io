@@ -868,6 +868,11 @@
               "title": "PanstarCloud",
               "url": "https://panstar.ai/",
               "icon": "icons/panstar_ai.jpg"
+            },
+            {
+              "title": "lightlayer",
+              "url": "https://account.lightlayer.net/",
+              "icon": "icons/account_lightlayer_net.png"
             }
           ]
         }
