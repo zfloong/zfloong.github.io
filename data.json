@@ -154,8 +154,8 @@
               "pos": 1
             },
             {
-              "title": "X.com",
-              "url": "https://x.com/i/grok",
+              "title": "X",
+              "url": "https://x.com/home",
               "icon": "icons/x_com.png",
               "locked": true,
               "pos": 2
