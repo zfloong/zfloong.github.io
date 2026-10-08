@@ -36,7 +36,17 @@ function onPointerDown(e) {
   if (!isEditMode() || e.button !== 0) return;
   if (e.target.closest('.edit-panel, .edit-bar, .sec-add, .sec-rename, .edit-add-group, .edit-add-cat')) return;
 
+  // 上一次拖动如果因为 pointerup 没正常触发（鼠标移出窗口、浏览器发了 pointercancel
+  // 等）而没清干净，这里先兜底清掉，否则残留的 pointermove/up 监听器会叠加，
+  // 导致"拖完 A 之后 B 拖不动"——多个 onPointerUp 抢着跑，第一个把 drag 置 null，
+  // 后面的直接 return 但没清自己的监听器，越积越多。
+  cancelDrag();
+
   const wrap = e.target.closest('.card-wrap');
+  // 空位只是占格子的占位，不能拖、也不能点
+  if (wrap && wrap.classList.contains('spacer')) return;
+  // 锁定卡片位置固定，不能拖
+  if (wrap && wrap.classList.contains('locked')) return;
   const tab = e.target.closest('.tab-btn');
   const el = wrap || tab;
   if (!el) return;
@@ -94,6 +104,10 @@ function beginDrag(e) {
 }
 
 function updateTarget(e) {
+  // 先把占位符拎出来：避免它挡住 elementFromPoint，也避免它占格子挤乱布局
+  if (drag.ph && drag.ph.parentElement) drag.ph.remove();
+  drag.targetSpacer = null;
+
   const under = document.elementFromPoint(e.clientX, e.clientY);
   if (!under) return;
 
@@ -107,6 +121,16 @@ function updateTarget(e) {
   if (drag.kind === 'card') {
     const grid = under.closest('.grid');
     if (!grid) return;
+    // 指针落在空位上 → 直接填入这个空位。遍历空位 rect 检测（比 elementFromPoint 更可靠，
+    // 因为 ph 已移除、drag.el 是 display:none，空位位置稳定）。
+    const spacers = grid.querySelectorAll('.card-wrap.spacer');
+    for (const sp of spacers) {
+      const r = sp.getBoundingClientRect();
+      if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+        drag.targetSpacer = sp;
+        return;
+      }
+    }
     placePlaceholder(grid, insertionIndex(grid, e.clientX, e.clientY, '.card-wrap'), '.card-wrap');
   } else {
     const tabs = document.querySelector('.nav-tabs');
@@ -115,10 +139,15 @@ function updateTarget(e) {
   }
 }
 
-/** 被拖的和占位符都不算：这样下标在"占位符/数组"两边是同一个坐标系 —— 
- *  数据侧先删掉被拖的那张再按这个下标插入，正好落在占位符显示的位置 */
+/** 被拖的、占位符、锁定卡片都不算：
+ *  - 被拖的和占位符排除是为了让下标在"占位符/数组"两边是同一个坐标系
+ *  - 锁定卡片排除是因为它们用显式 grid 定位，不参与流式排列，拖其他卡片时不该被它们挡路 */
 function siblingsOf(parent, selector) {
-  return [...parent.children].filter(n => n !== drag.ph && n !== drag.el && n.matches(selector));
+  return [...parent.children].filter(n =>
+    n !== drag.ph && n !== drag.el &&
+    !n.classList.contains('locked') &&
+    n.matches(selector)
+  );
 }
 
 function placePlaceholder(parent, index, selector) {
@@ -177,10 +206,11 @@ function onPointerUp() {
   if (!current.active) return;   // 没移动，就是一次普通点击
 
   const ph = current.ph;
-  const parent = ph.parentElement;
+  // 目标是空位时 ph 没插进 DOM，从 targetSpacer 拿 parent
+  const parent = ph.parentElement || (current.targetSpacer && current.targetSpacer.parentElement);
   const move = buildMove(current, parent);
 
-  ph.remove();
+  if (ph.parentElement) ph.remove();
   current.clone.remove();
   current.el.classList.remove('dragging');
 
@@ -196,13 +226,14 @@ function swallowClick(e) {
   e.stopPropagation();
 }
 
-/** 占位符前面有几个同类兄弟，就是落点下标（被拖的那个要排除：
- *  它在数组里会被先删掉，所以这个下标正好就是先删后插的下标） */
+/** 占位符前面有几个非锁定同类兄弟，就是落点下标（被拖的那个要排除：
+ *  它在数组里会被先删掉，所以这个下标正好就是先删后插的下标）。
+ *  锁定卡片也要排除：它们不参与流式排列，不算插入位置。 */
 function countBefore(ph, selector, exclude) {
   let index = 0;
   for (const node of ph.parentElement.children) {
     if (node === ph) break;
-    if (node !== exclude && node.matches(selector)) index += 1;
+    if (node !== exclude && !node.classList.contains('locked') && node.matches(selector)) index += 1;
   }
   return index;
 }
@@ -213,18 +244,23 @@ function buildMove(current, parent) {
   if (current.kind === 'card') {
     if (!parent.classList.contains('grid')) return null;
     const el = current.el;
+    // 目标是空位 → to.idx 直接取空位在非锁定元素中的下标
+    if (current.targetSpacer) {
+      const sp = current.targetSpacer;
+      const idx = [...sp.parentElement.children]
+        .filter(c => c.matches('.card-wrap') && c !== el && !c.classList.contains('locked'))
+        .indexOf(sp);
+      return {
+        kind: 'card',
+        from: { cat: el.dataset.cat, sec: el.dataset.sec === undefined ? null : Number(el.dataset.sec), idx: Number(el.dataset.idx) },
+        to: { cat: parent.dataset.cat, sec: parent.dataset.sec === 'flat' ? null : Number(parent.dataset.sec), idx },
+      };
+    }
+    const cb = countBefore(current.ph, '.card-wrap', el);
     return {
       kind: 'card',
-      from: {
-        cat: el.dataset.cat,
-        sec: el.dataset.sec === undefined ? null : Number(el.dataset.sec),
-        idx: Number(el.dataset.idx),
-      },
-      to: {
-        cat: parent.dataset.cat,
-        sec: parent.dataset.sec === 'flat' ? null : Number(parent.dataset.sec),
-        idx: countBefore(current.ph, '.card-wrap', el),
-      },
+      from: { cat: el.dataset.cat, sec: el.dataset.sec === undefined ? null : Number(el.dataset.sec), idx: Number(el.dataset.idx) },
+      to: { cat: parent.dataset.cat, sec: parent.dataset.sec === 'flat' ? null : Number(parent.dataset.sec), idx: cb },
     };
   }
 

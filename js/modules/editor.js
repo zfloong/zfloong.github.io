@@ -18,6 +18,7 @@
  */
 
 import { initDragSort, cancelDrag, isDragClickSuppressed } from './drag-sort.js';
+import { gridColumnCount } from './renderer.js';
 import { loadDraft, saveDraft, clearDraft, toRepoJson, copyText, markPushed, markLocalOnly, draftState } from './draft-store.js';
 import { grab, grabFromUrl, applyPendingIcons, pendingFor, pendingList, noteIconsPushed, clearPending } from './icon-fetch.js';
 import {
@@ -258,6 +259,38 @@ function openCardForm(target) {
   const error = el('div', 'edit-error');
   panelBody.append(name.wrap, url.wrap, icon.wrap, iconRow, rescue, error);
 
+  // 锁定位置：钉住这张卡片，拖动其他卡片时它不动。
+  // 只有已有卡片能锁（新增的还没位置，锁了没意义）。
+  let lockWrap = null;
+  if (!isNew) {
+    lockWrap = el('label', 'edit-field edit-check');
+    const lockInput = el('input', 'edit-check-input');
+    lockInput.type = 'checkbox';
+    lockInput.checked = !!item.locked;
+    const lockLabel = el('span', null, '锁定位置（拖动其他卡片时这张不动）');
+    lockWrap.append(lockInput, lockLabel);
+    panelBody.insertBefore(lockWrap, error);
+    // 锁定状态也算脏
+    const origLocked = !!item.locked;
+    form.dirty = () => name.input.value.trim() !== original.title
+      || url.input.value.trim() !== original.url
+      || icon.input.value.trim() !== original.icon
+      || lockInput.checked !== origLocked;
+  }
+
+  // 从 DOM 位置算 pos：第 n 行第 m 列 → n * cols + m
+  function posFromWrap(wrap) {
+    const grid = wrap && wrap.closest('.grid');
+    if (!grid) return null;
+    const cols = gridColumnCount(grid);
+    if (cols < 1) return null;
+    const r = wrap.getBoundingClientRect();
+    const gr = grid.getBoundingClientRect();
+    const col = Math.round((r.left - gr.left) / r.width);
+    const row = Math.round((r.top - gr.top) / r.height);
+    return row * cols + Math.max(0, Math.min(col, cols - 1));
+  }
+
   async function onCopyPrompt() {
     refreshPrompt();
     const ok = await copyText(promptBox.textContent);
@@ -309,7 +342,10 @@ function openCardForm(target) {
   if (!isNew) {
     actions.append(button('删除', 'danger', () => {
       if (!window.confirm(`删除「${item.title || '这张卡片'}」？`)) return;
-      arr.splice(target.idx, 1);
+      // 删卡片不补位：原位留空，保持布局的有意留白。
+      // 空位不能直接删，想去掉只能拖张卡片填进去。
+      arr.splice(target.idx, 1, { type: 'spacer' });
+      pruneTrailingSpacers(arr);
       closeForm(true);
       applyChange();
     }));
@@ -333,11 +369,22 @@ function openCardForm(target) {
       item.url = value;
       if (iconValue) item.icon = iconValue;
       else delete item.icon;
+      // 锁定 / 解锁：锁定时记下当前格子坐标，解锁时清掉
+      const lockInput = lockWrap ? lockWrap.querySelector('input') : null;
+      const wantLocked = lockInput ? lockInput.checked : false;
+      if (wantLocked && !item.locked) {
+        const pos = posFromWrap(target.wrap);
+        if (pos != null) { item.locked = true; item.pos = pos; }
+      } else if (!wantLocked && item.locked) {
+        delete item.locked;
+        delete item.pos;
+      }
     }
     closeForm(true);
     applyChange();
-    // 没填图标就按网址抓一张（抓不到也不拦着，只是没图标）
-    if (!saved.icon && urlKind(saved.url) === 'http') autoIcon(saved);
+    // 没填图标就按网址抓一张（抓不到也不拦着，只是没图标）。
+    // 用 iconSymbol（remixicon 类名）的卡片不算"没图标"，别抓张图给它盖掉。
+    if (!saved.icon && !saved.iconSymbol && urlKind(saved.url) === 'http') autoIcon(saved);
   }));
   panelBody.append(actions);
   name.input.focus();
@@ -347,7 +394,7 @@ function openCardForm(target) {
 async function autoIcon(target) {
   try {
     const got = await grab(target.url);
-    if (target.icon || !stillInData(target)) return;
+    if (target.icon || target.iconSymbol || !stillInData(target)) return;
     target.icon = got.path;
     applyChange();
     flash(got.reused ? `已套用仓库里现成的 ${got.path}`
@@ -926,6 +973,21 @@ function applyChange() {
   updateBar();
 }
 
+/** 把"第 n 个非锁定项"的序号转换成数组下标。
+ *  drag-sort 计算 to.idx 时排除了锁定卡片，但包含空位（空位也是 .card-wrap），
+ *  所以这里也要包含空位，只跳过锁定卡片，否则下标会错位、拖到空位上填不进去。 */
+function nonLockedIndex(arr, n) {
+  let count = 0;
+  for (let i = 0; i < arr.length; i++) {
+    const item = arr[i];
+    if (item && !item.locked) {
+      if (count === n) return i;
+      count += 1;
+    }
+  }
+  return arr.length;
+}
+
 function moveCard(from, to) {
   const data = ctx.getData();
   const fromCat = catById(data, from.cat);
@@ -934,8 +996,30 @@ function moveCard(from, to) {
   const fromArr = itemsArray(fromCat, from.sec);
   const toArr = itemsArray(toCat, to.sec);
   if (!fromArr || !toArr || from.idx >= fromArr.length) return;
+
   const [item] = fromArr.splice(from.idx, 1);
-  toArr.splice(Math.min(to.idx, toArr.length), 0, item);
+
+  // to.idx 是"第几个非锁定卡片"，需要还原成数组下标（锁定卡片不参与排序）
+  const toArrIdx = nonLockedIndex(toArr, to.idx);
+
+  if (toArr[toArrIdx] && toArr[toArrIdx].type === 'spacer') {
+    toArr.splice(toArrIdx, 1, item);   // 目标是空位 → 填入
+  } else {
+    toArr.splice(toArrIdx, 0, item);   // 否则插入，后面顺位后移
+  }
+
+  // 不补 spacer：拖走就移走，后面的卡片自动前移填位。
+  // 之前每次拖动都在源位置补一个 spacer，但中间的 spacer 永远不会被清理，
+  // 拖几次就攒一堆，把 grid 布局搞乱、卡片点不动。
+  pruneTrailingSpacers(fromArr);
+  if (fromArr !== toArr) pruneTrailingSpacers(toArr);
+}
+
+/** 去掉数组末尾连续的空位项：尾部空位不产生有意的留白，只会撑出空行 */
+function pruneTrailingSpacers(arr) {
+  while (arr.length && arr[arr.length - 1] && arr[arr.length - 1].type === 'spacer') {
+    arr.pop();
+  }
 }
 
 function moveTab(from, to) {
@@ -966,6 +1050,7 @@ function onEditClick(e) {
     cat: wrap.dataset.cat,
     sec: wrap.dataset.sec === undefined ? null : Number(wrap.dataset.sec),
     idx: Number(wrap.dataset.idx),
+    wrap,   // 锁定时要从 DOM 位置算 pos
   });
 }
 

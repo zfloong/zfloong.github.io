@@ -32,6 +32,21 @@ function buildCard(item, ref) {
   wrap.dataset.idx = String(ref.idx);
   if (ref.sec != null) wrap.dataset.sec = String(ref.sec);
 
+  // 空位：不渲染任何内容，只占一个格子。
+  // 正常浏览模式下 visibility:hidden 完全隐形；编辑模式下显示虚线轮廓提示"这里是空位"。
+  // 空位不能直接删除，只能被拖入的卡片填入（见 drag-sort.js / editor.js moveCard）。
+  if (item && item.type === 'spacer') {
+    wrap.classList.add('spacer');
+    return wrap;
+  }
+
+  // 锁定卡片：用 grid-column / grid-row 钉在固定格子，非锁定卡片流式排列时会自动绕过它。
+  // 这样无论其他卡片怎么拖动，锁定卡片都纹丝不动。
+  if (item && item.locked) {
+    wrap.classList.add('locked');
+    if (item.pos != null) wrap.dataset.pos = String(item.pos);
+  }
+
   const card = document.createElement('a');
   card.className = 'card';
   card.href = safeHref(item.url);
@@ -47,7 +62,17 @@ function buildCard(item, ref) {
     img.loading = 'lazy';
     img.decoding = 'async';
     img.alt = item.title || '';
-    img.addEventListener('error', () => { img.style.display = 'none'; });
+    img.addEventListener('error', () => {
+      img.style.display = 'none';
+      // 图片加载失败但卡片还有 iconSymbol（remixicon），回退到符号图标，
+      // 避免被 autoIcon 误写过 icon 的卡片一直是空白。
+      if (item.iconSymbol) {
+        const fallback = document.createElement('i');
+        fallback.className = item.iconSymbol;
+        fallback.style.cssText = `font-size: 36px; color: ${item.iconColor || 'inherit'}; background: ${item.iconBg || 'transparent'}; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;`;
+        card.insertBefore(fallback, img.nextSibling);
+      }
+    });
     card.appendChild(img);
   } else if (item.iconSymbol) {
     const icon = document.createElement('i');
@@ -62,6 +87,15 @@ function buildCard(item, ref) {
   title.textContent = item.title || '';
   info.appendChild(title);
   card.appendChild(info);
+
+  // 锁定标记：编辑模式下显示锁图标，提示这张卡片位置固定、不能拖
+  if (item && item.locked) {
+    const lock = document.createElement('span');
+    lock.className = 'lock-badge';
+    lock.setAttribute('aria-hidden', 'true');
+    lock.textContent = '';
+    card.appendChild(lock);
+  }
 
   wrap.appendChild(card);
   return wrap;
@@ -78,10 +112,50 @@ function buildGrid(items, catId, secIndex) {
   grid.className = 'grid';
   grid.dataset.cat = catId;
   grid.dataset.sec = secIndex == null ? 'flat' : String(secIndex);
+
+  // 非锁定卡片先渲染：它们走 grid 自动流式排列。
+  // 锁定卡片后渲染：它们用 grid-column / grid-row 显式定位，不会参与流式排列，
+  // 后渲染也不会影响非锁定卡片的自动布局。
+  const locked = [];
   (items || []).forEach((item, idx) => {
+    if (item && item.locked) {
+      locked.push({ item, idx });
+    } else {
+      grid.appendChild(buildCard(item, { cat: catId, sec: secIndex, idx }));
+    }
+  });
+  locked.forEach(({ item, idx }) => {
     grid.appendChild(buildCard(item, { cat: catId, sec: secIndex, idx }));
   });
   return grid;
+}
+
+/** 读取 grid 当前的列数（由 CSS repeat(auto-fill, minmax(...)) 决定） */
+function gridColumnCount(grid) {
+  const cs = getComputedStyle(grid).gridTemplateColumns;
+  if (!cs || cs === 'none') return 6;
+  return cs.split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * 给所有锁定卡片应用 grid-column / grid-row，把它们钉在 pos 指定的格子上。
+ * 必须在 grid 进入 DOM 之后调用（否则 getComputedStyle 拿不到真实列数）。
+ * 非锁定卡片不处理，继续走自动流式排列，会自然绕过锁定卡片占的格子。
+ */
+function applyLockedLayout(root = document) {
+  root.querySelectorAll('.grid').forEach(grid => {
+    if (grid.offsetParent === null) return;   // 隐藏分类不测，切到它时再布局
+    const cols = gridColumnCount(grid);
+    if (cols < 1) return;
+    grid.querySelectorAll('.card-wrap.locked').forEach(wrap => {
+      const pos = Number(wrap.dataset.pos);
+      if (!Number.isFinite(pos)) return;
+      const col = (pos % cols) + 1;
+      const row = Math.floor(pos / cols) + 1;
+      wrap.style.gridColumn = String(col);
+      wrap.style.gridRow = String(row);
+    });
+  });
 }
 
 /**
@@ -244,6 +318,9 @@ function renderNavAndContent(categories) {
 
   navTabsContainer.replaceChildren(navFragment);
   mainContentContainer.replaceChildren(contentFragment);
+
+  // grid 进 DOM 后才能测到真实列数，下一帧给锁定卡片定位
+  requestAnimationFrame(() => applyLockedLayout());
 }
 
-export { renderSearch, renderNavAndContent };
+export { renderSearch, renderNavAndContent, applyLockedLayout, gridColumnCount };
