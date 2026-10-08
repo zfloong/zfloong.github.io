@@ -50,59 +50,60 @@
           "name": "✨ AI Group",
           "items": [
             {
-              "title": "X.com",
-              "url": "https://x.com/i/grok",
-              "icon": "icons/x_com.png"
-            },
-            {
               "title": "Gemini",
               "url": "https://gemini.google.com/",
-              "icon": "icons/gemini_google_com.png"
-            },
-            {
-              "title": "AI Studio",
-              "url": "https://aistudio.google.com/prompts/new_chat",
-              "icon": "icons/aistudio_google_com.png"
+              "icon": "icons/gemini_google_com.png",
+              "locked": true,
+              "pos": 0
             },
             {
               "title": "ChatGPT",
               "url": "https://chatgpt.com/",
-              "icon": "icons/chatgpt_com.png"
-            },
-            {
-              "title": "QwenDome",
-              "url": "https://www.qianwen.com/",
-              "icon": "icons/img_alicdn_com.svg"
-            },
-            {
-              "title": "DeepSeek",
-              "url": "https://chat.deepseek.com/",
-              "icon": "icons/chat_deepseek_com.png"
-            },
-            {
-              "title": "MiMo",
-              "url": "https://aistudio.xiaomimimo.com/#/c",
-              "icon": "icons/aistudio_xiaomimimo_com.png"
+              "icon": "icons/chatgpt_com.png",
+              "locked": true,
+              "pos": 1
             },
             {
               "title": "Grok",
               "url": "https://grok.com/",
-              "icon": "icons/grok_com.png"
+              "icon": "icons/grok_com.png",
+              "locked": true,
+              "pos": 2
             },
             {
               "title": "LM 模型竞技场",
               "url": "https://lmarena.ai/zh",
-              "icon": "icons/lmarena_ai.png"
-            },
-            {
-              "title": "豆包",
-              "url": "https://www.doubao.com/chat/",
-              "icon": "icons/www_doubao_com.png"
+              "icon": "icons/lmarena_ai.png",
+              "locked": true,
+              "pos": 3
             },
             {
               "title": "Copilot",
               "url": "https://copilot.microsoft.com/",
-              "icon": "icons/copilot_microsoft_com.ico"
+              "icon": "icons/copilot_microsoft_com.ico",
+              "locked": true,
+              "pos": 4
+            },
+            {
+              "title": "AI Studio",
+              "url": "https://aistudio.google.com/prompts/new_chat",
+              "icon": "icons/aistudio_google_com.png",
+              "locked": true,
+              "pos": 5
+            },
+            {
+              "title": "DeepSeek",
+              "url": "https://chat.deepseek.com/",
+              "icon": "icons/chat_deepseek_com.png",
+              "locked": true,
+              "pos": 6
+            },
+            {
+              "title": "MiMo",
+              "url": "https://aistudio.xiaomimimo.com/#/c",
+              "icon": "icons/aistudio_xiaomimimo_com.png",
+              "locked": true,
+              "pos": 7
             },
             {
               "title": "文心一言",
@@ -112,7 +113,19 @@
             {
               "title": "Muse",
               "url": "https://muse.ai/",
-              "icon": "icons/muse_ai.png"
+              "icon": "icons/muse_ai.png",
+              "locked": true,
+              "pos": 12
+            },
+            {
+              "title": "豆包",
+              "url": "https://www.doubao.com/chat/",
+              "icon": "icons/www_doubao_com.png"
+            },
+            {
+              "title": "QwenDome",
+              "url": "https://www.qianwen.com/",
+              "icon": "icons/img_alicdn_com.svg"
             },
             {
               "title": "腾讯混元",
@@ -128,27 +141,31 @@
               "title": "GitHub",
               "url": "https://github.com/dashboard",
               "iconSymbol": "ri-github-fill",
-              "iconColor": "var(--text)"
+              "iconColor": "var(--text)",
+              "locked": true,
+              "pos": 0,
+              "icon": "icons/github_com.png"
             },
             {
               "title": "Bilibili",
               "url": "https://www.bilibili.com/",
-              "icon": "icons/bilibili_com.ico"
+              "icon": "icons/bilibili_com.ico",
+              "locked": true,
+              "pos": 1
+            },
+            {
+              "title": "X.com",
+              "url": "https://x.com/i/grok",
+              "icon": "icons/x_com.png",
+              "locked": true,
+              "pos": 2
             },
             {
               "title": "YouTube",
               "url": "https://www.youtube.com/",
-              "icon": "icons/youtube_com.ico"
-            },
-            {
-              "title": "Google Cloud",
-              "url": "https://cloud.google.com/",
-              "icon": "icons/cloud_google_com.ico"
-            },
-            {
-              "title": "Cloudflare",
-              "url": "https://dash.cloudflare.com/",
-              "icon": "icons/dash_cloudflare_com.png"
+              "icon": "icons/youtube_com.ico",
+              "locked": true,
+              "pos": 3
             },
             {
               "title": "Z-Library",
@@ -159,6 +176,20 @@
               "title": "樊登读书",
               "url": "https://www.dushu365.com/",
               "icon": "icons/dushu365_com.png"
+            },
+            {
+              "title": "Google Cloud",
+              "url": "https://cloud.google.com/",
+              "icon": "icons/cloud_google_com.ico",
+              "locked": true,
+              "pos": 6
+            },
+            {
+              "title": "Cloudflare",
+              "url": "https://dash.cloudflare.com/",
+              "icon": "icons/dash_cloudflare_com.png",
+              "locked": true,
+              "pos": 7
             },
             {
               "title": "微信读书",
