@@ -252,41 +252,31 @@ function renderSleepGuide() {
     <h3>😴 睡眠</h3>
     <div class="core-advice">
       
-      <!-- 一、反对僵化日程 -->
       <div class="advice-item">
+        <i class="ri-time-line"></i>
         <div class="advice-text">
-          <h4>一、反对僵化日程</h4>
-          <p>舍弃固定作息和闹钟。身体自然醒就起床，困了再睡。拒绝将睡眠塞进时间表，由内在节律而非外部钟表主导。</p>
+          <h4>顺其自然</h4>
+          <p>不设闹钟，不排时间表。身体自然醒就起床，困了再睡。由内在节律而非外部钟表主导。</p>
         </div>
       </div>
       
       <div class="divider"></div>
       
-      <!-- 二、无忧睡眠 -->
       <div class="advice-item">
+        <i class="ri-heart-line"></i>
         <div class="advice-text">
-          <h4>二、无忧睡眠</h4>
-          <p>睡眠目标是"无忧"的深度恢复，质量远重于时长。接纳白天小睡，核心是解除对睡眠时长的焦虑，专注恢复本身。</p>
+          <h4>无忧而眠</h4>
+          <p>质量重于时长。接纳白天小睡，核心是解除对睡眠时长的焦虑，专注恢复本身。</p>
         </div>
       </div>
       
       <div class="divider"></div>
       
-      <!-- 三、个人习惯示例 -->
       <div class="advice-item">
+        <i class="ri-refresh-line"></i>
         <div class="advice-text">
-          <h4>三、个人习惯示例</h4>
-          <p>拥抱作息随机性，塔勒布本人曾晚 8 点睡、凌晨 4 点醒。不设固定程序，完全随状态、社交需求变化。</p>
-        </div>
-      </div>
-      
-      <div class="divider"></div>
-      
-      <!-- 四、拥抱偶发剥夺 -->
-      <div class="advice-item">
-        <div class="advice-text">
-          <h4>四、拥抱偶发剥夺</h4>
-          <p>从进化角度看，人类的睡眠系统天生极具弹性，一次偶发的睡眠不足只是小扰动。只要<strong>白天不大量补睡</strong>，身体成功自我恢复后，未来的睡眠节律反而会变得更稳定、更抗干扰。能在波动中维持运转并借机变强的睡眠系统，才是符合自然规律的稳健设计</p>
+          <h4>越挫越强</h4>
+          <p>偶发失眠是系统抗干扰训练。只要白天不大量补睡，身体自我恢复后，未来睡眠反而更稳定。</p>
         </div>
       </div>
       

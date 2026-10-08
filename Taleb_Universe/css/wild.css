@@ -76,20 +76,20 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* --- 运动板块 (左侧列) --- */
-.exercise-card {
+/* --- 睡眠板块 (左侧列) --- */
+.sleep-card {
     grid-column: 1 / 2;
     grid-row: 2 / 3;
 }
 
-/* --- 饮食板块 (中间列) --- */
-.diet-card {
+/* --- 运动板块 (中间列) --- */
+.exercise-card {
     grid-column: 2 / 3;
     grid-row: 2 / 3;
 }
 
-/* --- 睡眠板块 (右侧列) --- */
-.sleep-card {
+/* --- 饮食板块 (右侧列) --- */
+.diet-card {
     grid-column: 3 / 4;
     grid-row: 2 / 3;
 }
