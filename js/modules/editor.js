@@ -181,7 +181,7 @@ function openCardForm(target) {
   openPanel(isNew ? `新增卡片 · ${groupName(cat, target.sec)}` : '编辑卡片');
 
   const name = field('名称', item ? item.title : '', '卡片上显示的文字');
-  const url = field('网址', item ? item.url : '', 'https://… 或站内路径（如 Taleb_Universe/diet.html）');
+  const url = field('网址', item ? item.url : '', 'https://… 或站内路径（如 about.html）');
   const icon = field('图标（可选）', item ? item.icon : '', '留空的话推送时按网址自动抓一张；也可填 icons/xxx.png 或 remixicon 类名如 ri-links-line');
 
   // 预览 + 自动抓取：抓下来的图先存本地，推送时一起提交进仓库 icons/
