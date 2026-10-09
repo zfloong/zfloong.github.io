@@ -337,6 +337,11 @@
               "title": "耳聆网",
               "url": "https://www.ear0.com/",
               "icon": "icons/ear0_com.png"
+            },
+            {
+              "title": "photopea",
+              "url": "https://www.photopea.com/",
+              "icon": "icons/photopea_com.png"
             }
           ]
         },
