@@ -112,12 +112,18 @@ async function loadDataAndInit() {
     const draft = loadDraft();
     let data;
     if (draft) {
-      // 本机 data.json 已经和草稿一样（也就是拉取过了）说明文件才是最准的，草稿退场
       const fresh = await fetchData().catch(() => null);
-      if (fresh && sameContent(fresh, draft.data)) {
+      if (fresh && draftState(draft) === 'pushed') {
+        // 已推送：线上 data.json 迟早重建生效，草稿没有继续存在的必要，直接退场
+        // （避免已推送的中间态布局数据长期覆盖线上）
+        clearDraft();
+        data = fresh;
+      } else if (fresh && sameContent(fresh, draft.data)) {
+        // 本机 data.json 已经和草稿一样（也就是拉取过了）说明文件才是最准的，草稿退场
         clearDraft();
         data = fresh;
       } else {
+        // fresh 为 null（断网）时退回草稿兜底防白屏；未推送的草稿仍继续生效
         data = draft.data;
         // 断网时读不到文件、也就无从比较，这时候不吓人：只有「真没推过」且确知不一致才提示
         if (fresh && draftState(draft) === 'draft') showDraftNotice(draft.savedAt);
