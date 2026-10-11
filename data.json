@@ -168,6 +168,13 @@
               "pos": 3
             },
             {
+              "title": "Telegram Web",
+              "url": "https://web.telegram.org",
+              "icon": "icons/web_telegram_org.png",
+              "locked": true,
+              "pos": 4
+            },
+            {
               "title": "Z-Library",
               "url": "https://zh.z-library.sk/",
               "icon": "icons/zh_z-library_sk.png"
