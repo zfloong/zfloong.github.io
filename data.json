@@ -779,6 +779,11 @@
               "title": "V.PS",
               "url": "https://v.ps/",
               "icon": "icons/v_ps.png"
+            },
+            {
+              "title": "Lightsail",
+              "url": "https://ap-northeast-2.console.aws.amazon.com/lightsail/webapp/home/instances",
+              "icon": "icons/ap_northeast_2_console_aws_amazon_com.png"
             }
           ]
         },
