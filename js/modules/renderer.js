@@ -158,6 +158,15 @@ function applyLockedLayout(root = document) {
   });
 }
 
+// 窗口缩放（含 Ctrl+加减号）会改变 auto-fill 的列数，锁定卡片必须按新列数重钉；
+// 否则旧的内联 grid-column 会撑出隐式列，把整个网格挤成没见过的形状。
+// rAF 合并连续 resize 事件，每帧最多重排一次。
+let layoutRAF = 0;
+window.addEventListener('resize', () => {
+  cancelAnimationFrame(layoutRAF);
+  layoutRAF = requestAnimationFrame(applyLockedLayout);
+});
+
 /**
  * 渲染搜索区
  * 创建搜索引擎按钮、快捷链接和搜索表单

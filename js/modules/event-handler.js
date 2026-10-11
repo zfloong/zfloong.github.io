@@ -2,6 +2,7 @@
  * 事件处理模块
  * 处理用户交互事件
  */
+import { applyLockedLayout } from './renderer.js';
 
 /**
  * 保存用户偏好到本地存储
@@ -245,6 +246,8 @@ function bindSectionToggleEvents() {
       }
       const isCollapsed = title.classList.contains('collapsed');
       savePreference(`section_${sectionId}`, !isCollapsed);
+      // 展开时网格从隐藏变可见，锁定卡片要按当前列数补定位（隐藏期间被跳过了）
+      applyLockedLayout();
     });
   });
 }
@@ -288,6 +291,9 @@ function bindTabEvents() {
       });
       const targetSection = document.getElementById(targetId);
       if (targetSection) targetSection.classList.add('active');
+
+      // 切换后新分类里的锁定卡片按当前列数定位（加载时隐藏的分类被跳过了）
+      applyLockedLayout();
 
       // 保存到本地存储
       savePreference('activeTab', targetId);
