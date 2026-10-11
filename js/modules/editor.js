@@ -863,7 +863,7 @@ function buildBar() {
     statusEl,
     pushBtnEl,
     mk('复制 data.json', '', onCopy),
-    mk('放弃草稿', 'danger', onDiscard),
+    mk('删除草稿', 'danger', onDiscard),
     // 叫「完成」容易被读成"保存/提交"，但它只是退出编辑模式，什么都不推
     mk('退出编辑', '', exitEditMode),
   );
@@ -906,7 +906,16 @@ async function onCopy() {
 }
 
 function onDiscard() {
-  if (!window.confirm('放弃本机草稿，回到线上 data.json？')) return;
+  const draft = loadDraft();
+  if (!draft) {
+    flash('本机没有草稿，无需删除');
+    return;
+  }
+  // 文案按草稿状态说清"删的是什么、丢不丢东西"，别让用户猜"放弃"放弃了什么
+  const msg = draftState(draft) === 'pushed'
+    ? '删除本机草稿缓存？这份草稿已推送过，线上内容不受影响，删除后页面加载线上 data.json。'
+    : '删除本机草稿？未推送的修改会一并丢弃，页面回到线上 data.json 的内容。';
+  if (!window.confirm(msg)) return;
   clearDraft();
   clearPending();
   location.reload();

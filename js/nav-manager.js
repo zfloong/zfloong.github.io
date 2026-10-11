@@ -57,7 +57,7 @@ function showDraftNotice(savedAt) {
   useRemote.className = 'edit-bar-btn primary';
   useRemote.textContent = '用线上最新';
   useRemote.addEventListener('click', () => {
-    if (!window.confirm('放弃本机草稿，回到线上 data.json？')) return;
+    if (!window.confirm('删除本机草稿并加载线上 data.json？未推送的修改会一并丢弃。')) return;
     clearDraft();
     location.reload();
   });
