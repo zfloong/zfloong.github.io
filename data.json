@@ -123,7 +123,7 @@
               "icon": "icons/www_doubao_com.png"
             },
             {
-              "title": "QwenDome",
+              "title": "Qwen-CN",
               "url": "https://www.qianwen.com/",
               "icon": "icons/img_alicdn_com.svg"
             },
@@ -131,6 +131,11 @@
               "title": "腾讯混元",
               "url": "https://yuanbao.tencent.com/",
               "icon": "icons/yuanbao_tencent_com.png"
+            },
+            {
+              "title": "Qwen.US",
+              "url": "https://chat.qwen.ai/",
+              "icon": "icons/img_alicdn_com.svg"
             }
           ]
         },
@@ -599,11 +604,6 @@
               "title": "通义万相",
               "url": "https://tongyi.aliyun.com/want",
               "icon": "icons/tongyi_aliyun_com.png"
-            },
-            {
-              "title": "Qwen.ai",
-              "url": "https://chat.qwen.ai/",
-              "icon": "icons/img_alicdn_com.svg"
             }
           ]
         }
