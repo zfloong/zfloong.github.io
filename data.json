@@ -864,19 +864,9 @@
           "name": "🧩 尚未归置",
           "items": [
             {
-              "title": "Acck",
-              "url": "https://acck.io/",
-              "icon": "icons/acck_io.png"
-            },
-            {
               "title": "Corenet",
               "url": "https://www.corenetcloud.com/",
               "icon": "icons/corenetcloud_com.png"
-            },
-            {
-              "title": "Akile",
-              "url": "https://akile.ai/",
-              "icon": "icons/akile_ai.png"
             },
             {
               "title": "RackNerd",
@@ -889,6 +879,21 @@
               "icon": "icons/dedirock_com.png"
             },
             {
+              "title": "PanstarCloud",
+              "url": "https://panstar.ai/",
+              "icon": "icons/panstar_ai.jpg"
+            },
+            {
+              "title": "lightlayer",
+              "url": "https://account.lightlayer.net/",
+              "icon": "icons/account_lightlayer_net.png"
+            },
+            {
+              "title": "Isvoro",
+              "url": "https://isvoro.com/",
+              "icon": "icons/isvoro_com.jpg"
+            },
+            {
               "title": "狗妈 GoMami",
               "url": "https://gomami.io/",
               "icon": "icons/gomami_io.png"
@@ -899,19 +904,14 @@
               "icon": "icons/neburst_com.png"
             },
             {
-              "title": "Isvoro",
-              "url": "https://isvoro.com/",
-              "icon": "icons/isvoro_com.jpg"
+              "title": "Akile",
+              "url": "https://akile.ai/",
+              "icon": "icons/akile_ai.png"
             },
             {
-              "title": "PanstarCloud",
-              "url": "https://panstar.ai/",
-              "icon": "icons/panstar_ai.jpg"
-            },
-            {
-              "title": "lightlayer",
-              "url": "https://account.lightlayer.net/",
-              "icon": "icons/account_lightlayer_net.png"
+              "title": "Acck",
+              "url": "https://acck.io/",
+              "icon": "icons/acck_io.png"
             }
           ]
         }
