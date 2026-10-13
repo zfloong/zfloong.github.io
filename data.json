@@ -531,16 +531,6 @@
           "name": "☁️ 云平台",
           "items": [
             {
-              "title": "Oracle",
-              "url": "https://www.oracle.com/cn/cloud/",
-              "icon": "icons/oracle_com.ico"
-            },
-            {
-              "title": "AWS",
-              "url": "https://aws.amazon.com/cn/",
-              "icon": "icons/aws_amazon_com.png"
-            },
-            {
               "title": "阿里云",
               "url": "https://www.aliyun.com/",
               "icon": "icons/img_alicdn_com.ico"
@@ -801,6 +791,16 @@
               "title": "V.PS",
               "url": "https://v.ps/",
               "icon": "icons/v_ps.png"
+            },
+            {
+              "title": "Oracle",
+              "url": "https://www.oracle.com/cn/cloud/",
+              "icon": "icons/oracle_com.ico"
+            },
+            {
+              "title": "AWS",
+              "url": "https://aws.amazon.com/cn/",
+              "icon": "icons/aws_amazon_com.png"
             },
             {
               "title": "Lightsail",
