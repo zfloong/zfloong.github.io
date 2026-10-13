@@ -771,6 +771,11 @@
               "title": "DigVPS（AFF）",
               "url": "https://digvps.com/",
               "icon": "icons/digvps_com.png"
+            },
+            {
+              "title": "CF优选域名",
+              "url": "https://bestcf.fxxk.dedyn.io/",
+              "icon": "icons/bestcf_fxxk_dedyn_io.png"
             }
           ]
         },
