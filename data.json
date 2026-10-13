@@ -536,16 +536,9 @@
               "icon": "icons/oracle_com.ico"
             },
             {
-              "title": "火山引擎",
-              "url": "https://www.volcengine.com/",
-              "icon": "icons/www_volcengine_com.png"
-            },
-            {
-              "title": "阿里百炼",
-              "url": "https://bailian.console.aliyun.com/",
-              "iconSymbol": "ri-cloud-line",
-              "iconColor": "white",
-              "iconBg": "#ff6a00"
+              "title": "AWS",
+              "url": "https://aws.amazon.com/cn/",
+              "icon": "icons/aws_amazon_com.png"
             },
             {
               "title": "阿里云",
@@ -556,6 +549,18 @@
               "title": "腾讯云",
               "url": "https://www.tencentcloud.com/",
               "icon": "icons/tencentcloud_com.ico"
+            },
+            {
+              "title": "火山引擎",
+              "url": "https://www.volcengine.com/",
+              "icon": "icons/www_volcengine_com.png"
+            },
+            {
+              "title": "阿里百炼",
+              "url": "https://bailian.console.aliyun.com/",
+              "iconSymbol": "ri-cloud-line",
+              "iconColor": "white",
+              "iconBg": "#ff6a00"
             }
           ]
         },
