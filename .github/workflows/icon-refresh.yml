@@ -1,0 +1,37 @@
+name: 月度图标刷新
+
+on:
+  schedule:
+    - cron: '0 2 1 * *'    # 每月 1 号 02:00 UTC
+  workflow_dispatch:        #  Actions 页面可手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: node scripts/refresh-icons.mjs
+
+      # 字节级比对保证"无变化即无提交"；兜底源疑似变化只进日志，不产生提交
+      - name: 提交变更
+        run: |
+          if [ -n "$(git status --porcelain icons/ data.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add icons/ data.json
+            git commit -m "月度图标刷新（自动）"
+            git push
+          else
+            echo "所有图标均无变化，不提交"
+          fi
