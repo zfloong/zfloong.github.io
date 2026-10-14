@@ -696,6 +696,11 @@
               "icon": "icons/bettergi_com.png"
             },
             {
+              "title": "微博",
+              "url": "https://weibo.com/",
+              "icon": "icons/weibo_com.png"
+            },
+            {
               "title": "BetterGI-腾讯频道",
               "url": "https://pd.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=2knUxQTSdCl&businessType=9",
               "icon": "icons/pd_qq_com.jpg"
