@@ -52,6 +52,13 @@ function hostOf(url) {
   }
 }
 
+/** 图标文件名基准：按站点域名算，与前端 icon-fetch.js 的 baseFor 同一套规则。
+ *  这样每张卡片的图标文件名由它自己的域名唯一决定，多站共用 CDN 前缀
+ *  （如 img_alicdn_com.svg 被千问/通义/阿里云共用）也不会再互相覆盖。 */
+function baseFor(host) {
+  return host.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
 /**
  * 归一化到 64×64 RGBA 原始像素：先 trim 裁掉纯色/透明边距（消除"同一 logo
  * 不同留白/缩放"的管线差异），再 contain 到统一尺寸。
@@ -128,17 +135,15 @@ async function main() {
 
   const data = JSON.parse(readFileSync(DATA_PATH, 'utf-8'));
 
-  // 收集所有"本地图标 + 有效网址"的条目，按图标路径去重（多张卡片可共用同一图标文件）
-  // iconSymbol（remixicon 图标）不参与抓取
-  const byPath = new Map();   // path → { host, items: [] }
+  // 收集所有"本地图标 + 有效网址"的卡片；iconSymbol（remixicon）不参与
+  const cards = [];
   function collect(item) {
     if (!item || typeof item.icon !== 'string') return;
     if (!item.icon.startsWith('icons/')) return;
     if (item.iconSymbol) return;
     const host = hostOf(item.url);
     if (!host) return;
-    if (!byPath.has(item.icon)) byPath.set(item.icon, { host, items: [] });
-    byPath.get(item.icon).items.push(item);
+    cards.push({ item, host, canonical: `icons/${baseFor(host)}.png` });
   }
 
   if (data.search?.quickLinks) data.search.quickLinks.forEach(collect);
@@ -149,68 +154,84 @@ async function main() {
     }
   }
 
-  console.log(`共 ${byPath.size} 个本地图标需要检查\n`);
+  // 同域名只抓一次网络，结果复用到所有引用它的卡片
+  const fetchCache = new Map();   // host → got|null
+  for (const host of new Set(cards.map((c) => c.host))) {
+    fetchCache.set(host, await fetchIcon(host));
+  }
 
-  let unchanged = 0, updated = 0, skippedFallback = 0, failed = 0, missing = 0;
-  const renames = new Map();   // 旧路径 → 新路径（格式变了才产生）
+  console.log(`共 ${cards.length} 张卡片图标需要检查（${fetchCache.size} 个独立站点）\n`);
 
-  for (const [path, { host }] of byPath) {
-    const absPath = join(ROOT, path);
-    const oldBuffer = existsSync(absPath) ? readFileSync(absPath) : null;
-    if (!oldBuffer) missing++;
+  let unchanged = 0, updated = 0, skippedFallback = 0, failed = 0;
+  const touchedHosts = new Set();
+  // 改名前的旧路径快照：用于收尾删除"已被移走、无人再引用"的旧文件
+  const oldPathSnapshot = cards.map((c) => c.item.icon);
 
-    const got = await fetchIcon(host);
+  for (const { item, host, canonical } of cards) {
+    const absOld = join(ROOT, item.icon);
+    const oldBuffer = existsSync(absOld) ? readFileSync(absOld) : null;
+
+    const got = fetchCache.get(host);
     if (!got) {
-      console.log(`[保留] ${path}（${host}：所有源都失败/超时）`);
+      console.log(`[保留] ${item.icon}（${host}：所有源都失败/超时）`);
       failed++;
       continue;
     }
+    // 同一 host 的多张卡片只计一次结果
+    if (touchedHosts.has(host)) {
+      item.icon = canonical;
+      continue;
+    }
+
     const changed = pixelsChanged(await toPixels(oldBuffer), await toPixels(got.buffer));
     if (oldBuffer && !changed) {
       unchanged++;
       continue;
     }
     if (got.generic) {
-      console.log(`[待人工] ${path}（${host}：仅兜底源有结果且与本地不同，可能是通用图标，未覆盖）`);
+      console.log(`[待人工] ${item.icon}（${host}：仅兜底源有结果且与本地不同，可能是通用图标，未覆盖）`);
       skippedFallback++;
       continue;
     }
 
-    // 格式可能变（ico→png 等）：后缀跟着真实字节走，引用一并改
-    const oldExt = path.slice(path.lastIndexOf('.') + 1);
-    let newPath = path;
-    if (got.ext !== oldExt) {
-      newPath = path.replace(/\.[a-z0-9]+$/i, `.${got.ext}`);
-      renames.set(path, newPath);
+    writeFileSync(join(ROOT, canonical), got.buffer);
+    if (canonical !== item.icon) {
+      console.log(`[更新] ${item.icon} → ${canonical}（${host}）`);
+    } else {
+      console.log(`[更新] ${canonical}（${host}）`);
     }
-    writeFileSync(join(ROOT, newPath), got.buffer);
-    if (renames.has(path) && oldBuffer) {
-      // 旧文件已无人引用（本脚本按路径分组，同一路径的条目一起改）
-      rmSync(absPath);
-    }
-    console.log(`[更新] ${path}${newPath !== path ? ` → ${newPath}` : ''}（${host}）`);
+    item.icon = canonical;
+    touchedHosts.add(host);
     updated++;
   }
 
-  // 重命名时回写 data.json 里的所有引用
-  if (renames.size > 0) {
-    function rewrite(item) {
-      if (item && renames.has(item.icon)) item.icon = renames.get(item.icon);
-    }
-    if (data.search?.quickLinks) data.search.quickLinks.forEach(rewrite);
-    for (const cat of data.categories || []) {
-      if (cat.sections) for (const sec of cat.sections) (sec.items || []).forEach(rewrite);
-      (cat.items || []).forEach(rewrite);
-    }
-    writeFileSync(DATA_PATH, JSON.stringify(data, null, 2) + '\n', 'utf-8');
+  // 清理孤儿旧文件：仅限"本次改名移走的旧路径"，且改完后全库无卡片再引用
+  const referenced = new Set();
+  function mark(item) {
+    if (item && typeof item.icon === 'string' && item.icon.startsWith('icons/')) referenced.add(item.icon);
   }
+  if (data.search?.quickLinks) data.search.quickLinks.forEach(mark);
+  for (const cat of data.categories || []) {
+    if (cat.sections) for (const sec of cat.sections) (sec.items || []).forEach(mark);
+    (cat.items || []).forEach(mark);
+  }
+  let removed = 0;
+  for (const oldPath of new Set(oldPathSnapshot)) {
+    if (referenced.has(oldPath) || !existsSync(join(ROOT, oldPath))) continue;
+    rmSync(join(ROOT, oldPath));
+    console.log(`[清理] 移走后无人引用的旧文件: ${oldPath}`);
+    removed++;
+  }
+
+  // 重写 data.json
+  writeFileSync(DATA_PATH, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 
   console.log('\n=== 完成 ===');
   console.log(`  无变化: ${unchanged}`);
   console.log(`  已更新: ${updated}`);
   console.log(`  仅兜底源疑似变化（未覆盖，待人工）: ${skippedFallback}`);
   console.log(`  抓取失败（保留旧图标）: ${failed}`);
-  if (missing > 0) console.log(`  其中本地文件缺失、已按新抓取补齐: ${missing}`);
+  if (removed > 0) console.log(`  清理孤儿旧文件: ${removed}`);
 }
 
 main().catch((err) => {
