@@ -243,6 +243,11 @@
               "icon": "images/fmhy-play.svg"
             },
             {
+              "title": "小米云服务",
+              "url": "https://i.mi.com/",
+              "icon": "icons/i_mi_com.png"
+            },
+            {
               "title": "ClouDNS",
               "url": "https://www.cloudns.net/",
               "icon": "icons/cloudns_net.png"
@@ -668,32 +673,16 @@
             {
               "title": "Komari",
               "url": "https://monitor.654519996.xyz/",
-              "icon": "icons/monitor_654519996_xyz.png"
-            },
-            {
-              "title": "TikTok",
-              "url": "https://www.tiktok.com/explore",
-              "icon": "icons/tiktok_com.png"
+              "icon": "icons/monitor_654519996_xyz.png",
+              "locked": true,
+              "pos": 0
             },
             {
               "title": "抖音",
               "url": "https://www.douyin.com/",
-              "icon": "icons/douyin_com.png"
-            },
-            {
-              "title": "快手",
-              "url": "https://www.kuaishou.com/new-reco",
-              "icon": "icons/kuaishou_com.png"
-            },
-            {
-              "title": "Instagram",
-              "url": "https://www.instagram.com/",
-              "icon": "icons/instagram_com.png"
-            },
-            {
-              "title": "BetterGI",
-              "url": "https://bettergi.com/",
-              "icon": "icons/bettergi_com.png"
+              "icon": "icons/douyin_com.png",
+              "locked": true,
+              "pos": 1
             },
             {
               "title": "微博",
@@ -701,9 +690,40 @@
               "icon": "icons/weibo_com.png"
             },
             {
+              "title": "快手",
+              "url": "https://www.kuaishou.com/new-reco",
+              "icon": "icons/kuaishou_com.png"
+            },
+            {
+              "title": "BetterGI",
+              "url": "https://bettergi.com/",
+              "icon": "icons/bettergi_com.png"
+            },
+            {
+              "title": "Instagram",
+              "url": "https://www.instagram.com/",
+              "icon": "icons/instagram_com.png",
+              "locked": true,
+              "pos": 6
+            },
+            {
               "title": "BetterGI-腾讯频道",
               "url": "https://pd.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=2knUxQTSdCl&businessType=9",
               "icon": "icons/pd_qq_com.png"
+            },
+            {
+              "title": "SOOP",
+              "url": "https://www.sooplive.com",
+              "icon": "icons/sooplive_com.png",
+              "locked": true,
+              "pos": 8
+            },
+            {
+              "title": "TikTok",
+              "url": "https://www.tiktok.com/explore",
+              "icon": "icons/tiktok_com.png",
+              "locked": true,
+              "pos": 7
             },
             {
               "title": "PVZ  Wiki",
@@ -719,11 +739,6 @@
               "title": "淘宝",
               "url": "https://www.taobao.com/",
               "icon": "icons/taobao_com.png"
-            },
-            {
-              "title": "小米云服务",
-              "url": "https://i.mi.com/",
-              "icon": "icons/i_mi_com.png"
             },
             {
               "title": "网易邮箱",
