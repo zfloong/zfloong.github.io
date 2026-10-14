@@ -135,7 +135,7 @@
               "icon": "icons/yuanbao_tencent_com.png"
             },
             {
-              "title": "Qwen.US",
+              "title": "Qwen-US",
               "url": "https://chat.qwen.ai/",
               "icon": "icons/chat_qwen_ai.png",
               "locked": true,
@@ -724,6 +724,13 @@
               "icon": "icons/tiktok_com.png",
               "locked": true,
               "pos": 7
+            },
+            {
+              "title": "Facebook",
+              "url": "https://www.facebook.com",
+              "icon": "icons/facebook_com.png",
+              "locked": true,
+              "pos": 9
             },
             {
               "title": "PVZ  Wiki",
