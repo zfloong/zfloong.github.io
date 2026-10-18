@@ -152,7 +152,7 @@ body {
   background-color: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  padding-top: 62px;
+  padding-top: 76px;
   background-image:
     radial-gradient(circle at 30% 20%, var(--bg-tint-a) 0%, transparent 45%),
     radial-gradient(circle at 70% 70%, var(--bg-tint-b) 0%, transparent 45%);
@@ -166,7 +166,7 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 52px;
+  height: 66px;
   /* 半透明渐变，网格透得出来 —— 刻意与背景融为一体（不做磨砂/分隔线，
      否则会在顶部切出一条边，破坏一体感）。两端色值跟随背景变量，避免与底色分家。 */
   background: linear-gradient(to bottom, var(--nav-bg-top) 0%, var(--nav-bg-mid) 70%, transparent 100%);
@@ -188,7 +188,7 @@ body {
 
 .nav-tabs {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.35rem;
   /* 横向滚动用的容器。注意：只要 overflow-x 不是 visible，overflow-y 就会被算成 auto，
      于是这个容器会把按钮的 box-shadow 沿四条边切成平口 —— 看起来就是
      "有个方框把胶囊切了、显示不全"。
@@ -236,8 +236,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 35px;
+  height: 35px;
   padding: 0;
   border: 1px solid var(--border);
   border-radius: 50%;
@@ -261,8 +261,8 @@ body {
   background: transparent;
   border: 1px solid transparent;
   color: var(--text);
-  font-size: 0.82rem;
-  padding: 0.35rem 0.9rem;
+  font-size: 1rem;
+  padding: 0.5rem 0.9rem;
   border-radius: 50px;
   cursor: pointer;
   font-weight: 500;
@@ -577,7 +577,6 @@ body {
               background 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
               border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
               box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  position: relative;
   z-index: 1;
 }
 /* 键盘光标（keyboard-nav.js）与鼠标悬停共用同一套强调，不再单独设计 */
@@ -736,29 +735,35 @@ footer a:hover {
    在线编辑器（js/modules/editor.js）
    入口：导航右上角 .edit-entry —— 按钮常驻可见，编辑器模块点击后才动态加载
    ========================================= */
-/* 编辑入口：和 .theme-toggle 同尺寸、同底色，两个并排才像一组。
-   纯图标不写文字 —— 原来是带「编辑 / 完成编辑」的长胶囊，压在标签上分量太重；
-   进没进编辑模式改由钮自身的着色表达（.on 见下方「编辑模式」一节）。 */
-.edit-entry {
-  display: flex;
+footer p {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  gap: 8px;
+}
+
+/* 编辑入口：常驻页脚，低调优雅；进没进编辑模式通过 .on 着色 */
+.edit-entry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   padding: 0;
-  background: var(--history-bg);
-  border: 1px solid var(--border);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 50%;
-  color: var(--text-sub);
-  font-size: 0.95rem;
+  color: var(--text-faint);
+  font-size: 0.9rem;
   line-height: 1;
   cursor: pointer;
   transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
 }
-.edit-entry:hover {
-  color: var(--text);
-  border-color: rgba(var(--ink-rgb),0.3);
-  background: rgba(var(--ink-rgb),0.12);
+.edit-entry:hover,
+.edit-entry.on {
+  color: var(--ink);
+  border-color: var(--border);
+  background: var(--history-bg);
 }
 .edit-entry:focus-visible {
   outline: 2px solid var(--focus-glow);
@@ -1215,6 +1220,24 @@ body.edit-mode .section-group-title::after {
   background: rgba(var(--ink-rgb),0.12);
 }
 
+.tab-edit-pen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  font-size: 0.82rem;
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: opacity 0.2s, color 0.2s, background 0.2s;
+}
+.tab-edit-pen:hover {
+  opacity: 1;
+  color: var(--primary);
+  background: rgba(var(--ink-rgb), 0.12);
+}
+
 /* 拖动中：原件让出布局位置，占位符顶上 —— 只 visibility:hidden 的话原件仍占一格，
    网格里等于多出一个格子，后面的卡片被挤位，落点判定就永远追不上指针 */
 .card-wrap.dragging,
@@ -1349,33 +1372,56 @@ body.edit-mode .section-group-title::after {
   font-weight: 600;
 }
 
-/* 顶部持久提示条：推送结果、进入编辑模式这类要人看清的消息。
-   和 .draft-notice 共用玻璃质感与文案排版，区别是它不自动消失（除非给了自动隐藏），
-   由「知道了」收起。tone-* 只换左边框颜色，不换底色 —— 免得在两套主题里各校一遍。 */
+/* 悬浮提示条：推送结果、进入编辑模式这类要人看清的消息。
+   固定在屏幕视口底部（有底栏时悬浮在底栏上方，无底栏时贴底部视口），
+   无论页面多长、滚到哪里，始终100%可见，视线与操作完全对齐。 */
 .result-notice {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  max-width: 680px;
-  margin: 0 auto 0.9rem auto;
-  padding: 0.55rem 0.7rem 0.55rem 0.9rem;
+  gap: 0.6rem;
+  width: min(640px, 92vw);
+  margin: 0;
+  padding: 0.65rem 0.85rem 0.65rem 1rem;
   background: var(--history-bg);
   backdrop-filter: var(--glass);
   -webkit-backdrop-filter: var(--glass);
   border: 1px solid var(--border);
-  border-left-width: 3px;
+  border-left-width: 4px;
   border-radius: 14px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 12px 36px rgba(var(--shade-rgb), 0.45);
+  animation: noticeFloatIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* 编辑模式下底部工具条升起，提示条智能浮动在工具条上方 */
+body.edit-mode .result-notice {
+  bottom: calc(1.25rem + 50px + 12px);
+}
+
+@keyframes noticeFloatIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
 .result-notice.tone-ok {
-  border-left-color: rgba(120, 190, 140, 0.75);
+  border-left-color: rgba(120, 190, 140, 0.85);
 }
 .result-notice.tone-local {
-  border-left-color: rgba(205, 170, 100, 0.75);
+  border-left-color: rgba(205, 170, 100, 0.85);
 }
 .result-notice.tone-edit {
-  border-left-color: rgba(var(--ink-rgb), 0.4);
+  border-left-color: var(--primary);
 }
 .result-notice .edit-link {
   font-size: 0.72rem;

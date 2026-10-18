@@ -89,6 +89,13 @@ async function refreshDraftNotice() {
     if (existing) existing.remove();
     return;
   }
+  // 未配置 GitHub Token 说明是普通朋友/访客的本地专属模式，绝不用"未提交"骚扰访客
+  const isOwner = !!localStorage.getItem('flyloong_gh_token');
+  if (!isOwner) {
+    if (existing) existing.remove();
+    return;
+  }
+
   // 已推送 / 只存本机：都不再说"未提交"（前者在等 Pages 重建，后者是用户自己的选择）
   const state = draftState(draft);
   if (state === 'pushed' || state === 'local') {
@@ -125,8 +132,9 @@ async function loadDataAndInit() {
       } else {
         // fresh 为 null（断网）时退回草稿兜底防白屏；未推送的草稿仍继续生效
         data = draft.data;
-        // 断网时读不到文件、也就无从比较，这时候不吓人：只有「真没推过」且确知不一致才提示
-        if (fresh && draftState(draft) === 'draft') showDraftNotice(draft.savedAt);
+        // 只有站长（已配 token）且断网外的情况下才提示未推送草稿，普通朋友用本地模式不打扰
+        const isOwner = !!localStorage.getItem('flyloong_gh_token');
+        if (isOwner && fresh && draftState(draft) === 'draft') showDraftNotice(draft.savedAt);
       }
     } else {
       data = await fetchData();
@@ -183,6 +191,23 @@ function bindEditEntry() {
       editorApi.initEditor({ entry, getData: () => currentData, rerender, refreshDraftNotice });
     } catch (error) {
       console.error('编辑器加载失败:', error);
+    }
+  });
+
+  // 支持 Alt+E 或 Ctrl+E 快速开启/退出编辑模式
+  document.addEventListener('keydown', (e) => {
+    if ((e.altKey || e.ctrlKey) && e.key.toLowerCase() === 'e') {
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+      e.preventDefault();
+      entry.click();
+    }
+  });
+
+  // 双击页面空白背景区域也可快速切换编辑模式
+  document.addEventListener('dblclick', (e) => {
+    if (e.target === document.body || e.target.classList.contains('main-content')) {
+      entry.click();
     }
   });
 }

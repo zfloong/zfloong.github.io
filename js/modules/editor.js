@@ -342,9 +342,8 @@ function openCardForm(target) {
   if (!isNew) {
     actions.append(button('删除', 'danger', () => {
       if (!window.confirm(`删除「${item.title || '这张卡片'}」？`)) return;
-      // 删卡片不补位：原位留空，保持布局的有意留白。
-      // 空位不能直接删，想去掉只能拖张卡片填进去。
-      arr.splice(target.idx, 1, { type: 'spacer' });
+      // 删卡片直接移出，后续卡片自然前移补齐，符合直觉
+      arr.splice(target.idx, 1);
       pruneTrailingSpacers(arr);
       closeForm(true);
       applyChange();
@@ -447,7 +446,7 @@ function openRenameGroupForm(catId, secIndex) {
   if (!section) return;
 
   form = { kind: 'group' };
-  openPanel(`重命名分组 · ${cat.navTitle || cat.id}`);
+  openPanel(`编辑分组 · ${cat.navTitle || cat.id}`);
 
   const original = section.name;
   const name = field('分组名称', original, '例如：研习之路');
@@ -456,6 +455,16 @@ function openRenameGroupForm(catId, secIndex) {
   form.dirty = () => name.input.value.trim() !== original;
 
   const actions = el('div', 'edit-actions');
+  const itemCount = (section.items || []).length;
+  actions.append(button('删除分组', 'danger', () => {
+    const tip = itemCount > 0
+      ? `确定删除分组「${section.name}」吗？组内的 ${itemCount} 张卡片也会一并删除！`
+      : `确定删除空分组「${section.name}」吗？`;
+    if (!window.confirm(tip)) return;
+    cat.sections.splice(secIndex, 1);
+    closeForm(true);
+    applyChange();
+  }));
   actions.append(button('取消', '', () => closeForm()));
   actions.append(button('保存', 'primary', () => {
     const value = name.input.value.trim();
@@ -468,6 +477,55 @@ function openRenameGroupForm(catId, secIndex) {
   panelBody.append(actions);
   name.input.focus();
   name.input.select();
+}
+
+function openEditCategoryForm(catId) {
+  const data = ctx.getData();
+  const cat = catById(data, catId);
+  if (!cat) return;
+
+  form = { kind: 'category' };
+  openPanel(`编辑分类 · ${cat.navTitle || cat.id}`);
+
+  const origTitle = cat.navTitle || cat.id || '';
+  const origIcon = cat.icon || '';
+  const name = field('分类名称', origTitle, '显示在顶部页签上，例如：AI 工具');
+  const icon = field('图标（可选）', origIcon, 'remixicon 类名，例如 ri-robot-line');
+  const error = el('div', 'edit-error');
+  panelBody.append(name.wrap, icon.wrap, error);
+  form.dirty = () => name.input.value.trim() !== origTitle || icon.input.value.trim() !== origIcon;
+
+  const actions = el('div', 'edit-actions');
+  actions.append(button('删除分类', 'danger', () => {
+    if (data.categories.length <= 1) {
+      error.textContent = '至少需要保留一个分类，无法全部删除';
+      return;
+    }
+    const totalCards = (cat.items || []).length + (cat.sections || []).reduce((sum, s) => sum + (s.items || []).length, 0);
+    const tip = totalCards > 0
+      ? `确定删除分类「${origTitle}」吗？该分类下的所有分组和 ${totalCards} 张卡片都将被删除！`
+      : `确定删除分类「${origTitle}」吗？`;
+    if (!window.confirm(tip)) return;
+    const idx = data.categories.findIndex(c => c.id === catId);
+    if (idx !== -1) {
+      data.categories.splice(idx, 1);
+      closeForm(true);
+      applyChange();
+      activateCategory(data.categories[0].id);
+    }
+  }));
+  actions.append(button('取消', '', () => closeForm()));
+  actions.append(button('保存', 'primary', () => {
+    const value = name.input.value.trim();
+    if (!value) { error.textContent = '分类名称不能为空'; return; }
+    cat.navTitle = value;
+    if (icon.input.value.trim()) cat.icon = icon.input.value.trim();
+    else delete cat.icon;
+    closeForm(true);
+    applyChange();
+  }));
+  panelBody.append(actions);
+  name.input.focus();
 }
 
 function nextCategoryId(data) {
@@ -746,8 +804,6 @@ function noticeBtn(label, cls, onClick) {
 
 function showResultNotice({ tone = 'ok', title, sub, link = null, actions = [], autoHideMs = 0 }) {
   clearResultNotice();
-  const host = document.querySelector('.main-content');
-  if (!host) return;
 
   const notice = el('div', `result-notice tone-${tone}`);
   const text = el('div', 'draft-notice-text');
@@ -766,7 +822,7 @@ function showResultNotice({ tone = 'ok', title, sub, link = null, actions = [], 
   notice.append(noticeBtn('知道了', '', clearResultNotice));
 
   noticeEl = notice;
-  host.insertBefore(notice, host.firstChild);
+  document.body.appendChild(notice);
   if (autoHideMs) setTimeout(clearResultNotice, autoHideMs);
 }
 
@@ -838,6 +894,20 @@ function decorate() {
 
   const tabs = document.querySelector('.nav-tabs');
   if (tabs) {
+    // 为每个标签增加编辑/删除入口（仅在编辑模式显示）
+    document.querySelectorAll('.nav-tabs .tab-btn').forEach((tab, index) => {
+      const cat = ctx.getData().categories[index];
+      if (!cat) return;
+      const editPen = el('span', 'tab-edit-pen', '✎');
+      editPen.title = `编辑或删除分类「${cat.navTitle || cat.id}」`;
+      editPen.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        openEditCategoryForm(cat.id);
+      });
+      tab.appendChild(editPen);
+    });
+
     const add = el('button', 'edit-add-cat', '＋');
     add.type = 'button';
     add.title = '新增一个分类';
@@ -857,14 +927,16 @@ function buildBar() {
     node.addEventListener('click', fn);
     return node;
   };
-  pushBtnEl = mk('推送到 GitHub', 'primary', openPushPanel);
+
+  const connected = !!getToken();
+  pushBtnEl = mk(connected ? '推送到 GitHub' : '☁️ 站长同步', connected ? 'primary' : '', openPushPanel);
   bar = el('div', 'edit-bar');
   bar.append(
     statusEl,
     pushBtnEl,
-    mk('复制 data.json', '', onCopy),
-    mk('删除草稿', 'danger', onDiscard),
-    // 叫「完成」容易被读成"保存/提交"，但它只是退出编辑模式，什么都不推
+    mk('📥 导入配置', '', onImport),
+    mk('📤 导出备份', '', onExport),
+    mk('↺ 恢复默认', 'danger', onResetDefault),
     mk('退出编辑', '', exitEditMode),
   );
   document.body.appendChild(bar);
@@ -879,43 +951,79 @@ function flash(message) {
 
 function updateBar() {
   if (!statusEl) return;
+  const connected = !!getToken();
   if (pushBtnEl) {
-    const connected = !!getToken();
-    pushBtnEl.textContent = connected ? '推送到 GitHub' : '连接 GitHub 推送';
-    pushBtnEl.classList.toggle('ok', connected);
+    pushBtnEl.textContent = connected ? '推送到 GitHub' : '☁️ 站长同步';
+    pushBtnEl.className = `edit-bar-btn ${connected ? 'primary ok' : ''}`.trim();
   }
   const draft = loadDraft();
   if (!draft) {
-    statusEl.textContent = '拖动卡片或页签可排序，点卡片改名称/网址';
+    statusEl.textContent = connected
+      ? '站长模式 · 可自由调整并推送到云端'
+      : '本地专属模式 · 改动自动保存在本机浏览器';
     return;
   }
   const t = new Date(draft.savedAt);
   const pad = (n) => String(n).padStart(2, '0');
   const when = `${pad(t.getMonth() + 1)}-${pad(t.getDate())} ${pad(t.getHours())}:${pad(t.getMinutes())}`;
-  // 状态写在最前面：用户一眼要知道的是"推没推"，而不是"存没存"
-  statusEl.textContent = {
-    draft: `草稿已存本机 · 未推送 · ${when}`,
-    pushed: `已推送 · ${when}`,
-    local: `本机保存 · ${when}`,
-  }[draftState(draft)] || `草稿已存本机 · ${when}`;
-}
-
-async function onCopy() {
-  const ok = await copyText(toRepoJson(ctx.getData()));
-  flash(ok ? '已复制，粘贴覆盖仓库里的 data.json 即可' : '复制失败：浏览器没给剪贴板权限，允许后重试');
-}
-
-function onDiscard() {
-  const draft = loadDraft();
-  if (!draft) {
-    flash('本机没有草稿，无需删除');
-    return;
+  if (connected) {
+    statusEl.textContent = {
+      draft: `已存草稿 · 未推送 · ${when}`,
+      pushed: `已推送到云端 · ${when}`,
+      local: `仅存本机 · ${when}`,
+    }[draftState(draft)] || `已存草稿 · ${when}`;
+  } else {
+    statusEl.textContent = `本地配置已保存 · ${when}`;
   }
-  // 文案按草稿状态说清"删的是什么、丢不丢东西"，别让用户猜"放弃"放弃了什么
-  const msg = draftState(draft) === 'pushed'
-    ? '删除本机草稿缓存？这份草稿已推送过，线上内容不受影响，删除后页面加载线上 data.json。'
-    : '删除本机草稿？未推送的修改会一并丢弃，页面回到线上 data.json 的内容。';
-  if (!window.confirm(msg)) return;
+}
+
+async function onExport() {
+  const data = ctx.getData();
+  const jsonStr = toRepoJson(data);
+  const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const dateStr = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+  a.href = url;
+  a.download = `nav-backup-${dateStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  flash('✅ 配置已导出为 JSON 备份文件');
+}
+
+function onImport() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.categories)) {
+        throw new Error('不是合法的导航数据文件（缺少 categories 数组）');
+      }
+      if (!window.confirm(`确定导入「${file.name}」吗？\n当前页面的导航配置将被替换。`)) return;
+      const data = ctx.getData();
+      Object.keys(data).forEach(k => delete data[k]);
+      Object.assign(data, parsed);
+      saveDraft(data);
+      applyChange();
+      flash('✅ 配置已成功导入！');
+    } catch (err) {
+      alert(`导入失败：${err.message}`);
+    }
+  });
+  input.click();
+}
+
+function onResetDefault() {
+  if (!window.confirm('确定要清除本地自定义修改，恢复为站长初始精选的导航内容吗？')) return;
   clearDraft();
   clearPending();
   location.reload();
@@ -923,23 +1031,34 @@ function onDiscard() {
 
 function enterEditMode() {
   document.body.classList.add('edit-mode');
-  entryEl.classList.add('on');   // 入口钮没有文字了，进编辑模式只靠这个 .on 着色
+  entryEl.classList.add('on');
   if (!bar) buildBar();
   updateBar();
   decorate();
-  // 进来第一件事是告诉用户"你现在能干什么"，而不是让他自己摸。
-  // 10 秒后自动淡出，不长期占地方；工具条上的状态文案一直在，想看随时在。
+
+  const connected = !!getToken();
   showResultNotice({
     tone: 'edit',
-    title: '已进入编辑模式',
-    sub: '拖动卡片或页签可排序。点卡片改名称、网址、图标 改动先存在本机草稿，推送到 GitHub 之后才会提交。',
-    autoHideMs: 3000,
+    title: connected ? '已进入编辑模式（站长云端模式）' : '已进入编辑模式（本地专属模式）',
+    sub: connected
+      ? '拖动卡片或页签可排序，点卡片改名称/网址/图标。修改完成后点击「推送到 GitHub」即可同步到云端。'
+      : '可自由增删改查、排序、导入与导出配置。所有修改自动保存在当前浏览器，朋友们可放心定制！',
+    autoHideMs: 4000,
   });
 }
 
 function exitEditMode() {
+  const connected = !!getToken();
+  const draft = loadDraft();
+  if (connected && draft && draftState(draft) === 'draft') {
+    if (!window.confirm('当前有未推送到 GitHub 的改动（已保存在本机）。确定直接退出编辑模式吗？')) return;
+  }
   closeForm(true);
   cancelDrag();
+  if (flashTimer) {
+    clearTimeout(flashTimer);
+    flashTimer = null;
+  }
   document.body.classList.remove('edit-mode');
   entryEl.classList.remove('on');
   if (bar) {
@@ -948,8 +1067,7 @@ function exitEditMode() {
     statusEl = null;
     pushBtnEl = null;
   }
-  ctx.rerender();   // 重建 DOM，去掉加号与拖动标记
-  // 停在页面上接着看时，按加载时同一套规则把草稿状态摆出来，不必等刷新
+  ctx.rerender();
   ctx.refreshDraftNotice();
 }
 

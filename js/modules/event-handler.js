@@ -183,7 +183,7 @@ function showSearchHistory(container, searchInput) {
   });
 
   // 添加清除历史记录事件
-  document.getElementById('clear-history').addEventListener('click', () => {
+  clearBtn.addEventListener('click', () => {
     clearSearchHistory();
     container.style.display = 'none';
   });

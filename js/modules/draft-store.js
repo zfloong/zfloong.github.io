@@ -89,9 +89,9 @@ function clearDraft() {
   }
 }
 
-/** 按 data.json 既有格式序列化：2 空格缩进 + CRLF + 结尾换行（无 BOM） */
+/** 按 data.json 规范序列化：2 空格缩进 + LF + 结尾换行（无 BOM） */
 function toRepoJson(data) {
-  return JSON.stringify(data, null, 2).replace(/\r?\n/g, '\r\n') + '\r\n';
+  return JSON.stringify(data, null, 2) + '\n';
 }
 
 async function copyText(text) {

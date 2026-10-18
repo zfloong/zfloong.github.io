@@ -8,6 +8,10 @@
     "fetch-icons": "node scripts/fetch-icons.mjs",
     "refresh-icons": "node scripts/refresh-icons.mjs"
   },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.17.0"
+  },
   "devDependencies": {
     "sharp": "^0.33.0"
   }
