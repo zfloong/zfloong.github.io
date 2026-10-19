@@ -135,11 +135,16 @@
               "icon": "icons/yuanbao_tencent_com.png"
             },
             {
-              "title": "Qwen-US",
-              "url": "https://chat.qwen.ai/",
-              "icon": "icons/chat_qwen_ai.png",
+              "title": "狂野生长",
+              "url": "https://health.654519996.xyz/",
+              "icon": "icons/health_654519996_xyz.png",
               "locked": true,
               "pos": 13
+            },
+            {
+              "title": "Qwen-US",
+              "url": "https://chat.qwen.ai/",
+              "icon": "icons/chat_qwen_ai.png"
             }
           ]
         },
