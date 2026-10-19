@@ -1036,6 +1036,20 @@ body.edit-open {
 .edit-link:hover {
   text-decoration: underline;
 }
+.edit-inline-btn {
+  display: inline;
+  margin-left: 0.35rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.edit-inline-btn:hover {
+  opacity: 0.8;
+}
 
 /* 推送抽屉里的分块：连接状态 / 本次要提交的内容 */
 .edit-conn {

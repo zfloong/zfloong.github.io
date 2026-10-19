@@ -315,21 +315,32 @@ function openCardForm(target) {
     }
   }
 
-  async function onGrab() {
+  async function doGrab(force = false) {
     const raw = url.input.value.trim();
     if (urlKind(raw) !== 'http') { setGrabMsg('先把网址填成 http(s) 开头的完整地址', true); return; }
     grabBtn.disabled = true;
-    setGrabMsg('抓取中…', false);
+    setGrabMsg(force ? '重新抓取中…' : '抓取中…', false);
     try {
-      const got = await grab(raw);
+      const got = await grab(raw, { force });
       icon.input.value = got.path;
       showPreview(got.path);
-      // 这一次是兜底图才需要补救入口；换成好图之后要收回去，别一直杵在那
       const needRescue = !got.reused && !!got.generic;
       showRescue(needRescue);
-      if (got.reused) setGrabMsg('仓库里已经有这张图标了，直接用');
-      else if (needRescue) setGrabMsg('只从兜底服务拿到一张通用图标，多半不是这个网站的，建议换一张', true);
-      else setGrabMsg('已抓到，推送时和 data.json 一起提交');
+      if (got.reused) {
+        setGrabMsg('');
+        const span = el('span', '', '仓库已有此图标。');
+        const reBtn = el('button', 'edit-inline-btn', '强制重新抓取');
+        reBtn.type = 'button';
+        reBtn.onclick = (e) => {
+          e.preventDefault();
+          doGrab(true);
+        };
+        grabMsg.append(span, reBtn);
+      } else if (needRescue) {
+        setGrabMsg('只从兜底服务拿到一张通用图标，多半不是这个网站的，建议换一张', true);
+      } else {
+        setGrabMsg(force ? '已从网络获取最新图标，推送时将覆盖仓库旧图' : '已抓到，推送时和 data.json 一起提交');
+      }
     } catch (err) {
       setGrabMsg(err.message, true);
       showRescue(true);   // 一张都没抓到的时候，这条路最有用
@@ -337,6 +348,13 @@ function openCardForm(target) {
       grabBtn.disabled = false;
     }
   }
+
+  async function onGrab() {
+    const currentIcon = icon.input.value.trim();
+    const shouldForce = !isNew && !!currentIcon && currentIcon.startsWith('icons/');
+    await doGrab(shouldForce);
+  }
+
 
   const actions = el('div', 'edit-actions');
   if (!isNew) {

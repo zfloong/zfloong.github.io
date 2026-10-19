@@ -26,12 +26,14 @@ const DATA_PATH = join(ROOT, 'data.json');
 
 const SOURCE_TIMEOUT = 8000;   // 单源最多 8 秒，与在线编辑器一致
 
-// 与 js/modules/icon-fetch.js 同一条链；分辨率提到 256，和手动粘贴直链的落盘规格一致，
-// 免得同一枚 logo 因尺寸不同被判成"变了"
+// 抓取链：优先直连站点取高清图，再走 icon.horse 与 wsrv 代理；
+// 分辨率统一到 256，免得同一枚 logo 因尺寸不同被判成"变了"
 const SOURCES = [
-  (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://www.google.com/s2/favicons?domain=${host}&sz=128`)}&output=png&w=256&h=256&fit=contain`,
-  (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://${host}/favicon.ico`)}&output=png&w=256&h=256&fit=contain`,
-  (host) => `https://icon.horse/icon/${host}`,
+  { url: (host) => `https://${host}/apple-touch-icon.png`, checkGeneric: () => false },
+  { url: (host) => `https://${host}/favicon.ico`, checkGeneric: () => false },
+  { url: (host) => `https://icon.horse/icon/${host}`, checkGeneric: (buf) => buf.length < 3000 },
+  { url: (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://www.google.com/s2/favicons?domain=${host}&sz=128`)}&output=png&w=256&h=256&fit=contain`, checkGeneric: (buf) => buf.length < 1000 },
+  { url: (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://${host}/favicon.ico`)}&output=png&w=256&h=256&fit=contain`, checkGeneric: () => false },
 ];
 
 /** 按文件头字节认真实格式，只按路径猜会写出假扩展名 */
@@ -96,19 +98,21 @@ function pixelsChanged(a, b) {
   return diff / (a.length / 4) > 0.02;
 }
 
-/** 沿抓取链取一张图标；generic=true 表示只有兜底源命中 */
+/** 沿抓取链取一张图标；generic=true 表示仅命中通用兜底占位图 */
 async function fetchIcon(host) {
   for (let i = 0; i < SOURCES.length; i += 1) {
+    const src = SOURCES[i];
+    const targetUrl = typeof src === 'function' ? src(host) : src.url(host);
     try {
-      const res = await fetch(SOURCES[i](host), {
+      const res = await fetch(targetUrl, {
         signal: AbortSignal.timeout(SOURCE_TIMEOUT),
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; icon-refresh/1.0)' },
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
       });
       if (!res.ok) continue;
       const type = res.headers.get('content-type') || '';
       if (!type.startsWith('image/')) continue;
       let buffer = Buffer.from(await res.arrayBuffer());
-      if (buffer.length < 200 || buffer.length > 300 * 1024) continue;
+      if (buffer.length < 200 || buffer.length > 500 * 1024) continue;
       let ext = sniffKind(buffer);
       if (!ext) continue;
       if (ext === 'ico') {
@@ -122,7 +126,8 @@ async function fetchIcon(host) {
           ext = 'png';
         } catch { /* 保留原始 ico */ }
       }
-      return { buffer, ext, generic: i === SOURCES.length - 1 };
+      const generic = src.checkGeneric ? src.checkGeneric(buffer) : false;
+      return { buffer, ext, generic };
     } catch {
       // 超时 / 网络错误：换下一个源
     }

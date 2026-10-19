@@ -21,9 +21,14 @@ const INDEX_TTL = 10 * 60 * 1000;   // 仓库图标清单缓存时长
 const SOURCE_TIMEOUT = 8000;        // 单个源最多等 8 秒；没有这道闸，一个挂死的源会让按钮一直转
 
 const SOURCES = [
-  (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://www.google.com/s2/favicons?domain=${host}&sz=128`)}&output=png&w=128&h=128`,
-  (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://${host}/favicon.ico`)}&output=png&w=128&h=128`,
-  (host) => `https://icon.horse/icon/${host}`,
+  // 1. 若目标站本身允许 CORS（如 Cloudflare Pages/Workers/部分现代静态站），直接读取官方高清原图
+  { url: (host) => `https://${host}/apple-touch-icon.png`, checkGeneric: () => false },
+  { url: (host) => `https://${host}/favicon.ico`, checkGeneric: () => false },
+  // 2. icon.horse 兜底服务（自带全域 CORS，支持 .xyz 等小众 TLD，未命中时占位图小于 3KB）
+  { url: (host) => `https://icon.horse/icon/${host}`, checkGeneric: (blob) => blob.size < 3000 },
+  // 3. wsrv.nl 代理 Google favicons 和站点 favicon.ico（部分 TLD 如 .xyz 会被 wsrv 策略拦截，故排在 direct / icon.horse 之后）
+  { url: (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://www.google.com/s2/favicons?domain=${host}&sz=128`)}&output=png&w=128&h=128`, checkGeneric: (blob) => blob.size < 1000 },
+  { url: (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://${host}/favicon.ico`)}&output=png&w=128&h=128`, checkGeneric: () => false },
 ];
 
 let index = null;   // { at, exact: Map(路径 → 文件), byBase: Map(去掉扩展名 → 路径) }
@@ -161,52 +166,58 @@ function sniffKind(bytes) {
 }
 
 /**
- * 给一个网址找图标：仓库里已有就复用，否则从带 CORS 的源抓一张存进暂存区
+ * 给一个网址找图标：非强制时若仓库里已有就复用，否则从可用源抓一张存进暂存区
+ * @param {string} url 目标网站网址
+ * @param {Object|boolean} [options] 传 options 对象（或布尔值 force）
+ * @param {boolean} [options.force=false] 是否强制从网络抓取最新图标（跳过现有图标复用）
  * @returns {Promise<{path:string, reused:boolean, dataUrl?:string, generic?:boolean}>}
- *          generic 为 true 表示只有兜底源命中，图可能只是通用图标，需人工核对
  */
-async function grab(url, token = getToken()) {
+async function grab(url, options = {}) {
+  const force = typeof options === 'boolean' ? options : !!(options && options.force);
   const host = hostOf(url);
   if (!host) throw new Error('网址要填完整（http:// 或 https:// 开头）');
 
-  try {
-    await loadIndex(false);
-  } catch (error) {
-    // 仓库清单读不到（断网 / 限流）不该拦住抓取，抓完照样能在本地看到
-    console.warn('读取仓库图标清单失败，跳过查重:', error);
+  if (!force) {
+    try {
+      await loadIndex(false);
+    } catch (error) {
+      // 仓库清单读不到（断网 / 限流）不该拦住抓取，抓完照样能在本地看到
+      console.warn('读取仓库图标清单失败，跳过查重:', error);
+    }
+    const reused = existingPath(host);
+    if (reused) return { path: reused, reused: true };
   }
-  const reused = existingPath(host);
-  if (reused) return { path: reused, reused: true };
 
   for (let i = 0; i < SOURCES.length; i += 1) {
+    const src = SOURCES[i];
+    const targetUrl = typeof src === 'function' ? src(host) : src.url(host);
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), SOURCE_TIMEOUT);
     try {
-      const res = await fetch(SOURCES[i](host), { mode: 'cors', cache: 'no-store', signal: controller.signal });
+      const res = await fetch(targetUrl, { mode: 'cors', cache: 'no-store', signal: controller.signal });
       if (!res.ok) continue;
       const type = res.headers.get('content-type') || '';
       if (!type.startsWith('image/')) continue;
       const blob = await res.blob();
-      if (blob.size < 200 || blob.size > 300 * 1024) continue;   // 1×1 的占位图 / 过大的图都不要
+      if (blob.size < 200 || blob.size > 500 * 1024) continue;   // 1×1 的占位图 / 过大的图都不要
       const kind = sniffKind(new Uint8Array(await blob.arrayBuffer()));
       if (!kind) continue;                                       // 认不出的格式换下一个源，别写错扩展名
       const path = `${ICON_DIR}/${baseFor(host)}.${kind.ext}`;
       const dataUrl = await blobToDataUrl(new Blob([blob], { type: kind.mime }));
       const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
-      // 兜底源（icon.horse）给陌生域名发的是一张通用图标，骗过校验却不像真图标，得提醒一句
-      const generic = i === SOURCES.length - 1;
+      const generic = src.checkGeneric ? src.checkGeneric(blob) : false;
       if (!addPending(path, { dataUrl, base64, host, generic, at: Date.now() })) {
         throw new Error('浏览器存储满了，先推送或清掉草稿再抓');
       }
       return { path, reused: false, dataUrl, generic };
     } catch (error) {
       if (/存储满/.test(error.message)) throw error;
-      // 换下一个源（超时中断也走这里）
+      // 换下一个源（CORS 拦截、超时中断也走这里）
     } finally {
       clearTimeout(timer);
     }
   }
-  throw new Error('这个网站没给可用的图标，可以先留空或手填');
+  throw new Error('未能从网络获取到可用图标，可以先手动填写图片直链');
 }
 
 /**
