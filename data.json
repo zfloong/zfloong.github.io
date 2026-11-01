@@ -276,7 +276,7 @@
             {
               "title": "订阅链接转换",
               "url": "https://sublinkworker.654519996.xyz/",
-              "icon": "icons/sublinkworker_654519996_xyz.ico"
+              "icon": "icons/sublinkworker_654519996_xyz.png"
             },
             {
               "title": "网速单位换算",
@@ -436,7 +436,7 @@
             {
               "title": "Tools",
               "url": "https://tools.52935.xyz/",
-              "icon": "icons/tools_52935_xyz.ico"
+              "icon": "icons/tools_52935_xyz.png"
             },
             {
               "title": "PDF24 Tools",
@@ -736,7 +736,7 @@
             {
               "title": "PVZ  Wiki",
               "url": "https://wiki.biligame.com/pvzrh/%E9%A6%96%E9%A1%B5",
-              "icon": "icons/wiki_biligame_com.ico"
+              "icon": "icons/wiki_biligame_com.png"
             },
             {
               "title": "京东",
@@ -858,12 +858,12 @@
             {
               "title": "VMiss",
               "url": "https://app.vmiss.com/index.php",
-              "icon": "icons/vmiss_com.png"
+              "icon": "icons/app_vmiss_com.png"
             },
             {
               "title": "咸鱼云 SaltyFish",
               "url": "https://portal.saltyfish.io/",
-              "icon": "icons/saltyfish_io.png"
+              "icon": "icons/portal_saltyfish_io.png"
             },
             {
               "title": "白丝云 CloudSilk",
