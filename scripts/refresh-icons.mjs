@@ -1,5 +1,5 @@
 /**
- * 图标月度刷新脚本
+ * 图标年度刷新脚本
  *
  * 与 fetch-icons.mjs 的分工：fetch-icons 把外链图标本地化；本脚本反过来——
  * 对已本地化的图标，按卡片网址重新抓一遍，像素变了才替换。
@@ -146,7 +146,7 @@ async function fetchIcon(host) {
 }
 
 async function main() {
-  console.log('=== 图标月度刷新 ===\n');
+  console.log('=== 图标年度刷新 ===\n');
 
   const data = JSON.parse(readFileSync(DATA_PATH, 'utf-8'));
 
