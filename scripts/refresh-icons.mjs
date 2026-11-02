@@ -26,14 +26,17 @@ const DATA_PATH = join(ROOT, 'data.json');
 
 const SOURCE_TIMEOUT = 8000;   // 单源最多 8 秒，与在线编辑器一致
 
-// 抓取链：优先直连站点取高清图，再走 icon.horse 与 wsrv 代理；
-// 分辨率统一到 256，免得同一枚 logo 因尺寸不同被判成"变了"
+// 抓取链：直连取站点自己的高清 touch icon，再走 wsrv 代理兜底，icon.horse 垫底。
+// 分辨率统一到 256，免得同一枚 logo 因尺寸不同被判成"变了"。
+// 注意：不直连 favicon.ico——它返回原始 ico，sharp 解不了 ico（见下方 toPng 的说明），
+// wsrv 代理会替我们把 ico 转成 png，直连它纯属浪费一次请求。
 const SOURCES = [
-  { url: (host) => `https://${host}/apple-touch-icon.png`, checkGeneric: () => false },
-  { url: (host) => `https://${host}/favicon.ico`, checkGeneric: () => false },
-  { url: (host) => `https://icon.horse/icon/${host}`, checkGeneric: (buf) => buf.length < 3000 },
-  { url: (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://www.google.com/s2/favicons?domain=${host}&sz=128`)}&output=png&w=256&h=256&fit=contain`, checkGeneric: (buf) => buf.length < 1000 },
-  { url: (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://${host}/favicon.ico`)}&output=png&w=256&h=256&fit=contain`, checkGeneric: () => false },
+  { url: (host) => `https://${host}/apple-touch-icon.png`, generic: false },
+  { url: (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://www.google.com/s2/favicons?domain=${host}&sz=128`)}&output=png&w=256&h=256&fit=contain`, generic: false },
+  { url: (host) => `https://wsrv.nl/?url=${encodeURIComponent(`https://${host}/favicon.ico`)}&output=png&w=256&h=256&fit=contain`, generic: false },
+  // icon.horse 是兜底源：找不到 favicon 时会返回"首字母占位图"（3-4KB 灰色圆圈+字母），
+  // 用字节数阈值根本拦不住，所以一律视为 generic——永不自动覆盖，只进日志待人工
+  { url: (host) => `https://icon.horse/icon/${host}`, generic: true },
 ];
 
 /** 按文件头字节认真实格式，只按路径猜会写出假扩展名 */
@@ -98,36 +101,43 @@ function pixelsChanged(a, b) {
   return diff / (a.length / 4) > 0.02;
 }
 
-/** 沿抓取链取一张图标；generic=true 表示仅命中通用兜底占位图 */
+/** 统一转成 256px 以内的 png。sharp 解不了 ico（libvips 未带该解码器），
+ *  ico/webp/gif 一律尝试转换；转不动返回 null——调用方跳过该源换下一个，
+ *  绝不把非 png 字节落盘成 .png（那会造出浏览器解不动的假 png）。
+ *  png 输入也要过一遍：直连的 apple-touch-icon.png 常是 512px+/上百 KB 的原图。 */
+async function toPng(buffer, ext) {
+  try {
+    const sharp = (await import('sharp')).default;
+    const img = sharp(buffer);
+    const meta = await img.metadata();
+    if (ext === 'png' && meta.width <= 256 && meta.height <= 256) return buffer;
+    return await img
+      .resize(256, 256, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer();
+  } catch {
+    return null;
+  }
+}
+
+/** 沿抓取链取一张图标；generic=true 表示兜底源（可能给的是首字母占位图） */
 async function fetchIcon(host) {
-  for (let i = 0; i < SOURCES.length; i += 1) {
-    const src = SOURCES[i];
-    const targetUrl = typeof src === 'function' ? src(host) : src.url(host);
+  for (const src of SOURCES) {
     try {
-      const res = await fetch(targetUrl, {
+      const res = await fetch(src.url(host), {
         signal: AbortSignal.timeout(SOURCE_TIMEOUT),
         headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
       });
       if (!res.ok) continue;
       const type = res.headers.get('content-type') || '';
       if (!type.startsWith('image/')) continue;
-      let buffer = Buffer.from(await res.arrayBuffer());
-      if (buffer.length < 200 || buffer.length > 500 * 1024) continue;
-      let ext = sniffKind(buffer);
+      const raw = Buffer.from(await res.arrayBuffer());
+      if (raw.length < 200 || raw.length > 500 * 1024) continue;
+      const ext = sniffKind(raw);
       if (!ext) continue;
-      if (ext === 'ico') {
-        // 能转就转 png，转不了按原始 ico 存，保证后缀与字节一致
-        try {
-          const sharp = (await import('sharp')).default;
-          buffer = await sharp(buffer)
-            .resize(256, 256, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-            .png()
-            .toBuffer();
-          ext = 'png';
-        } catch { /* 保留原始 ico */ }
-      }
-      const generic = src.checkGeneric ? src.checkGeneric(buffer) : false;
-      return { buffer, ext, generic };
+      const buffer = await toPng(raw, ext);
+      if (!buffer) continue;          // 转不了就换下一个源，绝不落盘假 png
+      return { buffer, generic: src.generic };
     } catch {
       // 超时 / 网络错误：换下一个源
     }
