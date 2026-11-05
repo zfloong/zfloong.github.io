@@ -630,6 +630,11 @@
       "titleColor": "#2dd4bf",
       "items": [
         {
+          "title": "小学教学",
+          "url": "https://edu.654519996.xyz/",
+          "icon": "icons/edu_654519996_xyz.png"
+        },
+        {
           "title": "MIT 科技评论",
           "url": "https://www.mittrchina.com/news",
           "icon": "icons/mittrchina_com.png"
